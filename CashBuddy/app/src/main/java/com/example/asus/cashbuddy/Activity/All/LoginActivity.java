@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
         signIn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                loadingPanel.setVisibility(View.VISIBLE); //For loading screen purposes
+                /*loadingPanel.setVisibility(View.VISIBLE); //For loading screen purposes
                 loadingPanel.setClickable(true);
 
                 if(!validateLoginInfo()) {
@@ -100,8 +100,10 @@ public class LoginActivity extends AppCompatActivity {
                             }
                             loadingPanel.setVisibility(View.GONE);
                         }
-                    });
-
+                    });*/
+                Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
 

@@ -34,7 +34,8 @@
         <activity android:name=".Activity.Merchant.RegisterMerchantActivity" />
         <activity android:name=".Activity.User.TopUpActivity" />
         <activity android:name=".Activity.User.TransferActivity" />
-        <activity android:name=".Activity.All.NumberVerificationActivity"></activity>
+        <activity android:name=".Activity.All.NumberVerificationActivity" />
+        <activity android:name=".Activity.Admin.AdminTopUpActivity"></activity>
     </application>
 
 </manifest>

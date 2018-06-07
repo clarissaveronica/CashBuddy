@@ -12,10 +12,10 @@ import com.example.asus.cashbuddy.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AdminHistoryFragment extends Fragment {
+public class PhoneNumTopUpFragment extends Fragment {
 
 
-    public AdminHistoryFragment() {
+    public PhoneNumTopUpFragment() {
         // Required empty public constructor
     }
 
@@ -24,7 +24,7 @@ public class AdminHistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_history, container, false);
+        return inflater.inflate(R.layout.fragment_phone_num_top_up, container, false);
     }
 
 }

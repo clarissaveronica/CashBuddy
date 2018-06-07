@@ -1,5 +1,9 @@
 package com.example.asus.cashbuddy.Activity.User;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,12 +20,15 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 public class ScanActivity extends AppCompatActivity implements ZXingScannerView.ResultHandler {
     private ZXingScannerView mScannerView;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mScannerView = new ZXingScannerView(this);
         setContentView(mScannerView);
+
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_DENIED)
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 100);
 
         //Custom Action Bar's Title
         getSupportActionBar().setTitle("Scan");
