@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Cash Buddy</string>
+
+    <!--Navigation-->
+    <string name="title_home">Home</string>
+    <string name="title_deals">Deals</string>
+    <string name="title_history">History</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_settings">Settings</string>
+    <string name="title_transactions">Transaction</string>
+
+    <!-- Sign Out Confirmation Message -->
+    <string name="signOut_title">Sign Out</string>
+    <string name="signOut_confirmation">You are signing out. Are you sure?</string>
+    <string name="signOut_confirm">Yes</string>
+    <string name="signOut_cancel">No</string>
+
+    <!--Sign Up and Log in-->
+    <string name="signUpText"><u>Sign Up</u></string>
+
+    <!-- Login and register error -->
+    <string name="requires_phonenum">Phone Number is required.</string>
+    <string name="requires_password">Password is required.</string>
+
+    <!-- Authentication -->
+    <string name="authentication_success">Authentication success.</string>
+    <string name="authentication_failed">Authentication failed.</string>
+
+    <!--Menus-->
+    <string name="topUpText"><u>Top Up</u></string>
+    <string name="scanText"><u>Scan</u></string>
+    <string name="transferText"><u>Transfer</u></string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_merchant_main">MerchantMainActivity</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_activity_admin_main">AdminMainActivity</string>
+</resources>

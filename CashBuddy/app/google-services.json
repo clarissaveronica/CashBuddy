@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "540038189311",
+    "firebase_url": "https://cashbuddyuph.firebaseio.com",
+    "project_id": "cashbuddyuph",
+    "storage_bucket": "cashbuddyuph.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540038189311:android:019c95c66afba10b",
+        "android_client_info": {
+          "package_name": "com.example.asus.cashbuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540038189311-kgasssap3mvrte1mfvbg525haq68la3l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.asus.cashbuddy",
+            "certificate_hash": "4f96d8c95c138e7eaf6b6fe1026338bd2322e999"
+          }
+        },
+        {
+          "client_id": "540038189311-dqpfm0ntn444606s71usfgcr3b3naffc.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "540038189311-dqpfm0ntn444606s71usfgcr3b3naffc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAR5H_RNvInmaHNcEiNIuZAD35M9VL1jPk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "540038189311-dqpfm0ntn444606s71usfgcr3b3naffc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

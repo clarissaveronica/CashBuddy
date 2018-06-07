@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.asus.cashbuddy.Fragment.Merchant.MerchantHomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="250dp"
+                android:layout_height="60dp"
+                android:background="@drawable/rounded_top_corners"
+                android:gravity="center"
+                android:text="USER"
+                android:textColor="@color/White"
+                android:textSize="24dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/userRequestNum"
+                android:layout_width="250dp"
+                android:layout_height="60dp"
+                android:background="@drawable/rounded_bottom_corners"
+                android:gravity="center"
+                android:text="Request Num"
+                android:textSize="22dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="250dp"
+                android:layout_height="60dp"
+                android:background="@drawable/rounded_top_corners"
+                android:gravity="center"
+                android:text="MERCHANT"
+                android:textColor="@color/White"
+                android:textSize="24dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/merchantRequestNum"
+                android:layout_width="250dp"
+                android:layout_height="60dp"
+                android:background="@drawable/rounded_bottom_corners"
+                android:gravity="center"
+                android:text="Request Num"
+                android:textSize="22dp" />
+        </LinearLayout>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
