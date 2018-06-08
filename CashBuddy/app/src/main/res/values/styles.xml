@@ -13,4 +13,9 @@
         <item name="colorPrimaryDark">@color/White</item>
     </style>
 
+    <style name="PrimaryColorButton" parent="AppTheme">
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="android:textColor">@color/White</item>
+    </style>
+
 </resources>

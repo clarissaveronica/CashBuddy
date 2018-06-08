@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragment.Admin.PhoneNumTopUpFragment">
+    tools:context=".Fragment.User.PhoneTransferFragment">
 
     <LinearLayout android:orientation="vertical"
         android:layout_width="match_parent"
@@ -29,7 +29,6 @@
                 android:layout_weight="1"
                 android:layout_marginStart="16dp"
                 android:textSize="16sp"
-                android:textColor="@color/black"
                 android:layout_gravity="center_vertical"
                 android:text="Enter telephone number"/>
 
@@ -58,7 +57,7 @@
             android:layout_marginTop="16dp"
             android:layout_gravity="end"
             android:padding="16dp"
-            android:text="@string/topUpText" />
+            android:text="@string/transferText" />
     </LinearLayout>
 
 </FrameLayout>

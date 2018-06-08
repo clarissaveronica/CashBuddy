@@ -66,8 +66,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="35dp"
-            android:layout_marginBottom="50dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="65dp"
             android:gravity="center"
             android:orientation="horizontal">
 
@@ -81,7 +81,7 @@
                     android:id="@+id/topupButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="15dp"
+                    android:layout_margin="10dp"
                     android:background="@drawable/rounded_button"
                     android:src="@drawable/ic_add_black_50dp"
                     android:tint="@color/White" />
@@ -90,8 +90,8 @@
                     android:id="@+id/topUp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Top Up"
-                    android:textSize="20dp" />
+                    android:text="@string/topUpText"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -104,7 +104,7 @@
                     android:id="@+id/scanButton"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_margin="15dp"
+                    android:layout_margin="10dp"
                     android:background="@drawable/rounded_button"
                     android:src="@drawable/ic_qr_code_43dp"
                     android:tint="@color/White" />
@@ -113,8 +113,8 @@
                     android:id="@+id/scan"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Scan"
-                    android:textSize="20dp" />
+                    android:text="@string/scanText"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -127,7 +127,7 @@
                     android:id="@+id/transferButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="15dp"
+                    android:layout_margin="10dp"
                     android:background="@drawable/rounded_button"
                     android:src="@drawable/ic_transfer_50dp"
                     android:tint="@color/White" />
@@ -136,8 +136,8 @@
                     android:id="@+id/transfer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Transfer"
-                    android:textSize="20dp" />
+                    android:text="@string/transferText"
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

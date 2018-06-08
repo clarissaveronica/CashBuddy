@@ -29,9 +29,11 @@
     <string name="authentication_failed">Authentication failed.</string>
 
     <!--Menus-->
-    <string name="topUpText"><u>Top Up</u></string>
-    <string name="scanText"><u>Scan</u></string>
-    <string name="transferText"><u>Transfer</u></string>
+    <string name="topUpText">Top Up</string>
+    <string name="scanText">Scan</string>
+    <string name="transferText">Transfer</string>
+    <string name="withdrawText">Withdraw</string>
+    <string name="qrCodeText">QR Code</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -39,9 +41,16 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_activity_admin_main">AdminMainActivity</string>
 
-    <string-array name="top_up_method">
-        <item>QR</item>
+    <string-array name="methods">
+        <item>Select Method</item>
+        <item>Scan QR</item>
         <item>Telephone Number</item>
+    </string-array>
+
+    <string-array name="top_up_methods">
+        <item>Select Method</item>
+        <item>Bank Transfer</item>
+        <item>Cash Buddy Zone</item>
     </string-array>
 
 </resources>

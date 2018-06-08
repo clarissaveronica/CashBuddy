@@ -51,7 +51,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="65dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -63,19 +64,19 @@
 
             <ImageButton
                 android:id="@+id/withdrawButton"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:layout_margin="15dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/rounded_button"
-                android:src="@drawable/ic_withdraw_55dp"
+                android:src="@drawable/ic_withdraw_45dp"
                 android:tint="@color/White" />
 
             <TextView
                 android:id="@+id/withdraw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18dp"
-                android:text="Withdraw" />
+                android:textSize="16sp"
+                android:text="@string/withdrawText" />
 
         </LinearLayout>
 
@@ -87,9 +88,9 @@
 
             <ImageButton
                 android:id="@+id/generateQRButton"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:layout_margin="15dp"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/rounded_button"
                 android:src="@drawable/ic_generate_qr_50dp"
                 android:tint="@color/White"/>
@@ -98,8 +99,8 @@
                 android:id="@+id/transfer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="18dp"
-                android:text="QR Code" />
+                android:textSize="16sp"
+                android:text="@string/qrCodeText" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

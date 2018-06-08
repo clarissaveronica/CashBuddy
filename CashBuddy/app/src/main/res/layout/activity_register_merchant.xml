@@ -269,8 +269,7 @@
 
             <Button
                 android:id="@+id/signUpButton"
-                android:background="@color/colorPrimary"
-                android:textColor="@color/White"
+                android:theme="@style/PrimaryColorButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"

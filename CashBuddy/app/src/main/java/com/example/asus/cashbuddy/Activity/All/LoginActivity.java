@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                             loadingPanel.setVisibility(View.GONE);
                         }
                     });*/
-                Intent intent = new Intent(LoginActivity.this, AdminMainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MerchantMainActivity.class);
                 startActivity(intent);
                 finish();
             }

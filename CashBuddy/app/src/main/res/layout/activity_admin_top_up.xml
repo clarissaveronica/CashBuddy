@@ -33,7 +33,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="16dp"
-                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:layout_gravity="center_vertical"
                 android:text="Enter Top Up Amount"/>
@@ -53,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Top Up Amount"
-                android:inputType="phone"/>
+                android:inputType="number"/>
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
@@ -79,7 +78,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="16dp"
-                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:layout_gravity="center_vertical"
                 android:text="Choose Top Up Method"/>
@@ -98,8 +96,13 @@
 
         <FrameLayout
             android:id="@+id/content"
+            android:visibility="invisible"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp">
         </FrameLayout>
 
     </LinearLayout>
