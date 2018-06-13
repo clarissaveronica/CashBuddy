@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.asus.cashbuddy.Activity.Merchant.RegisterMerchantActivity;
-import com.example.asus.cashbuddy.Activity.User.RegisterUserActivity;
+import com.example.asus.cashbuddy.Activity.Merchant.MerchantRegisterActivity;
+import com.example.asus.cashbuddy.Activity.User.UserRegisterActivity;
 import com.example.asus.cashbuddy.R;
 
 public class RegisterMainActivity extends AppCompatActivity {
@@ -27,7 +27,7 @@ public class RegisterMainActivity extends AppCompatActivity {
         merchantSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RegisterMainActivity.this, RegisterMerchantActivity.class);
+                Intent intent = new Intent(RegisterMainActivity.this, MerchantRegisterActivity.class);
                 intent.putExtra("role", "merchant");
                 startActivity(intent);
                 finish();
@@ -37,7 +37,7 @@ public class RegisterMainActivity extends AppCompatActivity {
         userSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(RegisterMainActivity.this, RegisterUserActivity.class);
+                Intent intent = new Intent(RegisterMainActivity.this, UserRegisterActivity.class);
                 intent.putExtra("role", "user");
                 startActivity(intent);
                 finish();

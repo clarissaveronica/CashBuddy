@@ -13,7 +13,7 @@ import com.example.asus.cashbuddy.Fragment.All.HistoryFragment;
 import com.example.asus.cashbuddy.Fragment.Merchant.MerchantHomeFragment;
 import com.example.asus.cashbuddy.Fragment.Merchant.MerchantNewTransactionFragment;
 import com.example.asus.cashbuddy.Fragment.All.NotificationFragment;
-import com.example.asus.cashbuddy.Fragment.User.UserProfileFragment;
+import com.example.asus.cashbuddy.Fragment.All.ProfileFragment;
 import com.example.asus.cashbuddy.Others.BottomNavigationViewHelper;
 import com.example.asus.cashbuddy.R;
 
@@ -41,7 +41,7 @@ public class MerchantMainActivity extends AppCompatActivity {
                     manager.beginTransaction().replace(R.id.content, new NotificationFragment()).commit();
                     return true;
                 case R.id.navigation_profile:
-                    manager.beginTransaction().replace(R.id.content, new UserProfileFragment()).commit();
+                    manager.beginTransaction().replace(R.id.content, new ProfileFragment()).commit();
                     return true;
             }
             return false;

@@ -1,4 +1,4 @@
-package com.example.asus.cashbuddy.Activity.Admin;
+package com.example.asus.cashbuddy.Activity.User;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -11,24 +11,23 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Fragment.Admin.AdminPhoneTopUpFragment;
 import com.example.asus.cashbuddy.Fragment.Admin.AdminQRScanFragment;
+import com.example.asus.cashbuddy.Fragment.User.UserPhoneTransferFragment;
 import com.example.asus.cashbuddy.R;
 
-public class AdminTopUpActivity extends AppCompatActivity {
+public class UserTransferActivity extends AppCompatActivity {
 
     FrameLayout content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_top_up);
-
+        setContentView(R.layout.activity_user_transfer);
         //Custom Action Bar's Title
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_layout);
         TextView textViewTitle = findViewById(R.id.title);
-        textViewTitle.setText(R.string.topUpText);
+        textViewTitle.setText(R.string.transferText);
 
         //Initialize view
         final FragmentManager manager = getSupportFragmentManager();
@@ -36,7 +35,7 @@ public class AdminTopUpActivity extends AppCompatActivity {
 
         //Initialize spinner
         Spinner spinner = findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(AdminTopUpActivity.this, R.array.methods, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(UserTransferActivity.this, R.array.methods, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -50,7 +49,7 @@ public class AdminTopUpActivity extends AppCompatActivity {
                     manager.beginTransaction().replace(R.id.content, new AdminQRScanFragment()).commit();
                 }else if(choose.equals("Telephone Number")){
                     content.setVisibility(View.VISIBLE);
-                    manager.beginTransaction().replace(R.id.content, new AdminPhoneTopUpFragment()).commit();
+                    manager.beginTransaction().replace(R.id.content, new UserPhoneTransferFragment()).commit();
                 }else if(choose.equals("Select Method")){
                     content.setVisibility(View.INVISIBLE);
                 }

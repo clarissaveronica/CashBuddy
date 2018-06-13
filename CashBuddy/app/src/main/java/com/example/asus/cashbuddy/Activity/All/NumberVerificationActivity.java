@@ -56,4 +56,9 @@ public class NumberVerificationActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

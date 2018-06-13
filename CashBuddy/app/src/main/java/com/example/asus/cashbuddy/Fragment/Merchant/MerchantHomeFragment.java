@@ -2,6 +2,7 @@ package com.example.asus.cashbuddy.Fragment.Merchant;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.example.asus.cashbuddy.Activity.Merchant.MerchantWithdrawActivity;
 import com.example.asus.cashbuddy.R;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -26,7 +28,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
  */
 public class MerchantHomeFragment extends Fragment {
 
-    private ImageButton qrButton;
+    private ImageButton qrButton, withdrawButton;
 
     public MerchantHomeFragment() {
         // Required empty public constructor
@@ -44,11 +46,21 @@ public class MerchantHomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //Initialize views
+        withdrawButton = view.findViewById(R.id.withdrawButton);
         qrButton = view.findViewById(R.id.generateQRButton);
+
         qrButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 showQR();
+            }
+        });
+        withdrawButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getActivity(), MerchantWithdrawActivity.class);
+                startActivity(intent);
             }
         });
     }

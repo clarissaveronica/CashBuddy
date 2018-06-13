@@ -21,7 +21,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.User.ScanActivity" />
+        <activity android:name=".Activity.User.UserScanActivity" />
         <activity
             android:name=".Activity.Merchant.MerchantMainActivity"
             android:label="@string/title_activity_merchant_main" />
@@ -30,13 +30,21 @@
             android:label="@string/title_activity_admin_main" />
         <activity android:name=".Activity.User.MainActivity" />
         <activity android:name=".Activity.All.RegisterMainActivity" />
-        <activity android:name=".Activity.User.RegisterUserActivity" />
-        <activity android:name=".Activity.Merchant.RegisterMerchantActivity" />
-        <activity android:name=".Activity.User.TopUpActivity" />
-        <activity android:name=".Activity.User.TransferActivity" />
+        <activity android:name=".Activity.User.UserRegisterActivity" />
+        <activity android:name=".Activity.Merchant.MerchantRegisterActivity" />
+        <activity android:name=".Activity.User.UserTopUpActivity" />
+        <activity android:name=".Activity.User.UserTransferActivity"/>
         <activity android:name=".Activity.All.NumberVerificationActivity" />
         <activity android:name=".Activity.Admin.AdminTopUpActivity" />
-        <activity android:name=".Activity.Merchant.WithdrawMerchantActivity"></activity>
+        <activity android:name=".Activity.Merchant.MerchantWithdrawActivity" />
+        <activity android:name=".Activity.All.AboutActivity" />
+        <activity android:name=".Activity.All.FAQActivity" />
+        <activity android:name=".Activity.All.ContactUsActivity" />
+        <activity android:name=".Activity.Admin.AdminConfirmTopUpActivity" />
+        <activity android:name=".Activity.Admin.AdminMerchantWithdrawActivity" />
+        <activity android:name=".Activity.Admin.AdminMerchantVerificationActivity" />
+        <activity android:name=".Activity.Merchant.MerchantProfileActivity" />
+        <activity android:name=".Activity.User.UserProfileActivity"></activity>
     </application>
 
 </manifest>

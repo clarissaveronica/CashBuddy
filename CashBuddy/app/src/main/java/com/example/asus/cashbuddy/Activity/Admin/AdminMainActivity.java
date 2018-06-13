@@ -22,7 +22,7 @@ public class AdminMainActivity extends AppCompatActivity {
 
     private static final int MENU_LOGOUT = Menu.FIRST;
 
-    String[] name = {"User Top Up","Confirm Top Up", "Store Withdrawal","Merchant Verification"};
+    String[] name = {"User Top Up","Confirm Top Up", "Merchant Withdrawal","Merchant Verification"};
 
     String[] description = {"Add user's balance","Confirm user's top up request",
             "Confirm merchant's request for balance withdrawal", "Verify unverified merchant"};
@@ -61,10 +61,16 @@ public class AdminMainActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case "WITHDRAW":
+                        intent = new Intent(AdminMainActivity. this, AdminMerchantWithdrawActivity.class);
+                        startActivity(intent);
                         break;
                     case "C_TOP_UP":
+                        intent = new Intent(AdminMainActivity. this, AdminConfirmTopUpActivity.class);
+                        startActivity(intent);
                         break;
                     case "MERCHANT_VERIFICATION":
+                        intent = new Intent(AdminMainActivity. this, AdminMerchantVerificationActivity.class);
+                        startActivity(intent);
                         break;
 
                     default: break;

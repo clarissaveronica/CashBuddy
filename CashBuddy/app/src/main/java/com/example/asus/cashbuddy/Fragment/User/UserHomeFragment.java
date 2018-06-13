@@ -15,11 +15,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
-import com.example.asus.cashbuddy.Activity.All.LoginActivity;
-import com.example.asus.cashbuddy.Activity.Merchant.MerchantMainActivity;
-import com.example.asus.cashbuddy.Activity.User.ScanActivity;
-import com.example.asus.cashbuddy.Activity.User.TopUpActivity;
-import com.example.asus.cashbuddy.Activity.User.TransferActivity;
+import com.example.asus.cashbuddy.Activity.User.UserScanActivity;
+import com.example.asus.cashbuddy.Activity.User.UserTopUpActivity;
+import com.example.asus.cashbuddy.Activity.User.UserTransferActivity;
 import com.example.asus.cashbuddy.R;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -56,7 +54,7 @@ public class UserHomeFragment extends Fragment {
         //Start qr code scan
         scan.setOnClickListener(new View.OnClickListener(){
             public void onClick (View v){
-                Intent intent = new Intent(getActivity(), ScanActivity.class);
+                Intent intent = new Intent(getActivity(), UserScanActivity.class);
                 startActivity(intent);
             }
         });
@@ -65,7 +63,7 @@ public class UserHomeFragment extends Fragment {
         transfer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), TransferActivity.class);
+                Intent intent = new Intent(getActivity(), UserTransferActivity.class);
                 startActivity(intent);
             }
         });
@@ -74,7 +72,7 @@ public class UserHomeFragment extends Fragment {
         topup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), TopUpActivity.class);
+                Intent intent = new Intent(getActivity(), UserTopUpActivity.class);
                 startActivity(intent);
             }
         });

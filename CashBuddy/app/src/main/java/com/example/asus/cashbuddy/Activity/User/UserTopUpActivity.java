@@ -1,4 +1,4 @@
-package com.example.asus.cashbuddy.Activity.Admin;
+package com.example.asus.cashbuddy.Activity.User;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
@@ -11,18 +11,18 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Fragment.Admin.AdminPhoneTopUpFragment;
-import com.example.asus.cashbuddy.Fragment.Admin.AdminQRScanFragment;
+import com.example.asus.cashbuddy.Fragment.User.UserCBZoneTransferFragment;
+import com.example.asus.cashbuddy.Fragment.User.UserTransferTopUpFragment;
 import com.example.asus.cashbuddy.R;
 
-public class AdminTopUpActivity extends AppCompatActivity {
+public class UserTopUpActivity extends AppCompatActivity {
 
     FrameLayout content;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_top_up);
+        setContentView(R.layout.activity_user_top_up);
 
         //Custom Action Bar's Title
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -36,7 +36,7 @@ public class AdminTopUpActivity extends AppCompatActivity {
 
         //Initialize spinner
         Spinner spinner = findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(AdminTopUpActivity.this, R.array.methods, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(UserTopUpActivity.this, R.array.top_up_methods, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -45,12 +45,12 @@ public class AdminTopUpActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String choose = parent.getItemAtPosition(position).toString();
 
-                if(choose.equals("Scan QR")){
+                if(choose.equals("Cash Buddy Zone")){
                     content.setVisibility(View.VISIBLE);
-                    manager.beginTransaction().replace(R.id.content, new AdminQRScanFragment()).commit();
-                }else if(choose.equals("Telephone Number")){
+                    manager.beginTransaction().replace(R.id.content, new UserCBZoneTransferFragment()).commit();
+                }else if(choose.equals("Bank Transfer")){
                     content.setVisibility(View.VISIBLE);
-                    manager.beginTransaction().replace(R.id.content, new AdminPhoneTopUpFragment()).commit();
+                    manager.beginTransaction().replace(R.id.content, new UserTransferTopUpFragment()).commit();
                 }else if(choose.equals("Select Method")){
                     content.setVisibility(View.INVISIBLE);
                 }

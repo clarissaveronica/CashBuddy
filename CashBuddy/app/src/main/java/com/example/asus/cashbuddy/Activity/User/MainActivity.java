@@ -9,12 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Fragment.User.DealsFragment;
+import com.example.asus.cashbuddy.Fragment.User.UserDealsFragment;
 import com.example.asus.cashbuddy.Fragment.All.HistoryFragment;
 import com.example.asus.cashbuddy.Fragment.User.UserHomeFragment;
 import com.example.asus.cashbuddy.Fragment.All.NotificationFragment;
 import com.example.asus.cashbuddy.Others.BottomNavigationViewHelper;
-import com.example.asus.cashbuddy.Fragment.User.UserProfileFragment;
+import com.example.asus.cashbuddy.Fragment.All.ProfileFragment;
 import com.example.asus.cashbuddy.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
                     manager.beginTransaction().replace(R.id.content, new UserHomeFragment()).commit();
                     return true;
                 case R.id.navigation_deals:
-                    manager.beginTransaction().replace(R.id.content, new DealsFragment()).commit();
+                    manager.beginTransaction().replace(R.id.content, new UserDealsFragment()).commit();
                     return true;
                 case R.id.navigation_history:
                     manager.beginTransaction().replace(R.id.content, new HistoryFragment()).commit();
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                     manager.beginTransaction().replace(R.id.content, new NotificationFragment()).commit();
                     return true;
                 case R.id.navigation_profile:
-                    manager.beginTransaction().replace(R.id.content, new UserProfileFragment()).commit();
+                    manager.beginTransaction().replace(R.id.content, new ProfileFragment()).commit();
                     return true;
             }
             return false;

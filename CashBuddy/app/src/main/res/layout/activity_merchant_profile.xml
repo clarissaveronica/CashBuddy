@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.Merchant.MerchantProfileActivity">
+
+    <LinearLayout android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginTop="32dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="8dp"
+                android:src="@drawable/ic_person_black"
+                android:tint="@color/White"
+                android:background="@drawable/circle_primary_color"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:textSize="18sp"
+                android:layout_gravity="center_vertical"
+                android:text="Name"/>
+
+        </LinearLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_gravity="center_vertical">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/merchantName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Name"
+                android:inputType="textPersonName"/>
+        </android.support.design.widget.TextInputLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="8dp"
+                android:src="@drawable/ic_email_black"
+                android:tint="@color/White"
+                android:background="@drawable/circle_primary_color"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:text="Email"/>
+
+        </LinearLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_gravity="center_vertical">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/registration_email_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Email"
+                android:inputType="textEmailAddress"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="8dp"
+                android:src="@drawable/ic_location_on_black"
+                android:tint="@color/White"
+                android:background="@drawable/circle_primary_color"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:text="Location"/>
+
+        </LinearLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_vertical">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/merchantLocation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Merchant Location"
+                android:inputType="text"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8sp"
+            android:layout_marginTop="45sp"
+            android:layout_marginEnd="8sp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/signOutButton"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:theme="@style/PrimaryColorButton"
+                android:text="Save Changes"
+                android:textSize="16dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
