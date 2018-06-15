@@ -13,7 +13,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Activity.All.NumberVerificationActivity;
+import com.example.asus.cashbuddy.Activity.All.PhoneNumVerificationActivity;
+import com.example.asus.cashbuddy.Activity.All.RegisterVerificationActivity;
 import com.example.asus.cashbuddy.Fragment.All.RegistrationCancellationDialogFragment;
 import com.example.asus.cashbuddy.R;
 
@@ -62,13 +63,13 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
                     String phoneNumber = phoneNumberEditText.getText().toString();
                     String location = locationEditText.getText().toString();
 
-                    Intent intent = new Intent(MerchantRegisterActivity.this, NumberVerificationActivity.class);
+                    Intent intent = new Intent(MerchantRegisterActivity.this, RegisterVerificationActivity.class);
                     intent.putExtra("email", email);
                     intent.putExtra("password", password);
                     intent.putExtra("name", name);
                     intent.putExtra("number", phoneNumber);
                     intent.putExtra("location", location);
-                    intent.putExtra("role", "merchant");
+                    intent.putExtra("role", "UNVERIFIED_MERCHANT");
                     startActivity(intent);
                     finish();
                 }
@@ -106,6 +107,9 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
         if (TextUtils.isEmpty(phoneNumber)) {
             phoneNumberEditText.setError("Phone number is required");
             valid = false;
+        }else if(phoneNumber.length() < 10){
+            phoneNumberEditText.setError("Invalid phone number");
+            valid = false;
         }
 
         if (TextUtils.isEmpty(location)) {
@@ -124,13 +128,6 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
     private void showCancellationConfirmation() {
         DialogFragment dialogFragment = new RegistrationCancellationDialogFragment();
         dialogFragment.show(getSupportFragmentManager(), null);
-    }
-
-    private void finishRegistration() {
-        progressBarLayout.setVisibility(View.GONE);
-        Intent intent = new Intent(MerchantRegisterActivity.this, NumberVerificationActivity.class);
-        startActivity(intent);
-        finish();
     }
 
     @Override

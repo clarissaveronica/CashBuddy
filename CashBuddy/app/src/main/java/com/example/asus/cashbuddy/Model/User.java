@@ -7,27 +7,29 @@ package com.example.asus.cashbuddy.Model;
 public class User {
 
     private String name;
-    private String userPhone;
     private String profilePictureUrl;
     private String device_token;
+    private String email;
     private int balance;
+    private String password;
 
     public User() {}
 
-    public User(String name, String phone, String profilePictureUrl, String device_token, int balance) {
+    public User(String name,  String email, String password, String profilePictureUrl, String device_token, int balance) {
         this.name = name;
-        this.userPhone = phone;
+        this.email = email;
         this.profilePictureUrl = profilePictureUrl;
         this.device_token = device_token;
         this.balance = balance;
+        this.password = password;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setUserPhone(String userPhone) {
-        this.userPhone = userPhone;
+    public void setEmail(String userPhone) {
+        this.email = email;
     }
 
     public void setProfilePictureUrl(String profilePictureUrl) {
@@ -40,13 +42,17 @@ public class User {
         this.device_token = device_token;
     }
 
+    public void setPassword(String password){this.password = password;}
+
     public String getName() {
         return name;
     }
 
-    public String getUserPhone() {
-        return userPhone;
+    public String getEmail() {
+        return email;
     }
+
+    public String getPassword(){return password;}
 
     public String getProfilePictureUrl() {
         return profilePictureUrl;

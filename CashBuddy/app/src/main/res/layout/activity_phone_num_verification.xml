@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.All.NumberVerificationActivity">
+    tools:context=".Activity.All.PhoneNumVerificationActivity">
 
     <LinearLayout android:orientation="vertical"
         android:layout_width="match_parent"
@@ -14,13 +14,15 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50sp">
+            android:layout_marginStart="16sp"
+            android:layout_marginEnd="16sp"
+            android:layout_marginTop="32sp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:gravity="center"
                 android:text="Please enter the verification pin"/>
 
@@ -30,6 +32,8 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16sp"
+            android:layout_marginEnd="16sp"
             android:layout_marginTop="5sp">
 
             <TextView
@@ -37,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/textView"
                 android:layout_weight="1"
-                android:textSize="15sp"
+                android:textSize="14sp"
                 android:gravity="center"
                 android:text="We have sent the verification pin to : number"/>
         </LinearLayout>
@@ -46,18 +50,42 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50sp"
+            android:layout_marginTop="32sp"
+            android:layout_marginStart="16sp"
+            android:layout_marginEnd="16sp"
             android:gravity="center">
 
-            <EditText
-                android:id="@+id/pin"
-                android:layout_width="200sp"
-                android:layout_height="100sp"
+            <com.alimuzaffar.lib.pin.PinEntryEditText
+                android:id="@+id/pinEntry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:cursorVisible="false"
+                android:digits="1234567890"
                 android:inputType="number"
-                android:maxLength="4"
+                android:maxLength="6"
+                android:textIsSelectable="false"
+                android:textSize="20sp"
+                app:pinAnimationType="popIn"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="16sp"
+            android:layout_marginEnd="16sp"
+            android:layout_marginTop="40sp">
+
+            <Button
+                android:layout_width="0sp"
+                android:theme="@style/PrimaryColorButton"
+                android:layout_height="wrap_content"
+                android:id="@+id/resendButton"
+                android:layout_weight="1"
+                android:textSize="14sp"
                 android:gravity="center"
-                android:textSize="60sp"
-                android:layout_margin="10sp"/>
+                android:text="Resend Code"/>
         </LinearLayout>
     </LinearLayout>
 

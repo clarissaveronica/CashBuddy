@@ -50,7 +50,7 @@
                 android:layout_marginStart="16dp"
                 android:textSize="16sp"
                 android:layout_gravity="center_vertical"
-                android:text="Enter Amount (Minimal Rp10.000)"/>
+                android:text="Please enter amount (Minimal Rp10.000)"/>
 
         </LinearLayout>
 
@@ -175,7 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:padding="8dp"
-                android:src="@drawable/ic_person_black"
+                android:src="@drawable/ic_credit_card_black_24dp"
                 android:tint="@color/White"
                 android:background="@drawable/circle_primary_color"
                 />
@@ -205,7 +205,7 @@
                 android:ems="10"
                 android:maxLength="6"
                 android:hint="Your bank account's number"
-                android:inputType="text" />
+                android:inputType="number" />
         </android.support.design.widget.TextInputLayout>
 
         <Button

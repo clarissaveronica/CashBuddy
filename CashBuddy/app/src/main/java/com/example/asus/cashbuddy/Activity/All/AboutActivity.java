@@ -7,6 +7,8 @@ import android.widget.TextView;
 
 import com.example.asus.cashbuddy.R;
 
+import static android.text.Layout.JUSTIFICATION_MODE_INTER_WORD;
+
 public class AboutActivity extends AppCompatActivity {
 
     @Override

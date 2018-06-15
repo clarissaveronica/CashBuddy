@@ -11,7 +11,7 @@
     <item
         android:id="@+id/navigation_new_transaction"
         android:icon="@drawable/ic_create_black_24dp"
-        android:title="@string/title_transactions"
+        android:title="@string/title_create"
         app:showAsAction="always|withText"/>
 
     <item

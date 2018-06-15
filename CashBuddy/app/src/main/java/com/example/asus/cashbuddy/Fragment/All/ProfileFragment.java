@@ -1,21 +1,25 @@
 package com.example.asus.cashbuddy.Fragment.All;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.asus.cashbuddy.Activity.All.AboutActivity;
+import com.example.asus.cashbuddy.Activity.All.ChangePasswordActivity;
 import com.example.asus.cashbuddy.Activity.All.ContactUsActivity;
-import com.example.asus.cashbuddy.Activity.All.FAQActivity;
+import com.example.asus.cashbuddy.Activity.All.LoginActivity;
 import com.example.asus.cashbuddy.Activity.User.UserProfileActivity;
 import com.example.asus.cashbuddy.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 /**
@@ -23,7 +27,8 @@ import com.example.asus.cashbuddy.R;
  */
 public class ProfileFragment extends Fragment {
 
-    Button editProfile, faq, contactUs, about, signOut;
+    Button editProfile, contactUs, about, signOut, changePass;
+    FirebaseAuth firebaseAuth;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -43,23 +48,15 @@ public class ProfileFragment extends Fragment {
 
         //Initialize view
         editProfile = view.findViewById(R.id.editProfileButton);
-        faq = view.findViewById(R.id.faqButton);
         contactUs = view.findViewById(R.id.contactButton);
         about = view.findViewById(R.id.aboutButton);
         signOut = view.findViewById(R.id.signOutButton);
+        changePass = view.findViewById(R.id.changePassButton);
 
         editProfile.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        faq.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                Intent intent = new Intent(getActivity(), FAQActivity.class);
                 startActivity(intent);
             }
         });
@@ -79,5 +76,43 @@ public class ProfileFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        changePass.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        signOut.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                logout();
+            }
+        });
+    }
+
+    public void logout(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(R.string.signOut_confirmation)
+                .setCancelable(false)
+                .setPositiveButton(R.string.signOut_confirm, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        firebaseAuth.getInstance().signOut();
+                        Intent intent = new Intent(getActivity(), LoginActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                })
+                .setNegativeButton(R.string.signOut_cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.setTitle(R.string.signOut_title);
+        alert.show();
     }
 }
