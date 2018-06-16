@@ -38,7 +38,7 @@ public class RegisterVerificationActivity extends AppCompatActivity {
     PinEntryEditText pinEntry;
     Button resendButton;
 
-    private String phoneVerificationId, phoneNum, name, password;
+    private String phoneVerificationId, num, name, password, email, location, role;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks;
     private PhoneAuthProvider.ForceResendingToken resendToken;
     private FirebaseAuth auth;
@@ -54,14 +54,18 @@ public class RegisterVerificationActivity extends AppCompatActivity {
         TextView textViewTitle = findViewById(R.id.title);
         textViewTitle.setText("Phone Number Verification");
 
+        //Get data
         Intent intent = getIntent();
-        final String num = "+62" + intent.getStringExtra("number").substring(1);
+        num = "+62" + intent.getStringExtra("number").substring(1);
         name = intent.getStringExtra("name");
+        role = intent.getStringExtra("role");
+        location = intent.getStringExtra("location");
+        email = intent.getStringExtra("email");
         password = intent.getStringExtra("password");
-        phoneNum = num;
 
         sendCode(num);
 
+        //Initialize views
         text = findViewById(R.id.textView);
         pinEntry = findViewById(R.id.pinEntry);
         resendButton = findViewById(R.id.resendButton);
@@ -92,8 +96,6 @@ public class RegisterVerificationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(RegisterVerificationActivity.this, LoginActivity.class);
-        startActivity(intent);
         finish();
     }
 
@@ -138,8 +140,17 @@ public class RegisterVerificationActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            AccountUtil.createUserOtherInformation(name, phoneNum, password, null, 0);
-                            login();
+                            if(role.equals("newUser")) {
+                                AccountUtil.createUserOtherInformation(name, num, email, password, null, 0);
+                                Intent intent = new Intent(RegisterVerificationActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finishAffinity();
+                            }else{
+                                AccountUtil.createMerchantOtherInformation(name, num, password, email, location, 0);
+                                Intent intent = new Intent(RegisterVerificationActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                finishAffinity();
+                            }
                         } else {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {
@@ -160,9 +171,5 @@ public class RegisterVerificationActivity extends AppCompatActivity {
                 this,
                 verificationCallbacks,
                 resendToken);
-    }
-
-    public void login(){
-
     }
 }

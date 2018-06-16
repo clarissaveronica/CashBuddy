@@ -10,6 +10,7 @@ import android.os.Parcelable;
 public class Merchant implements Parcelable {
     private String merchantName;
     private String merchantId;
+    private String password;
     private String phoneNumber;
     private String location;
     private String email;
@@ -25,11 +26,12 @@ public class Merchant implements Parcelable {
         this.balance = balance;
     }
 
-    public Merchant(String merchantName, String phoneNumber, String email, String location, String device_token, int balance) {
+    public Merchant(String merchantName, String phoneNumber, String password, String email, String location, String device_token, int balance) {
         this.merchantName = merchantName;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.location = location;
+        this.password = password;
         this.balance = balance;
         this.device_token = device_token;
     }
@@ -37,6 +39,7 @@ public class Merchant implements Parcelable {
     protected Merchant(Parcel in) {
         merchantName = in.readString();
         merchantId = in.readString();
+        password=in.readString();
         phoneNumber = in.readString();
         location = in.readString();
         balance = in.readInt();
@@ -63,6 +66,8 @@ public class Merchant implements Parcelable {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public void setPassword(String password) {this.password = password;};
 
     public void setMerchantId(String merchantId) {
         this.merchantId = merchantId;
@@ -98,6 +103,8 @@ public class Merchant implements Parcelable {
         return location;
     }
 
+    public String getPassword(){return password;}
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -118,6 +125,7 @@ public class Merchant implements Parcelable {
         dest.writeString(merchantName);
         dest.writeString(merchantId);
         dest.writeString(phoneNumber);
+        dest.writeString(password);
         dest.writeString(location);
         dest.writeString(email);
         dest.writeInt(balance);

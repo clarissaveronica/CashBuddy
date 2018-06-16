@@ -15,8 +15,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.asus.cashbuddy.Activity.All.LoginActivity;
 import com.example.asus.cashbuddy.Adapter.AdminMenuAdapter;
 import com.example.asus.cashbuddy.R;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AdminMainActivity extends AppCompatActivity {
 
@@ -31,6 +33,8 @@ public class AdminMainActivity extends AppCompatActivity {
 
     ListView lView;
     ListAdapter lAdapter;
+
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,10 +99,10 @@ public class AdminMainActivity extends AppCompatActivity {
                         .setCancelable(false)
                         .setPositiveButton(R.string.signOut_confirm, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                //firebaseAuth.getInstance().signOut();
-                                //Intent intent = new Intent(MainActivityAdmin.this, LoginActivity.class);
-                                //startActivity(intent);
-                                //finish();
+                                firebaseAuth.getInstance().signOut();
+                                Intent intent = new Intent(AdminMainActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                finish();
                             }
                         })
                         .setNegativeButton(R.string.signOut_cancel, new DialogInterface.OnClickListener() {

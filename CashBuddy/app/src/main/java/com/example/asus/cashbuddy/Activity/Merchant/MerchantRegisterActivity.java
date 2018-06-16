@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,13 @@ import com.example.asus.cashbuddy.Activity.All.PhoneNumVerificationActivity;
 import com.example.asus.cashbuddy.Activity.All.RegisterVerificationActivity;
 import com.example.asus.cashbuddy.Fragment.All.RegistrationCancellationDialogFragment;
 import com.example.asus.cashbuddy.R;
+import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class MerchantRegisterActivity extends AppCompatActivity implements RegistrationCancellationDialogFragment.CancellationHandler{
 
@@ -28,6 +36,8 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
     private TextInputEditText phoneNumberEditText;
     private TextInputEditText locationEditText;
     private Button signUpBtn;
+    private boolean valid;
+    private boolean check;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +65,6 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
             @Override
             public void onClick(View view){
                 if(validateForm()) {
-                    progressBarLayout.setVisibility(View.VISIBLE);
-
                     String email = emailEditText.getText().toString();
                     String password = passwordEditText.getText().toString();
                     String name = nameEditText.getText().toString();
@@ -69,9 +77,8 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
                     intent.putExtra("name", name);
                     intent.putExtra("number", phoneNumber);
                     intent.putExtra("location", location);
-                    intent.putExtra("role", "UNVERIFIED_MERCHANT");
+                    intent.putExtra("role", "newMerchant");
                     startActivity(intent);
-                    finish();
                 }
             }
         });
@@ -83,8 +90,6 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
         String name = nameEditText.getText().toString();
         String phoneNumber = phoneNumberEditText.getText().toString();
         String location = locationEditText.getText().toString();
-
-        boolean valid = true;
 
         if (TextUtils.isEmpty(email)) {
             emailEditText.setError("Email is required");
@@ -112,12 +117,58 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
             valid = false;
         }
 
+        checkNum(new OnGetDataListener() {
+            @Override
+            public void onSuccess(boolean checked) {
+                phoneNumberEditText.setError("Phone number is already used");
+                valid = false;
+            }
+
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onFailure() {
+                valid = true;
+            }
+        });
+
         if (TextUtils.isEmpty(location)) {
             locationEditText.setError("Location is required");
             valid = false;
         }
 
         return valid;
+    }
+
+    public void checkNum(final OnGetDataListener listener){
+        listener.onStart();
+
+        String num = "+62" + phoneNumberEditText.getText().toString().substring(1);
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference userNameRef = rootRef.child("phonenumbertouid").child(num);
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    check = true;
+                    listener.onSuccess(check);
+                }else{
+                    listener.onFailure();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {listener.onFailure();}
+        };
+        userNameRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public void checking(){
+
     }
 
     @Override
@@ -150,4 +201,11 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
 
     @Override
     public void resumeRegistration() {}
+
+    public interface OnGetDataListener {
+        //make new interface for call back
+        void onSuccess(boolean checked);
+        void onStart();
+        void onFailure();
+    }
 }

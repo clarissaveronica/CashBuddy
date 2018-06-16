@@ -148,7 +148,8 @@
                 android:layout_height="40dp"
                 android:theme="@style/PrimaryColorButton"
                 android:text="@string/signOut_title"
-                android:textSize="16dp"/>
+                
+                android:textSize="16sp"/>
         </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

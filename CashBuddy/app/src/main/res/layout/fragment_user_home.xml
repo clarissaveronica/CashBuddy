@@ -34,17 +34,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="25dp"
             android:gravity="center">
             <TextView
                 android:id="@+id/textView"
-                android:layout_width="250dp"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
+                android:layout_height="45dp"
                 android:background="@drawable/rounded_top_corners"
                 android:gravity="center"
-                android:text="BALANCE"
+                android:text="Balance"
                 android:textColor="@color/White"
-                android:textSize="24dp" />
+                android:textSize="18sp" />
             </LinearLayout>
 
         <LinearLayout
@@ -54,12 +54,13 @@
 
             <TextView
                 android:id="@+id/Balance"
-                android:layout_width="250dp"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
+                android:layout_height="45dp"
                 android:background="@drawable/rounded_bottom_corners"
                 android:gravity="center"
                 android:text="Rp"
-                android:textSize="22dp" />
+                android:textStyle="bold"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
@@ -106,7 +107,7 @@
                     android:layout_height="50dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/rounded_button"
-                    android:src="@drawable/ic_qr_code_43dp"
+                    android:src="@drawable/ic_qr_code_35dp"
                     android:tint="@color/White" />
 
                 <TextView

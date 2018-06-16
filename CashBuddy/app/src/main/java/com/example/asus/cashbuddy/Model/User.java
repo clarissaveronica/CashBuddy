@@ -11,13 +11,15 @@ public class User {
     private String device_token;
     private String email;
     private int balance;
+    private String phoneNumber;
     private String password;
 
     public User() {}
 
-    public User(String name,  String email, String password, String profilePictureUrl, String device_token, int balance) {
+    public User(String name,  String phoneNumber, String email, String password, String profilePictureUrl, String device_token, int balance) {
         this.name = name;
         this.email = email;
+        this.phoneNumber = phoneNumber;
         this.profilePictureUrl = profilePictureUrl;
         this.device_token = device_token;
         this.balance = balance;
@@ -44,6 +46,8 @@ public class User {
 
     public void setPassword(String password){this.password = password;}
 
+    public void setPhoneNumber(String phoneNumber){this.phoneNumber = phoneNumber;}
+
     public String getName() {
         return name;
     }
@@ -51,6 +55,8 @@ public class User {
     public String getEmail() {
         return email;
     }
+
+    public String getPhoneNumber(){return phoneNumber;}
 
     public String getPassword(){return password;}
 

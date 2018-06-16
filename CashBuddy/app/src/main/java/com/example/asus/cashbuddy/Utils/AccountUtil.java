@@ -44,8 +44,8 @@ public class AccountUtil {
         AccountUtil.currentUser = null;
     }
 
-    public static Task<Void> createUserOtherInformation(String name, String phoneNumber, String password, Uri profilePictureUri, int balance) {
-        return updateUserOtherInformation(name, phoneNumber, password, profilePictureUri, balance).continueWithTask(new Continuation<Void, Task<Void>>() {
+    public static Task<Void> createUserOtherInformation(String name, String phoneNumber, String email, String password, Uri profilePictureUri, int balance) {
+        return updateUserOtherInformation(name, phoneNumber, email, password, profilePictureUri, balance).continueWithTask(new Continuation<Void, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull Task<Void> task) throws Exception {
                 return createRole("USER");
@@ -58,9 +58,9 @@ public class AccountUtil {
         });
     }
 
-    public static Task<Void> createMerchantOtherInformation(final String name, final String phoneNumber,
+    public static Task<Void> createMerchantOtherInformation(final String name, final String phoneNumber, String password,
                                                          final String email, final String location, final int balance) {
-        return updateMerchantOtherInformation(name, phoneNumber, email, location, balance)
+        return updateMerchantOtherInformation(name, phoneNumber, password, email, location, balance)
                 .continueWithTask(new Continuation<Void, Task<Void>>() {
                     @Override
                     public Task<Void> then(@NonNull Task<Void> task) throws Exception {
@@ -74,16 +74,16 @@ public class AccountUtil {
                 });
     }
 
-    public static Task<Void> updateUserOtherInformation(final String name, final String email, final String password, Uri profilePictureUri, final int balance) {
+    public static Task<Void> updateUserOtherInformation(final String name, final String phoneNumber, final String email, final String password, Uri profilePictureUri, final int balance) {
         if(profilePictureUri == null) {
-            return updateUserInformationOnDatabase(name, email, password, null, balance);
+            return updateUserInformationOnDatabase(name, phoneNumber, email, password, null, balance);
         }
         else return uploadProfilePicture(profilePictureUri).continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Void>>() {
             @Override
             public Task<Void> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                 String url = task.getResult().getDownloadUrl().toString();
 
-                return updateUserInformationOnDatabase(name, email, password, url, balance);
+                return updateUserInformationOnDatabase(name, phoneNumber, email, password, url, balance);
             }
         });
     }
@@ -102,16 +102,16 @@ public class AccountUtil {
         });
     }
 
-    public static Task<Void> updateMerchantOtherInformation(final String name, final String phoneNumber, final String email, final String location, final int balance) {
-        return updateMerchantInformationOnDatabase(name, phoneNumber, email, location, balance);
+    public static Task<Void> updateMerchantOtherInformation(final String name, final String phoneNumber, final String password, final String email, final String location, final int balance) {
+        return updateMerchantInformationOnDatabase(name, phoneNumber, password, email, location, balance);
     }
     public static Task<Void> updateMerchantOtherInformation(final Merchant merchant) {
         return updateMerchantInformationOnDatabase(merchant);
     }
 
-    private static Task<Void> updateUserInformationOnDatabase(String name, String email, String password, String profilePictureUrl, int balance) {
+    private static Task<Void> updateUserInformationOnDatabase(String name, String phoneNumber, String email, String password, String profilePictureUrl, int balance) {
         String device_token = FirebaseInstanceId.getInstance().getToken();
-        return updateUserInformationOnDatabase(new User(name, email,password, profilePictureUrl, device_token, balance));
+        return updateUserInformationOnDatabase(new User(name, phoneNumber, email,password, profilePictureUrl, device_token, balance));
     }
 
     private static Task<Void> updateUserInformationOnDatabase(User user) {
@@ -122,9 +122,9 @@ public class AccountUtil {
         return reference.child(firebaseUser.getUid()).setValue(user);
     }
 
-    private static Task<Void> updateMerchantInformationOnDatabase(String name, String phoneNumber, String email, String location, int balance) {
+    private static Task<Void> updateMerchantInformationOnDatabase(String name, String phoneNumber, String password, String email, String location, int balance) {
         String device_token = FirebaseInstanceId.getInstance().getToken();
-        return updateMerchantInformationOnDatabase(new Merchant(name, phoneNumber, email, location, device_token, balance));
+        return updateMerchantInformationOnDatabase(new Merchant(name, phoneNumber, password, email, location, device_token, balance));
     }
 
     private static Task<Void> updateMerchantInformationOnDatabase(Merchant merchant) {
