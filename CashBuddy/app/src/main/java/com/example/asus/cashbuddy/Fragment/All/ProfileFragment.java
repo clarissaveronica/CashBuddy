@@ -14,12 +14,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.asus.cashbuddy.Activity.All.AboutActivity;
-import com.example.asus.cashbuddy.Activity.All.ChangePasswordActivity;
+import com.example.asus.cashbuddy.Activity.All.ChangeSecurityCodeVerificationActivity;
 import com.example.asus.cashbuddy.Activity.All.ContactUsActivity;
 import com.example.asus.cashbuddy.Activity.All.LoginActivity;
+import com.example.asus.cashbuddy.Activity.Merchant.MerchantProfileActivity;
 import com.example.asus.cashbuddy.Activity.User.UserProfileActivity;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 /**
@@ -29,6 +36,9 @@ public class ProfileFragment extends Fragment {
 
     Button editProfile, contactUs, about, signOut, changePass;
     FirebaseAuth firebaseAuth;
+    DatabaseReference userDatabase;
+    String uid;
+    FirebaseUser user;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -56,8 +66,7 @@ public class ProfileFragment extends Fragment {
         editProfile.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                startActivity(intent);
+                checkRoleForProfile();
             }
         });
 
@@ -80,7 +89,7 @@ public class ProfileFragment extends Fragment {
         changePass.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+                Intent intent = new Intent(getActivity(), ChangeSecurityCodeVerificationActivity.class);
                 startActivity(intent);
             }
         });
@@ -89,6 +98,39 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view){
                 logout();
+            }
+        });
+    }
+
+    public void checkRoleForProfile(){
+        //Check user's role
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        uid = user.getUid();
+        userDatabase = FirebaseDatabase.getInstance().getReference();
+
+        userDatabase.child("role").child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String role = snapshot.getValue().toString();
+                    Intent intent;
+
+                    switch (role){
+                        case "USER":
+                            intent = new Intent(getActivity(), UserProfileActivity.class);
+                            startActivity(intent);
+                            break;
+                        case "MERCHANT":
+                            intent = new Intent(getActivity(), MerchantProfileActivity.class);
+                            startActivity(intent);
+                            break;
+                        default: break;
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
             }
         });
     }

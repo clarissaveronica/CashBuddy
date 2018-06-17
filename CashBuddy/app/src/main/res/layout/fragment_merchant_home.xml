@@ -23,13 +23,13 @@
             android:gravity="center">
             <TextView
                 android:id="@+id/textView"
-                android:layout_width="250dp"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
+                android:layout_height="45dp"
                 android:background="@drawable/rounded_top_corners"
                 android:gravity="center"
-                android:text="BALANCE"
+                android:text="Balance"
                 android:textColor="@color/White"
-                android:textSize="24dp" />
+                android:textSize="18sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -39,12 +39,13 @@
 
             <TextView
                 android:id="@+id/Balance"
-                android:layout_width="250dp"
-                android:layout_height="50dp"
+                android:layout_width="200dp"
+                android:layout_height="45dp"
                 android:background="@drawable/rounded_bottom_corners"
                 android:gravity="center"
                 android:text="Rp"
-                android:textSize="22dp" />
+                android:textStyle="bold"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
@@ -64,11 +65,11 @@
 
             <ImageButton
                 android:id="@+id/withdrawButton"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_margin="10dp"
                 android:background="@drawable/rounded_button"
-                android:src="@drawable/ic_withdraw_45dp"
+                android:src="@drawable/ic_withdraw_35dp"
                 android:tint="@color/White" />
 
             <TextView
@@ -88,11 +89,11 @@
 
             <ImageButton
                 android:id="@+id/generateQRButton"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_margin="10dp"
                 android:background="@drawable/rounded_button"
-                android:src="@drawable/ic_generate_qr_50dp"
+                android:src="@drawable/ic_generate_qr_30dp"
                 android:tint="@color/White"/>
 
             <TextView

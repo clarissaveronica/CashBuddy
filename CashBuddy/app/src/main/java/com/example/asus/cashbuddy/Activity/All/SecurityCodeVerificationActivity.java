@@ -1,5 +1,6 @@
 package com.example.asus.cashbuddy.Activity.All;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-public class PasswordVerificationActivity extends AppCompatActivity {
+public class SecurityCodeVerificationActivity extends AppCompatActivity {
 
     PinEntryEditText pinEntry;
 
@@ -32,18 +34,19 @@ public class PasswordVerificationActivity extends AppCompatActivity {
     DatabaseReference userDatabase, mUser, mMerchant;
     private FirebaseUser user;
     private String uid;
+    private String pin;
     private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_password_verification);
+        setContentView(R.layout.activity_security_code_verification);
 
         //Custom Action Bar's Title
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_layout);
         TextView textViewTitle = findViewById(R.id.title);
-        textViewTitle.setText("Password Verification");
+        textViewTitle.setText(R.string.securityCodeVerificationTitle);
 
         //Check user's role
         firebaseAuth = FirebaseAuth.getInstance();
@@ -52,7 +55,7 @@ public class PasswordVerificationActivity extends AppCompatActivity {
         userDatabase = FirebaseDatabase.getInstance().getReference();
 
         mUser = FirebaseDatabase.getInstance().getReference().child("users");
-        mMerchant = FirebaseDatabase.getInstance().getReference().child("merchants");
+        mMerchant = FirebaseDatabase.getInstance().getReference().child("merchant");
 
         pinEntry = findViewById(R.id.pinEntry);
 
@@ -61,28 +64,45 @@ public class PasswordVerificationActivity extends AppCompatActivity {
                 @Override
                 public void onPinEntered(CharSequence str) {
                     if (str.toString().length()==6) {
-                        final String pin = str.toString();
-                        userDatabase.child("users").child(uid).child("password").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot snapshot) {
-                                String password = snapshot.getValue(String.class);
-                                if(pin.equals(password)){
-                                    verify();
-                                }else{
-                                    Toast.makeText(PasswordVerificationActivity.this, "Wrong Pin", Toast.LENGTH_LONG).show();
-                                }
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                            }
-                        });
+                        pin = str.toString();
+                        verify();
                     }
                 }
             });
         }
     }
 
+    //Verify user's password input
     private void verify(){
+        userDatabase.child("role").child(uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String role = snapshot.getValue().toString();
+
+                    switch (role){
+                        case "USER":
+                            checkUser();
+                            break;
+                        case "MERCHANT":
+                            checkMerchant();
+                            break;
+                        case "ADMIN":
+                            checkUser();
+                            break;
+                        default: break;
+
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    //Login user when password is verified
+    private void login(){
         userDatabase.child("role").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -95,19 +115,19 @@ public class PasswordVerificationActivity extends AppCompatActivity {
                     switch (role){
                         case "USER":
                             mUser.child(currentUser).child("device_token").setValue(deviceToken);
-                            intent = new Intent(PasswordVerificationActivity.this, MainActivity.class);
+                            intent = new Intent(SecurityCodeVerificationActivity.this, MainActivity.class);
                             startActivity(intent);
                             finish();
                             break;
                         case "MERCHANT":
                             mMerchant.child(currentUser).child("device_token").setValue(deviceToken);
-                            intent = new Intent(PasswordVerificationActivity.this, MerchantMainActivity.class);
+                            intent = new Intent(SecurityCodeVerificationActivity.this, MerchantMainActivity.class);
                             startActivity(intent);
                             finish();
                             break;
                         case "UNVERIFIED_MERCHANT":
                             AlertDialog alertDialog = new AlertDialog.Builder(
-                                    PasswordVerificationActivity.this).create();
+                                    SecurityCodeVerificationActivity.this).create();
                             alertDialog.setTitle("Merchant not verified!");
                             alertDialog.setMessage("Please wait for our admin to verify your account");
                             alertDialog.setIcon(R.drawable.logo);
@@ -119,7 +139,7 @@ public class PasswordVerificationActivity extends AppCompatActivity {
                             FirebaseAuth.getInstance().signOut();
                             break;
                         case "ADMIN":
-                            intent = new Intent(PasswordVerificationActivity.this, AdminMainActivity.class);
+                            intent = new Intent(SecurityCodeVerificationActivity.this, AdminMainActivity.class);
                             startActivity(intent);
                             finish();
                             break;
@@ -133,4 +153,43 @@ public class PasswordVerificationActivity extends AppCompatActivity {
             }
         });
     }
+
+    //Check user's role
+    private void checkUser(){
+        userDatabase.child("users").child(uid).child("password").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String password = snapshot.getValue(String.class);
+                if(pin.equals(password)){
+                    login();
+                }else{
+                    Toast.makeText(SecurityCodeVerificationActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
+                    pinEntry.setText("");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
+    //Check if user is a merchant
+    private void checkMerchant(){
+        userDatabase.child("merchant").child(uid).child("password").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String password = snapshot.getValue(String.class);
+                if(pin.equals(password)){
+                    login();
+                }else{
+                    Toast.makeText(SecurityCodeVerificationActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
+                    pinEntry.setText("");
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+
 }

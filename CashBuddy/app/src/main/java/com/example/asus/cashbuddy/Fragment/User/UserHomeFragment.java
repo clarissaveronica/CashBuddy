@@ -19,6 +19,7 @@ import com.example.asus.cashbuddy.Activity.User.UserScanActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTopUpActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTransferActivity;
 import com.example.asus.cashbuddy.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -29,6 +30,7 @@ public class UserHomeFragment extends Fragment {
 
     //Initialize
     ImageButton scan, transfer, topup, profile;
+    private FirebaseAuth firebaseAuth;
 
     public UserHomeFragment() {
         // Required empty public constructor
@@ -50,6 +52,8 @@ public class UserHomeFragment extends Fragment {
         transfer = view.findViewById(R.id.transferButton);
         topup = view.findViewById(R.id.topupButton);
         profile = view.findViewById(R.id.profile);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         //Start qr code scan
         scan.setOnClickListener(new View.OnClickListener(){
@@ -95,7 +99,7 @@ public class UserHomeFragment extends Fragment {
         LayoutInflater factory = LayoutInflater.from(getActivity());
         final View view = factory.inflate(R.layout.qr_layout, null);
 
-        String text2Qr = "abcd"; //will be changed later
+        String text2Qr = firebaseAuth.getCurrentUser().getUid(); //will be changed later
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(text2Qr, BarcodeFormat.QR_CODE,300,300);

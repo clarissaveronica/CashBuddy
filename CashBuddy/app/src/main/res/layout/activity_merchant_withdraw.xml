@@ -23,6 +23,7 @@
             android:layout_weight="1"
             android:layout_gravity="center_horizontal"
             android:textSize="18sp"
+            android:textColor="@color/colorPrimary"
             android:text="Your Balance :"/>
 
         <LinearLayout

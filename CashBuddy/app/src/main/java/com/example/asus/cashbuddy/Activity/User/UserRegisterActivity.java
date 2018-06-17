@@ -9,25 +9,24 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Activity.All.PhoneNumVerificationActivity;
 import com.example.asus.cashbuddy.Activity.All.RegisterVerificationActivity;
 import com.example.asus.cashbuddy.Fragment.All.RegistrationCancellationDialogFragment;
 import com.example.asus.cashbuddy.R;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserRegisterActivity extends AppCompatActivity implements RegistrationCancellationDialogFragment.CancellationHandler{
 
@@ -67,6 +66,7 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
         submitButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                progressBarLayout.setVisibility(View.VISIBLE);
                 if(validateForm()) {
                     String email = emailEditText.getText().toString();
                     String password = passwordEditText.getText().toString();
@@ -81,6 +81,7 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
                     intent.putExtra("role", "newUser");
                     startActivity(intent);
                 }
+                progressBarLayout.setVisibility(View.GONE);
             }
         });
     }
@@ -94,13 +95,16 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
         if(TextUtils.isEmpty(email)) {
             emailEditText.setError("Email is required");
             valid = false;
+        }else if(!isEmailValid(email)){
+            emailEditText.setError("Invalid email");
+            valid = false;
         }
 
         if(TextUtils.isEmpty(password)) {
-            passwordEditText.setError("Password is required");
+            passwordEditText.setError("Security code is required");
             valid = false;
         }else if(password.length() !=6){
-            passwordEditText.setError("Your password must be 6 digits");
+            passwordEditText.setError("Your security code must be 6 digits");
             valid = false;
         }
 
@@ -115,26 +119,28 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
         }else if(phoneNumber.length() < 10){
             phoneNumberEditText.setError("Invalid phone number");
             valid = false;
+        }else if(!phoneNumber.substring(0,1).equals("0")){
+            phoneNumberEditText.setError("Invalid phone number");
+            valid = false;
         }
 
-        checkNum(new OnGetDataListener() {
-            @Override
-            public void onSuccess(boolean checked) {
-                phoneNumberEditText.setError("Phone number is already used");
-                valid = false;
-            }
+        if(!TextUtils.isEmpty(phoneNumber)) {
+            checkNum(new OnGetDataListener() {
+                @Override
+                public void onSuccess(boolean checked) {
+                    phoneNumberEditText.setError("Phone number is already used");
+                    valid = false;
+                }
 
-            @Override
-            public void onStart() {
+                @Override
+                public void onStart() {}
 
-            }
-
-            @Override
-            public void onFailure() {
-                valid = true;
-            }
-        });
-
+                @Override
+                public void onFailure() {
+                    valid = true;
+                }
+            });
+        }
         return valid;
     }
 
@@ -160,6 +166,13 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
             public void onCancelled(DatabaseError databaseError) {listener.onFailure();}
         };
         userNameRef.addListenerForSingleValueEvent(eventListener);
+    }
+
+    public static boolean isEmailValid(String email) {
+        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
+        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 
     private void showCancellationConfirmation() {

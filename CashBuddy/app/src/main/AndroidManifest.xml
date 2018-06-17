@@ -52,7 +52,7 @@
             android:name=".Activity.User.UserTransferActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.All.PhoneNumVerificationActivity"
+            android:name=".Activity.All.LoginVerificationActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.Admin.AdminTopUpActivity"
@@ -82,10 +82,11 @@
             android:name=".Activity.User.UserProfileActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.All.PasswordVerificationActivity"
+            android:name=".Activity.All.SecurityCodeVerificationActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Activity.All.ChangePasswordActivity" />
-        <activity android:name=".Activity.All.RegisterVerificationActivity"></activity>
+        <activity android:name=".Activity.All.ChangeSecurityCodeActivity" />
+        <activity android:name=".Activity.All.RegisterVerificationActivity" />
+        <activity android:name=".Activity.All.ChangeSecurityCodeVerificationActivity"></activity>
     </application>
 
 </manifest>

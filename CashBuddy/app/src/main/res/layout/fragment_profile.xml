@@ -76,7 +76,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/square_button"
                 android:gravity="left|center"
-                android:text="@string/changePasswordTitle"
+                android:text="@string/changeSecurityCodeTitle"
                 android:textSize="14dp" />
         </LinearLayout>
 

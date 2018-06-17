@@ -2,6 +2,7 @@ package com.example.asus.cashbuddy.Activity.All;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -37,6 +38,8 @@ public class RegisterVerificationActivity extends AppCompatActivity {
     TextView text;
     PinEntryEditText pinEntry;
     Button resendButton;
+    //Declare timer
+    CountDownTimer cTimer = null;
 
     private String phoneVerificationId, num, name, password, email, location, role;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks;
@@ -53,6 +56,8 @@ public class RegisterVerificationActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.actionbar_layout);
         TextView textViewTitle = findViewById(R.id.title);
         textViewTitle.setText("Phone Number Verification");
+
+        startTimer();
 
         //Get data
         Intent intent = getIntent();
@@ -89,6 +94,7 @@ public class RegisterVerificationActivity extends AppCompatActivity {
         resendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                startTimer();
                 resendCode(num);
             }
         });
@@ -96,6 +102,7 @@ public class RegisterVerificationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        cancelTimer();
         finish();
     }
 
@@ -154,7 +161,8 @@ public class RegisterVerificationActivity extends AppCompatActivity {
                         } else {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {
-                                // The verification code entered was invalid
+                                Toast.makeText(RegisterVerificationActivity.this, "Verification pin is wrong", Toast.LENGTH_LONG).show();
+                                pinEntry.setText("");
                             }
                         }
                     }
@@ -162,6 +170,8 @@ public class RegisterVerificationActivity extends AppCompatActivity {
     }
 
     public void resendCode(String num) {
+        Toast.makeText(RegisterVerificationActivity.this, "New verification pin has been sent", Toast.LENGTH_LONG).show();
+
         setUpVerificationCallbacks();
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
@@ -171,5 +181,26 @@ public class RegisterVerificationActivity extends AppCompatActivity {
                 this,
                 verificationCallbacks,
                 resendToken);
+    }
+
+    //start timer function
+    void startTimer() {
+        cTimer = new CountDownTimer(60000, 1000) {
+            public void onTick(long millisUntilFinished) {
+
+                resendButton.setText("RESEND CODE (" + millisUntilFinished/1000 +")");
+            }
+            public void onFinish() {
+                resendButton.setText("RESEND CODE");
+                resendButton.setEnabled(true);
+            }
+        };
+        cTimer.start();
+    }
+
+    //cancel timer
+    void cancelTimer() {
+        if(cTimer!=null)
+            cTimer.cancel();
     }
 }

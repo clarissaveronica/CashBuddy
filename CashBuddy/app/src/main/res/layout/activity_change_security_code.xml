@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.All.RegisterVerificationActivity">
+    tools:context=".Activity.All.ChangeSecurityCodeActivity">
 
     <LinearLayout android:orientation="vertical"
         android:layout_width="match_parent"
@@ -14,38 +14,18 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16sp"
-            android:layout_marginEnd="16sp"
             android:layout_marginTop="32sp">
 
             <TextView
                 android:layout_width="0sp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorPrimary"
-                android:gravity="center"
-                android:text="Please enter the verification pin"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16sp"
-            android:layout_marginEnd="16sp"
-            android:layout_marginTop="5sp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/textView"
                 android:layout_weight="1"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 android:gravity="center"
-                android:text="We have sent the verification pin to : number"/>
+                android:text="Please enter your new security code"/>
+
         </LinearLayout>
 
         <LinearLayout
@@ -67,28 +47,8 @@
                 android:maxLength="6"
                 android:textIsSelectable="false"
                 android:textSize="20sp"
-                app:pinAnimationType="popIn"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="16sp"
-            android:layout_marginEnd="16sp"
-            android:layout_marginTop="40sp">
-
-            <Button
-                android:layout_width="0sp"
-                android:theme="@style/PrimaryColorButton"
-                android:layout_height="wrap_content"
-                android:id="@+id/resendButton"
-                android:layout_weight="1"
-                android:textSize="14sp"
-                android:gravity="center"
-                android:enabled="false"
-                android:text="Resend Code"/>
+                app:pinAnimationType="popIn"
+                app:pinCharacterMask="•"/>
         </LinearLayout>
     </LinearLayout>
 

@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import com.example.asus.cashbuddy.Activity.Merchant.MerchantWithdrawActivity;
 import com.example.asus.cashbuddy.R;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -29,6 +30,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 public class MerchantHomeFragment extends Fragment {
 
     private ImageButton qrButton, withdrawButton;
+    private FirebaseAuth firebaseAuth;
 
     public MerchantHomeFragment() {
         // Required empty public constructor
@@ -49,6 +51,8 @@ public class MerchantHomeFragment extends Fragment {
         //Initialize views
         withdrawButton = view.findViewById(R.id.withdrawButton);
         qrButton = view.findViewById(R.id.generateQRButton);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         qrButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -73,7 +77,7 @@ public class MerchantHomeFragment extends Fragment {
         LayoutInflater factory = LayoutInflater.from(getActivity());
         final View view = factory.inflate(R.layout.qr_layout, null);
 
-        String text2Qr = "abcd"; //will be changed later
+        String text2Qr = firebaseAuth.getCurrentUser().getUid(); //will be changed later
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(text2Qr, BarcodeFormat.QR_CODE,300,300);

@@ -1,19 +1,14 @@
 package com.example.asus.cashbuddy.Activity.All;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.provider.ContactsContract;
+import android.graphics.Color;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +17,6 @@ import com.example.asus.cashbuddy.Activity.Admin.AdminMainActivity;
 import com.example.asus.cashbuddy.Activity.Merchant.MerchantMainActivity;
 import com.example.asus.cashbuddy.Activity.User.MainActivity;
 import com.example.asus.cashbuddy.R;
-import com.example.asus.cashbuddy.Utils.AccountUtil;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -31,7 +24,6 @@ import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -44,7 +36,7 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.concurrent.TimeUnit;
 
-public class PhoneNumVerificationActivity extends AppCompatActivity {
+public class LoginVerificationActivity extends AppCompatActivity {
 
     private static final String TAG = "PhoneAuth";
 
@@ -52,6 +44,9 @@ public class PhoneNumVerificationActivity extends AppCompatActivity {
     TextView text;
     PinEntryEditText pinEntry;
     Button resendButton;
+
+    //Declare timer
+    CountDownTimer cTimer = null;
 
     private String num;
     private String phoneVerificationId;
@@ -66,9 +61,11 @@ public class PhoneNumVerificationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_phone_num_verification);
+        setContentView(R.layout.activity_login_verification);
 
         Intent intent = getIntent();
+
+        startTimer();
 
         //Custom Action Bar's Title
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -107,12 +104,14 @@ public class PhoneNumVerificationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 resendCode(num);
+                startTimer();
             }
         });
     }
 
     @Override
     public void onBackPressed() {;
+        cancelTimer();
         finish();
     }
 
@@ -132,9 +131,9 @@ public class PhoneNumVerificationActivity extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 if(e instanceof FirebaseAuthInvalidCredentialsException){
-                    Toast.makeText(PhoneNumVerificationActivity.this, "Invalid credential", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginVerificationActivity.this, "Invalid credential", Toast.LENGTH_LONG).show();
                 }else if(e instanceof FirebaseTooManyRequestsException){
-                    Toast.makeText(PhoneNumVerificationActivity.this, "SMS Quota exceeded", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginVerificationActivity.this, "SMS Quota exceeded", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -161,7 +160,8 @@ public class PhoneNumVerificationActivity extends AppCompatActivity {
                         } else {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {
-                                // The verification code entered was invalid
+                                Toast.makeText(LoginVerificationActivity.this, "Verification pin is wrong", Toast.LENGTH_LONG).show();
+                                pinEntry.setText("");
                             }
                         }
                     }
@@ -169,6 +169,8 @@ public class PhoneNumVerificationActivity extends AppCompatActivity {
     }
 
     public void resendCode(String num) {
+        Toast.makeText(LoginVerificationActivity.this, "New verification pin has been sent", Toast.LENGTH_LONG).show();
+
         setUpVerificationCallbacks();
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
@@ -199,18 +201,18 @@ public class PhoneNumVerificationActivity extends AppCompatActivity {
                     switch (role){
                         case "USER":
                             mUser.child(currentUser).child("device_token").setValue(deviceToken);
-                            intent = new Intent(PhoneNumVerificationActivity.this, MainActivity.class);
+                            intent = new Intent(LoginVerificationActivity.this, MainActivity.class);
                             startActivity(intent);
                             finishAffinity();
                             break;
                         case "MERCHANT":
                             mMerchant.child(currentUser).child("device_token").setValue(deviceToken);
-                            intent = new Intent(PhoneNumVerificationActivity.this, MerchantMainActivity.class);
+                            intent = new Intent(LoginVerificationActivity.this, MerchantMainActivity.class);
                             startActivity(intent);
                             finishAffinity();
                             break;
                         case "ADMIN":
-                            intent = new Intent(PhoneNumVerificationActivity.this, AdminMainActivity.class);
+                            intent = new Intent(LoginVerificationActivity.this, AdminMainActivity.class);
                             startActivity(intent);
                             finishAffinity();
                             break;
@@ -224,5 +226,27 @@ public class PhoneNumVerificationActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+
+    //start timer function
+    void startTimer() {
+        cTimer = new CountDownTimer(60000, 1000) {
+            public void onTick(long millisUntilFinished) {
+
+                resendButton.setText("RESEND CODE (" + millisUntilFinished/1000 +")");
+            }
+            public void onFinish() {
+                resendButton.setText("RESEND CODE");
+                resendButton.setEnabled(true);
+            }
+        };
+        cTimer.start();
+    }
+
+
+    //cancel timer
+    void cancelTimer() {
+        if(cTimer!=null)
+            cTimer.cancel();
     }
 }

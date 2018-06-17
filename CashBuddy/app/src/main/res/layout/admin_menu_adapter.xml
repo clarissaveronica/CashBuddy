@@ -6,7 +6,8 @@
     <TextView
         android:id="@+id/aNametxt"
         android:text="Android Name"
-        android:textSize="20sp"
+        android:textSize="18sp"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_marginTop="8dp"
         android:maxLines="1"
         android:layout_width="match_parent"
