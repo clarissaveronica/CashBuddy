@@ -11,7 +11,7 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Fragment.Admin.AdminQRScanFragment;
+import com.example.asus.cashbuddy.Fragment.All.QRScanFragment;
 import com.example.asus.cashbuddy.Fragment.User.UserPhoneTransferFragment;
 import com.example.asus.cashbuddy.R;
 
@@ -46,7 +46,7 @@ public class UserTransferActivity extends AppCompatActivity {
 
                 if(choose.equals("Scan QR")){
                     content.setVisibility(View.VISIBLE);
-                    manager.beginTransaction().replace(R.id.content, new AdminQRScanFragment()).commit();
+                    manager.beginTransaction().replace(R.id.content, new QRScanFragment()).commit();
                 }else if(choose.equals("Telephone Number")){
                     content.setVisibility(View.VISIBLE);
                     manager.beginTransaction().replace(R.id.content, new UserPhoneTransferFragment()).commit();

@@ -13,7 +13,9 @@
 
         <LinearLayout android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -96,7 +98,6 @@
             android:layout_marginStart="32dp"
             android:layout_marginEnd="32dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
             android:layout_gravity="center_vertical">
 
             <android.support.design.widget.TextInputEditText

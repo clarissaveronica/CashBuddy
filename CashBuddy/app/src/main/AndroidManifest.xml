@@ -84,9 +84,12 @@
         <activity
             android:name=".Activity.All.SecurityCodeVerificationActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Activity.All.ChangeSecurityCodeActivity" />
-        <activity android:name=".Activity.All.RegisterVerificationActivity" />
-        <activity android:name=".Activity.All.ChangeSecurityCodeVerificationActivity"></activity>
+        <activity android:name=".Activity.All.ChangeSecurityCodeActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.All.RegisterVerificationActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.All.ChangeSecurityCodeVerificationActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

@@ -232,11 +232,12 @@ public class LoginVerificationActivity extends AppCompatActivity {
     void startTimer() {
         cTimer = new CountDownTimer(60000, 1000) {
             public void onTick(long millisUntilFinished) {
-
                 resendButton.setText("RESEND CODE (" + millisUntilFinished/1000 +")");
+                resendButton.setAlpha(.5f);
             }
             public void onFinish() {
                 resendButton.setText("RESEND CODE");
+                resendButton.setAlpha(1);
                 resendButton.setEnabled(true);
             }
         };

@@ -1,10 +1,12 @@
 package com.example.asus.cashbuddy.Activity.All;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -55,7 +57,7 @@ public class RegisterVerificationActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_layout);
         TextView textViewTitle = findViewById(R.id.title);
-        textViewTitle.setText("Phone Number Verification");
+        textViewTitle.setText(R.string.phoneNumVerificationTitle);
 
         startTimer();
 
@@ -122,7 +124,19 @@ public class RegisterVerificationActivity extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 if(e instanceof FirebaseAuthInvalidCredentialsException){
-                    Toast.makeText(RegisterVerificationActivity.this, "Invalid credential", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(RegisterVerificationActivity.this, "Invalid credential", Toast.LENGTH_LONG).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(RegisterVerificationActivity.this);
+                    builder.setMessage("Invalid Credential. Please enter a correct phone number")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    finish();
+                                }
+                            });
+
+                    AlertDialog alert = builder.create();
+                    alert.setTitle("Oops!");
+                    alert.show();
                 }else if(e instanceof FirebaseTooManyRequestsException){
                     Toast.makeText(RegisterVerificationActivity.this, "SMS Quota exceeded", Toast.LENGTH_LONG).show();
                 }
@@ -187,11 +201,12 @@ public class RegisterVerificationActivity extends AppCompatActivity {
     void startTimer() {
         cTimer = new CountDownTimer(60000, 1000) {
             public void onTick(long millisUntilFinished) {
-
                 resendButton.setText("RESEND CODE (" + millisUntilFinished/1000 +")");
+                resendButton.setAlpha(.5f);
             }
             public void onFinish() {
                 resendButton.setText("RESEND CODE");
+                resendButton.setAlpha(1);
                 resendButton.setEnabled(true);
             }
         };

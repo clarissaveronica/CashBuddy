@@ -14,23 +14,36 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.asus.cashbuddy.Activity.User.UserScanActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTopUpActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTransferActivity;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 public class UserHomeFragment extends Fragment {
 
     //Initialize
     ImageButton scan, transfer, topup, profile;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference databaseWallet;
+    private FirebaseUser user;
+    private TextView balance;
 
     public UserHomeFragment() {
         // Required empty public constructor
@@ -52,8 +65,10 @@ public class UserHomeFragment extends Fragment {
         transfer = view.findViewById(R.id.transferButton);
         topup = view.findViewById(R.id.topupButton);
         profile = view.findViewById(R.id.profile);
+        balance = view.findViewById(R.id.balance);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
 
         //Start qr code scan
         scan.setOnClickListener(new View.OnClickListener(){
@@ -88,6 +103,22 @@ public class UserHomeFragment extends Fragment {
                 showQR();
             }
         });
+
+        //Initialize balance on view
+        databaseWallet = FirebaseDatabase.getInstance().getReference("users");
+
+        databaseWallet.child(user.getUid()).child("balance").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String money = changeToRupiahFormat(Integer.parseInt(dataSnapshot.getValue().toString()));
+                balance.setText(money);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     //Show user's QR
@@ -119,5 +150,14 @@ public class UserHomeFragment extends Fragment {
         });
 
         alertadd.show();
+    }
+
+    public String changeToRupiahFormat(int money){
+        Locale localeID = new Locale("in", "ID");
+        NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(localeID);
+
+        String temp = formatRupiah.format((double)money);
+
+        return temp;
     }
 }
