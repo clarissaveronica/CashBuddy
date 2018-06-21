@@ -2,7 +2,6 @@ package com.example.asus.cashbuddy.Activity.All;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -17,9 +16,7 @@ import android.widget.Toast;
 import com.alimuzaffar.lib.pin.PinEntryEditText;
 import com.example.asus.cashbuddy.Activity.Merchant.MerchantMainActivity;
 import com.example.asus.cashbuddy.Activity.User.MainActivity;
-import com.example.asus.cashbuddy.Activity.User.UserRegisterActivity;
 import com.example.asus.cashbuddy.R;
-import com.example.asus.cashbuddy.Utils.AccountUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -30,56 +27,58 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.TimeUnit;
 
-public class RegisterVerificationActivity extends AppCompatActivity {
+public class ChangePhoneNumberVerificationActivity extends AppCompatActivity {
 
-    private static final String TAG = "PhoneAuth";
-
-    //Initialize views
-    TextView text;
-    PinEntryEditText pinEntry;
-    Button resendButton;
-    //Declare timer
-    CountDownTimer cTimer = null;
-
-    private String phoneVerificationId, num, name, password, email, location, role;
+    private FirebaseUser firebaseUser;
+    private FirebaseAuth firebaseAuth;
+    private String uid, phone, phoneVerificationId, role, old;
+    private DatabaseReference databaseUser;
+    private TextView text;
+    private Button resendButton;
+    private PinEntryEditText pinEntry;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks verificationCallbacks;
     private PhoneAuthProvider.ForceResendingToken resendToken;
-    private FirebaseAuth auth;
+    private CountDownTimer cTimer = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register_verification);
+        setContentView(R.layout.activity_change_phone_number_verification);
 
         //Custom Action Bar's Title
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_layout);
         TextView textViewTitle = findViewById(R.id.title);
-        textViewTitle.setText(R.string.phoneNumVerificationTitle);
+        textViewTitle.setText("New Phone Number Verification");
 
-        //Get data
         Intent intent = getIntent();
-        num = "+62" + intent.getStringExtra("number").substring(1);
-        name = intent.getStringExtra("name");
+        old = intent.getStringExtra("old");
+        phone = intent.getStringExtra("phone");
         role = intent.getStringExtra("role");
-        location = intent.getStringExtra("location");
-        email = intent.getStringExtra("email");
-        password = intent.getStringExtra("password");
 
-        startTimer();
-        sendCode(num);
+        //Get info from firebase
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        uid = firebaseUser.getUid();
+
+        if(role.equals("user")) {
+            databaseUser = FirebaseDatabase.getInstance().getReference("users");
+        }else databaseUser = FirebaseDatabase.getInstance().getReference("merchant");
 
         //Initialize views
         text = findViewById(R.id.textView);
         pinEntry = findViewById(R.id.pinEntry);
         resendButton = findViewById(R.id.resendButton);
 
-        text.setText("We have sent the verification pin to : " + num);
-
-        auth = FirebaseAuth.getInstance();
+        text.setText("We have sent the verification pin to : " + phone);
 
         if (pinEntry != null) {
             pinEntry.setOnPinEnteredListener(new PinEntryEditText.OnPinEnteredListener() {
@@ -97,9 +96,12 @@ public class RegisterVerificationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startTimer();
-                resendCode(num);
+                resendCode(phone);
             }
         });
+
+        sendCode(phone);
+        startTimer();
     }
 
     @Override
@@ -118,14 +120,13 @@ public class RegisterVerificationActivity extends AppCompatActivity {
         verificationCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-                signInWithPhoneAuthCredential(phoneAuthCredential);
+
             }
 
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 if(e instanceof FirebaseAuthInvalidCredentialsException){
-                    //Toast.makeText(RegisterVerificationActivity.this, "Invalid credential", Toast.LENGTH_LONG).show();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(RegisterVerificationActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ChangePhoneNumberVerificationActivity.this);
                     builder.setMessage("Invalid Credential. Please enter a correct phone number")
                             .setCancelable(false)
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -138,7 +139,7 @@ public class RegisterVerificationActivity extends AppCompatActivity {
                     alert.setTitle("Oops!");
                     alert.show();
                 }else if(e instanceof FirebaseTooManyRequestsException){
-                    Toast.makeText(RegisterVerificationActivity.this, "SMS Quota exceeded", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChangePhoneNumberVerificationActivity.this, "SMS Quota exceeded", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -156,26 +157,25 @@ public class RegisterVerificationActivity extends AppCompatActivity {
     }
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential){
-        auth.signInWithCredential(credential)
+        firebaseAuth.getCurrentUser().updatePhoneNumber(credential);
+        firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            if(role.equals("newUser")) {
-                                AccountUtil.createUserOtherInformation(name, num, email, password, null, 0);
-                                Intent intent = new Intent(RegisterVerificationActivity.this, MainActivity.class);
+                            successChange();
+                            finishAffinity();
+                            if(role.equals("user")) {
+                                Intent intent = new Intent(ChangePhoneNumberVerificationActivity.this, MainActivity.class);
                                 startActivity(intent);
-                                finishAffinity();
-                            }else if(role.equals("newMerchant")){
-                                AccountUtil.createMerchantOtherInformation(name, num, password, email, location, 0);
-                                Intent intent = new Intent(RegisterVerificationActivity.this, LoginActivity.class);
+                            }else{
+                                Intent intent = new Intent(ChangePhoneNumberVerificationActivity.this, MerchantMainActivity.class);
                                 startActivity(intent);
-                                finishAffinity();
                             }
                         } else {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {
-                                Toast.makeText(RegisterVerificationActivity.this, "Verification pin is wrong", Toast.LENGTH_LONG).show();
+                                Toast.makeText(ChangePhoneNumberVerificationActivity.this, "Verification pin is wrong", Toast.LENGTH_LONG).show();
                                 pinEntry.setText("");
                             }
                         }
@@ -183,8 +183,15 @@ public class RegisterVerificationActivity extends AppCompatActivity {
                 });
     }
 
+    public void successChange(){
+        databaseUser.child(uid).child("phoneNumber").setValue(phone);
+        FirebaseDatabase.getInstance().getReference().child("phonenumbertouid").child(old).removeValue();
+        FirebaseDatabase.getInstance().getReference().child("phonenumbertouid").child(phone).setValue(uid);
+    }
+
+
     public void resendCode(String num) {
-        Toast.makeText(RegisterVerificationActivity.this, "New verification pin has been sent", Toast.LENGTH_LONG).show();
+        Toast.makeText(ChangePhoneNumberVerificationActivity.this, "New verification pin has been sent", Toast.LENGTH_LONG).show();
 
         setUpVerificationCallbacks();
 
@@ -218,5 +225,4 @@ public class RegisterVerificationActivity extends AppCompatActivity {
         if(cTimer!=null)
             cTimer.cancel();
     }
-
 }

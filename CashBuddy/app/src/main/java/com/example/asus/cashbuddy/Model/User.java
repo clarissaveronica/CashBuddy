@@ -1,9 +1,5 @@
 package com.example.asus.cashbuddy.Model;
 
-/**
- * Created by Jessica on 1/20/2018.
- */
-
 public class User {
 
     private String name;
@@ -30,7 +26,7 @@ public class User {
         this.name = name;
     }
 
-    public void setEmail(String userPhone) {
+    public void setEmail(String email) {
         this.email = email;
     }
 

@@ -1,23 +1,18 @@
 package com.example.asus.cashbuddy.Activity.User;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.asus.cashbuddy.Activity.All.RegisterVerificationActivity;
-import com.example.asus.cashbuddy.Fragment.All.RegistrationCancellationDialogFragment;
+import com.example.asus.cashbuddy.Others.RegistrationCancellationDialogFragment;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,9 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UserRegisterActivity extends AppCompatActivity implements RegistrationCancellationDialogFragment.CancellationHandler{
-
-    // Views
-    private ViewGroup progressBarLayout;
 
     // Personal information views
     private TextInputEditText emailEditText;
@@ -54,19 +46,16 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
         textViewTitle.setText("User Registration");
 
         //Initialize views
-        progressBarLayout = findViewById(R.id.progress_bar_layout);
         emailEditText = findViewById(R.id.registration_email_edit_text);
         passwordEditText = findViewById(R.id.registration_password_edit_text);
         nameEditText = findViewById(R.id.user_registration_detail_name);
         phoneNumberEditText = findViewById(R.id.user_registration_detail_phone_number);
         submitButton = findViewById(R.id.registration_sign_up_button);
 
-        progressBarLayout.setVisibility(View.GONE);
 
         submitButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                progressBarLayout.setVisibility(View.VISIBLE);
                 if(validateForm()) {
                     String email = emailEditText.getText().toString();
                     String password = passwordEditText.getText().toString();
@@ -81,7 +70,6 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
                     intent.putExtra("role", "newUser");
                     startActivity(intent);
                 }
-                progressBarLayout.setVisibility(View.GONE);
             }
         });
     }
@@ -182,19 +170,7 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
 
     @Override
     public void onBackPressed() {
-        if(progressBarLayout.getVisibility() == View.GONE) showCancellationConfirmation();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Cancel register
-                if(progressBarLayout.getVisibility() == View.GONE) showCancellationConfirmation();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
+        showCancellationConfirmation();
     }
 
     @Override

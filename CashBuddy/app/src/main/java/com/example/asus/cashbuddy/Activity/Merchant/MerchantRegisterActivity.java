@@ -7,20 +7,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.asus.cashbuddy.Activity.All.RegisterVerificationActivity;
-import com.example.asus.cashbuddy.Fragment.All.RegistrationCancellationDialogFragment;
+import com.example.asus.cashbuddy.Others.RegistrationCancellationDialogFragment;
 import com.example.asus.cashbuddy.R;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,14 +21,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MerchantRegisterActivity extends AppCompatActivity implements RegistrationCancellationDialogFragment.CancellationHandler{
 
     // Views
-    private ViewGroup progressBarLayout;
     private TextInputEditText emailEditText;
     private TextInputEditText passwordEditText;
     private TextInputEditText nameEditText;
@@ -58,7 +49,6 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
         textViewTitle.setText("Merchant Registration");
 
         //Initialize views
-        progressBarLayout = findViewById(R.id.progress_bar_layout);
         emailEditText = findViewById(R.id.merchantEmail);
         passwordEditText = findViewById(R.id.merchantPassword);
         nameEditText = findViewById(R.id.merchantName);
@@ -66,12 +56,10 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
         locationEditText = findViewById(R.id.merchantLocation);
         signUpBtn = findViewById(R.id.signUpButton);
 
-        progressBarLayout.setVisibility(View.GONE);
 
         signUpBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                progressBarLayout.setVisibility(View.VISIBLE);
                 if(validateForm()) {
                     String email = emailEditText.getText().toString();
                     String password = passwordEditText.getText().toString();
@@ -88,7 +76,6 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
                     intent.putExtra("role", "newMerchant");
                     startActivity(intent);
                 }
-                progressBarLayout.setVisibility(View.GONE);
             }
         });
     }
@@ -191,24 +178,12 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
 
     @Override
     public void onBackPressed() {
-        if (progressBarLayout.getVisibility() == View.GONE) showCancellationConfirmation();
+        showCancellationConfirmation();
     }
 
     private void showCancellationConfirmation() {
         DialogFragment dialogFragment = new RegistrationCancellationDialogFragment();
         dialogFragment.show(getSupportFragmentManager(), null);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // Cancel register
-                if (progressBarLayout.getVisibility() == View.GONE) showCancellationConfirmation();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     @Override

@@ -12,12 +12,25 @@ import android.widget.TextView;
 import com.example.asus.cashbuddy.Fragment.User.UserDealsFragment;
 import com.example.asus.cashbuddy.Fragment.All.HistoryFragment;
 import com.example.asus.cashbuddy.Fragment.User.UserHomeFragment;
-import com.example.asus.cashbuddy.Fragment.All.NotificationFragment;
+import com.example.asus.cashbuddy.Model.User;
 import com.example.asus.cashbuddy.Others.BottomNavigationViewHelper;
 import com.example.asus.cashbuddy.Fragment.All.ProfileFragment;
 import com.example.asus.cashbuddy.R;
+import com.example.asus.cashbuddy.Utils.AccountUtil;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
+
+    private DatabaseReference userReference;
+    private ChildEventListener userEventListener;
+    private FirebaseUser user;
+    private FirebaseAuth firebaseAuth;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -35,9 +48,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_history:
                     manager.beginTransaction().replace(R.id.content, new HistoryFragment()).commit();
-                    return true;
-                case R.id.navigation_notifications:
-                    manager.beginTransaction().replace(R.id.content, new NotificationFragment()).commit();
                     return true;
                 case R.id.navigation_profile:
                     manager.beginTransaction().replace(R.id.content, new ProfileFragment()).commit();
@@ -66,5 +76,45 @@ public class MainActivity extends AppCompatActivity {
         //Default Main Menu
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.content, new UserHomeFragment()).commit();
+
+        //Get User
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+
+        userReference = FirebaseDatabase.getInstance().getReference("users");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        userEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(dataSnapshot.getKey().equals(user.getUid())) {
+                    User currentUser = dataSnapshot.getValue(User.class);
+                    AccountUtil.setCurrentAccount(currentUser);
+                    //populateUserInfo();
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        };
+        if(userReference != null) userReference.addChildEventListener(userEventListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(userReference != null) userReference.removeEventListener(userEventListener);
     }
 }

@@ -64,12 +64,8 @@ public class AccountUtil {
                 .continueWithTask(new Continuation<Void, Task<Void>>() {
                     @Override
                     public Task<Void> then(@NonNull Task<Void> task) throws Exception {
+                        createMappingPhoneNumberToUid();
                         return createRole("UNVERIFIED_MERCHANT");
-                    }
-                }).continueWithTask(new Continuation<Void, Task<Void>>() {
-                    @Override
-                    public Task<Void> then(@NonNull Task<Void> task) throws Exception {
-                        return createMappingPhoneNumberToUid();
                     }
                 });
     }

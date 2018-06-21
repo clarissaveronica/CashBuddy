@@ -78,19 +78,20 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
     public void handleResult(final Result rawResult) {
         s = rawResult.getText();
 
+
         getInfo(new OnGetDataListener() {
             @Override
             public void onSuccess() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(UserScanActivity.this);
-                builder.setMessage("You are making a " + amount +  " transaction with " + merchantName + ". Click confirm to proceed")
+                builder.setMessage("You are making a " + amount + " transaction with " + merchantName + ". Click confirm to proceed")
                         .setCancelable(false)
                         .setPositiveButton(R.string.setPrice_confirm, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                if(userBalance >= transactionAmount) {
+                                if (userBalance >= transactionAmount) {
                                     makeTransaction();
                                     setWallet();
                                     showSuccess();
-                                }else{
+                                } else {
                                     dialog.cancel();
                                     showError();
                                 }
@@ -109,7 +110,24 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
             }
 
             @Override
-            public void onStart() {}
+            public void onStart() {
+            }
+
+            @Override
+            public void onFailure() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(UserScanActivity.this);
+                builder.setMessage("Invalid QR code. Please try again")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                mScannerView.resumeCameraPreview(UserScanActivity.this);
+                            }
+                        });
+
+                AlertDialog alert = builder.create();
+                alert.setTitle("Oops!");
+                alert.show();
+            }
         });
     }
 
@@ -165,8 +183,12 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
         databasePrice.child(s).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                transactionAmount = Integer.parseInt(dataSnapshot.getValue().toString());
-                amount = changeToRupiahFormat(transactionAmount);
+                if(dataSnapshot.exists()){
+                    transactionAmount = Integer.parseInt(dataSnapshot.getValue().toString());
+                    amount = changeToRupiahFormat(transactionAmount);
+                }else{
+                    listener.onFailure();
+                }
             }
 
             @Override
@@ -178,8 +200,12 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
         databaseMerchant.child(s).child("merchantName").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                merchantName = dataSnapshot.getValue().toString();
-                listener.onSuccess();
+                if(dataSnapshot.exists()) {
+                    merchantName = dataSnapshot.getValue().toString();
+                    listener.onSuccess();
+                }else{
+                    listener.onFailure();
+                }
             }
 
             @Override
@@ -261,5 +287,6 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
         //make new interface for call back
         void onSuccess();
         void onStart();
+        void onFailure();
     }
 }

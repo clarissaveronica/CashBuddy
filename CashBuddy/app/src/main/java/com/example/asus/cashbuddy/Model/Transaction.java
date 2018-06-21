@@ -1,18 +1,11 @@
 package com.example.asus.cashbuddy.Model;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
 import java.util.TimeZone;
-
-/**
- * Created by steve on 2/10/2018.
- */
 
 public class Transaction implements Serializable {
 

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +20,11 @@ import com.example.asus.cashbuddy.R;
 import com.example.asus.cashbuddy.Utils.TransactionUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -34,6 +38,9 @@ public class MerchantNewTransactionFragment extends Fragment {
     private TextInputEditText price;
     private Button makeTransaction;
     private FirebaseAuth firebaseAuth;
+    private DatabaseReference databasePrice;
+    private FirebaseUser user;
+    private String currentPrice;
 
     public MerchantNewTransactionFragment() {
         // Required empty public constructor
@@ -54,6 +61,35 @@ public class MerchantNewTransactionFragment extends Fragment {
         price = view.findViewById(R.id.price);
         makeTransaction = view.findViewById(R.id.makeTransactionButton);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        databasePrice = FirebaseDatabase.getInstance().getReference("prices");
+
+        databasePrice.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    currentPrice = dataSnapshot.getValue().toString();
+                    int current = Integer.parseInt(currentPrice);
+                    price.setText(changeToRupiahFormat(current));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        price.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    price.setText("");
+                }
+            }
+        });
+
         makeTransaction.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -62,7 +98,7 @@ public class MerchantNewTransactionFragment extends Fragment {
                         .setCancelable(false)
                         .setPositiveButton(R.string.setPrice_confirm, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                int money = Integer.parseInt(price.getText().toString().replaceAll(",",""));
+                                int money = Integer.parseInt(price.getText().toString().replaceAll(",", ""));
                                 firebaseAuth = FirebaseAuth.getInstance();
                                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -117,7 +153,32 @@ public class MerchantNewTransactionFragment extends Fragment {
                     nfe.printStackTrace();
                 }
                 price.addTextChangedListener(this);
+
+                String newPrice = price.getText().toString().replace(".", "").replace("Rp", "").replace(",", "");
+                Log.i("adf", "n" + newPrice);
+                Log.i("adf123", "n" + currentPrice);
+
+                if(newPrice.equals(currentPrice)){
+                    makeTransaction.setEnabled(false);
+                    makeTransaction.setAlpha(0.5f);
+
+                }else if(newPrice.isEmpty()){
+                    makeTransaction.setEnabled(false);
+                    makeTransaction.setAlpha(0.5f);
+                }else{
+                    makeTransaction.setEnabled(true);
+                    makeTransaction.setAlpha(1);
+                }
             }
         });
+    }
+
+    public String changeToRupiahFormat(int money){
+        Locale localeID = new Locale("in", "ID");
+        NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(localeID);
+
+        String temp = formatRupiah.format((double)money);
+
+        return temp;
     }
 }

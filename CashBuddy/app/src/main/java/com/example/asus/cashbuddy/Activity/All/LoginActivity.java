@@ -14,9 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.asus.cashbuddy.Activity.User.UserRegisterActivity;
+import com.example.asus.cashbuddy.Model.User;
 import com.example.asus.cashbuddy.R;
+import com.example.asus.cashbuddy.Utils.AccountUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button signIn;
     private FirebaseUser user;
     private String uid;
+    private String tempUid;
     private boolean valid;
     private boolean check;
 
@@ -73,11 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                     loadingPanel.setVisibility(View.INVISIBLE);
                     return;
                 }else {
-                    Toast.makeText(LoginActivity.this, "OTP has been sent", Toast.LENGTH_LONG).show();
-
-                    Intent intent = new Intent(LoginActivity.this, LoginVerificationActivity.class);
-                    intent.putExtra("number", loginPhoneNumEditText.getText().toString());
-                    startActivity(intent);
+                    newLoginSession();
                 }
 
             }
@@ -100,6 +100,62 @@ public class LoginActivity extends AppCompatActivity {
         else {
             loadingPanel.setVisibility(View.GONE);
         }
+    }
+
+    private void newLoginSession(){
+        //Check user's role
+        userDatabase = FirebaseDatabase.getInstance().getReference();
+
+        userDatabase.child("role").child(tempUid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String role = snapshot.getValue().toString();
+                    Intent intent;
+
+                    switch (role){
+                        case "USER":
+                            Toast.makeText(LoginActivity.this, "OTP has been sent", Toast.LENGTH_LONG).show();
+                            intent = new Intent(LoginActivity.this, LoginVerificationActivity.class);
+                            intent.putExtra("number", loginPhoneNumEditText.getText().toString());
+                            startActivity(intent);
+                            break;
+                        case "MERCHANT":
+                            Toast.makeText(LoginActivity.this, "OTP has been sent", Toast.LENGTH_LONG).show();
+                            intent = new Intent(LoginActivity.this, LoginVerificationActivity.class);
+                            intent.putExtra("number", loginPhoneNumEditText.getText().toString());
+                            startActivity(intent);
+                            break;
+                        case "UNVERIFIED_MERCHANT":
+                            AlertDialog alertDialog = new AlertDialog.Builder(
+                                    LoginActivity.this).create();
+                            alertDialog.setTitle("Merchant not verified!");
+                            alertDialog.setMessage("Please wait for our admin to verify your store.");
+                            alertDialog.setIcon(R.drawable.logo);
+                            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    FirebaseAuth.getInstance().signOut();
+                                }
+                            });
+                            alertDialog.show();
+                            loadingPanel.setVisibility(View.INVISIBLE);
+                            break;
+                        case "ADMIN":
+                            Toast.makeText(LoginActivity.this, "OTP has been sent", Toast.LENGTH_LONG).show();
+                            intent = new Intent(LoginActivity.this, LoginVerificationActivity.class);
+                            intent.putExtra("number", loginPhoneNumEditText.getText().toString());
+                            startActivity(intent);
+                            break;
+                        default: break;
+
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
     private void login() {
@@ -184,6 +240,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure() {
+                    newLoginSession();
                     valid = true;
                 }
             });
@@ -203,9 +260,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(!dataSnapshot.exists()) {
-                    check = true;
+                    check = false;
                     listener.onSuccess(check);
                 }else{
+                    tempUid = dataSnapshot.getValue().toString();
+                    check = true;
                     listener.onFailure();
                 }
             }

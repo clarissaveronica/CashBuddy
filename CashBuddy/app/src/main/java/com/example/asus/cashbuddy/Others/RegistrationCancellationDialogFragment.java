@@ -1,4 +1,4 @@
-package com.example.asus.cashbuddy.Fragment.All;
+package com.example.asus.cashbuddy.Others;
 
 import android.app.Dialog;
 import android.content.Context;

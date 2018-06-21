@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.asus.cashbuddy.Activity.User.UserScanActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTopUpActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTransferActivity;
+import com.example.asus.cashbuddy.Model.User;
 import com.example.asus.cashbuddy.R;
+import com.example.asus.cashbuddy.Utils.AccountUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,11 +43,13 @@ import java.util.Locale;
 public class UserHomeFragment extends Fragment {
 
     //Initialize
-    ImageButton scan, transfer, topup, profile;
+    private ImageButton scan, transfer, topup;
+    private ImageView profile;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference databaseWallet;
+    private DatabaseReference databaseRef;
     private FirebaseUser user;
     private TextView balance;
+    private User currentUser;
 
     public UserHomeFragment() {
         // Required empty public constructor
@@ -105,20 +111,29 @@ public class UserHomeFragment extends Fragment {
         });
 
         //Initialize balance on view
-        databaseWallet = FirebaseDatabase.getInstance().getReference("users");
+        databaseRef = FirebaseDatabase.getInstance().getReference("users");
 
-        databaseWallet.child(user.getUid()).child("balance").addValueEventListener(new ValueEventListener() {
+        getUser(new OnGetDataListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String money = changeToRupiahFormat(Integer.parseInt(dataSnapshot.getValue().toString()));
+            public void onSuccess() {
+                User user = AccountUtil.getCurrentUser();
+                String money = changeToRupiahFormat(user.getBalance());
                 balance.setText(money);
+                //Set image
+                if(user.getProfilePictureUrl() != null) {
+                    Glide.with(getActivity())
+                            .load(user.getProfilePictureUrl())
+                            .into(profile);
+                }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onStart() {}
 
-            }
+            @Override
+            public void onFailure() { }
         });
+
     }
 
     //Show user's QR
@@ -159,5 +174,32 @@ public class UserHomeFragment extends Fragment {
         String temp = formatRupiah.format((double)money);
 
         return temp;
+    }
+
+    public void getUser(final OnGetDataListener listener){
+        listener.onStart();
+
+        databaseRef.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    currentUser = dataSnapshot.getValue(User.class);
+                    AccountUtil.setCurrentAccount(currentUser);
+                    listener.onSuccess();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public interface OnGetDataListener {
+        //make new interface for call back
+        void onSuccess();
+        void onStart();
+        void onFailure();
     }
 }
