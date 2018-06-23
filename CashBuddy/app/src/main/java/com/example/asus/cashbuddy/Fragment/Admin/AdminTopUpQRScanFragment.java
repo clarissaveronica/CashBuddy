@@ -1,4 +1,4 @@
-package com.example.asus.cashbuddy.Fragment.All;
+package com.example.asus.cashbuddy.Fragment.Admin;
 
 
 import android.Manifest;
@@ -24,11 +24,11 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class QRScanFragment extends Fragment implements ZXingScannerView.ResultHandler{
+public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerView.ResultHandler{
 
     private ZXingScannerView mScannerView;
 
-    public QRScanFragment() {
+    public AdminTopUpQRScanFragment() {
         // Required empty public constructor
     }
 

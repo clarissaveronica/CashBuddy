@@ -155,8 +155,6 @@ public class MerchantNewTransactionFragment extends Fragment {
                 price.addTextChangedListener(this);
 
                 String newPrice = price.getText().toString().replace(".", "").replace("Rp", "").replace(",", "");
-                Log.i("adf", "n" + newPrice);
-                Log.i("adf123", "n" + currentPrice);
 
                 if(newPrice.equals(currentPrice)){
                     makeTransaction.setEnabled(false);

@@ -39,7 +39,7 @@
                 android:layout_marginStart="16dp"
                 android:textSize="16sp"
                 android:layout_gravity="center_vertical"
-                android:text="Please enter Amount (Minimal Rp10.000)"/>
+                android:text="Please enter amount (Minimal Rp10.000)"/>
 
         </LinearLayout>
 
@@ -85,7 +85,7 @@
                 android:layout_marginStart="16dp"
                 android:textSize="16sp"
                 android:layout_gravity="center_vertical"
-                android:text="Choose Transfer Method"/>
+                android:text="Choose transfer method"/>
 
         </LinearLayout>
 
