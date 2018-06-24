@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.alimuzaffar.lib.pin.PinEntryEditText;
 import com.example.asus.cashbuddy.Model.Transfer;
 import com.example.asus.cashbuddy.R;
 import com.example.asus.cashbuddy.Utils.TransferUtil;
@@ -43,8 +44,9 @@ public class UserPhoneTransferFragment extends Fragment {
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
     private int userBalance, receiverBalance;
-    private String receiverName, receiverPhone, receiver;
+    private String receiverName, receiverPhone, receiver, transfer;
     private int totalTransfer;
+    private PinEntryEditText securitycode;
 
     public UserPhoneTransferFragment() {
         // Required empty public constructor
@@ -115,12 +117,26 @@ public class UserPhoneTransferFragment extends Fragment {
     public void getInfo(final OnGetDataListener listener){
         listener.onStart();
 
-        databaseUser.child(receiver).child("name").addValueEventListener(new ValueEventListener() {
+        databaseUser.child(receiver).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                     receiverName = dataSnapshot.getValue().toString();
-                    listener.onSuccess();
+
+                    databaseUser.child(user.getUid()).child("balance").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                userBalance = Integer.parseInt(dataSnapshot.getValue().toString());
+                                listener.onSuccess();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }else listener.onFailure();
             }
 
@@ -130,21 +146,7 @@ public class UserPhoneTransferFragment extends Fragment {
             }
         });
 
-        databaseUser.child(user.getUid()).child("balance").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    userBalance = Integer.parseInt(dataSnapshot.getValue().toString());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseUser.child(receiver).child("balance").addValueEventListener(new ValueEventListener() {
+        databaseUser.child(receiver).child("balance").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -178,7 +180,7 @@ public class UserPhoneTransferFragment extends Fragment {
         Bundle bundle = this.getArguments();
         totalTransfer = Integer.parseInt(bundle.getString("amount"));
 
-        final String transfer = changeToRupiahFormat(totalTransfer);
+        transfer = changeToRupiahFormat(totalTransfer);
 
         checkNum(new OnGetDataListener() {
             @Override
@@ -186,34 +188,11 @@ public class UserPhoneTransferFragment extends Fragment {
                 getInfo(new OnGetDataListener() {
                     @Override
                     public void onSuccess() {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setMessage("Sending " + transfer + " to " + receiverName + ". Click confirm to proceed")
-                                .setCancelable(false)
-                                .setPositiveButton(R.string.setPrice_confirm, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        if (userBalance >= totalTransfer) {
-                                            Transfer transfer = new Transfer(receiver, user.getUid(), totalTransfer);
-                                            TransferUtil.insert(transfer);
-
-                                            setWallet();
-                                            Toast.makeText(getContext(), "Transfer successful", Toast.LENGTH_LONG).show();
-
-                                            getActivity().finish();
-                                        }else {
-                                            dialog.cancel();
-                                            showError();
-                                        }
-                                    }
-                                })
-                                .setNegativeButton(R.string.setPrice_cancel, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-
-                        AlertDialog alert = builder.create();
-                        alert.setTitle(R.string.setPrice_title);
-                        alert.show();
+                            if (userBalance >= totalTransfer) {
+                                showInputSC();
+                            }else {
+                                showError();
+                            }
                     }
 
                     @Override
@@ -223,7 +202,7 @@ public class UserPhoneTransferFragment extends Fragment {
                     @Override
                     public void onFailure() {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setMessage("Wrong phone number. Please try again")
+                        builder.setMessage("Unregistered phone number. Please try again")
                                 .setCancelable(false)
                                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
@@ -286,5 +265,78 @@ public class UserPhoneTransferFragment extends Fragment {
         void onSuccess();
         void onStart();
         void onFailure();
+    }
+
+    public void showInputSC(){
+        final AlertDialog builder = new AlertDialog.Builder(getActivity())
+                .setTitle("Sending " + transfer + " to " + receiverName)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setMessage("Please enter your security code to proceed")
+                .create();
+
+        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.input_security_code, (ViewGroup) getView(), false);
+
+        securitycode = viewInflated.findViewById(R.id.pinEntry);
+
+        builder.setView(viewInflated);
+
+        builder.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = builder.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button negative = builder.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        verify(new OnGetDataListener() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(getActivity(), "Transfer successful", Toast.LENGTH_LONG).show();
+                                getActivity().finish();
+                            }
+
+                            @Override
+                            public void onStart() {
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+
+                negative.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        builder.dismiss();
+                    }
+                });
+            }
+        });
+        builder.show();
+    }
+
+    public void verify(final OnGetDataListener listener){
+        databaseUser.child(user.getUid()).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String password = snapshot.getValue(String.class);
+                if(securitycode.getText().toString().equals(password)){
+                    Transfer transfer = new Transfer(receiver, user.getUid(), totalTransfer);
+                    TransferUtil.insert(transfer);
+
+                    setWallet();
+                    listener.onSuccess();
+                }else listener.onFailure();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }

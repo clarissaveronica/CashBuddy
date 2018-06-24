@@ -164,7 +164,7 @@ public class UserProfileActivity extends AppCompatActivity implements EditCancel
 
         @Override
         public void afterTextChanged(Editable s) {
-            if (email != null && name != null) {
+            if (!email.getText().toString().equals("") && !name.getText().toString().equals("")) {
                 if (!user.getEmail().equals(email.getText().toString()) || !user.getName().equals(name.getText().toString())) {
                     if (isEmailValid(email.getText().toString())) {
                         submitButton.setAlpha(1);
@@ -179,8 +179,10 @@ public class UserProfileActivity extends AppCompatActivity implements EditCancel
                     submitButton.setEnabled(false);
                 }
             }else{
-                if(email == null) email.setError("Email is required");
-                if(name == null) name.setError("Name is required");
+                if(email.getText().toString().equals("")) email.setError("Email is required");
+                if(name.getText().toString().equals("")) name.setError("Name is required");
+                submitButton.setAlpha(0.5f);
+                submitButton.setEnabled(false);
             }
         }
 

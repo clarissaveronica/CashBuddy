@@ -15,8 +15,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.alimuzaffar.lib.pin.PinEntryEditText;
 import com.example.asus.cashbuddy.Model.Transfer;
 import com.example.asus.cashbuddy.R;
 import com.example.asus.cashbuddy.Utils.TransferUtil;
@@ -44,8 +46,9 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
     private int userBalance, receiverBalance;
-    private String result, receiverName;
+    private String result, receiverName, transfer;
     private int totalTransfer;
+    private PinEntryEditText securitycode;
 
     public UserTransferQRScanFragment() {
         // Required empty public constructor
@@ -70,9 +73,6 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         databaseUser = FirebaseDatabase.getInstance().getReference("users");
-
-        //Bundle bundle = this.getArguments();
-        //totalTransfer = Integer.parseInt(bundle.getString("amount"));
     }
 
     @Override
@@ -94,40 +94,16 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
         Bundle bundle = this.getArguments();
         totalTransfer = Integer.parseInt(bundle.getString("amount"));
 
-        final String transfer = changeToRupiahFormat(totalTransfer);
+        transfer = changeToRupiahFormat(totalTransfer);
 
         getInfo(new OnGetDataListener() {
             @Override
             public void onSuccess() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Sending " + transfer + " to " + receiverName + ". Click confirm to proceed")
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.setPrice_confirm, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                if (userBalance >= totalTransfer) {
-                                    Transfer transfer = new Transfer(result, user.getUid(), totalTransfer);
-                                    TransferUtil.insert(transfer);
-
-                                    setWallet();
-                                    Toast.makeText(getContext(), "Transfer successful", Toast.LENGTH_LONG).show();
-
-                                    getActivity().finish();
-                                }else {
-                                    dialog.cancel();
-                                    showError();
-                                }
-                            }
-                        })
-                        .setNegativeButton(R.string.setPrice_cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                mScannerView.resumeCameraPreview(UserTransferQRScanFragment.this);
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alert = builder.create();
-                alert.setTitle(R.string.setPrice_title);
-                alert.show();
+                if (userBalance >= totalTransfer) {
+                    showInputSC();
+                }else {
+                    showError();
+                }
             }
 
             @Override
@@ -137,7 +113,7 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
             @Override
             public void onFailure() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Invalid QR code. Please try again")
+                builder.setMessage("Unregistered phone number. Please try again")
                         .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -170,7 +146,7 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
     public void getInfo(final OnGetDataListener listener){
         listener.onStart();
 
-        databaseUser.child(result).child("name").addValueEventListener(new ValueEventListener() {
+        databaseUser.child(result).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -185,7 +161,7 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
             }
         });
 
-        databaseUser.child(user.getUid()).child("balance").addValueEventListener(new ValueEventListener() {
+        databaseUser.child(user.getUid()).child("balance").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -199,7 +175,7 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
             }
         });
 
-        databaseUser.child(result).child("balance").addValueEventListener(new ValueEventListener() {
+        databaseUser.child(result).child("balance").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -238,5 +214,79 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
         void onSuccess();
         void onStart();
         void onFailure();
+    }
+
+    public void showInputSC(){
+        final AlertDialog builder = new AlertDialog.Builder(getActivity())
+                .setTitle("Sending " + transfer + " to " + receiverName)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setMessage("Please enter your security code to proceed")
+                .create();
+
+        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.input_security_code, (ViewGroup) getView(), false);
+
+        securitycode = viewInflated.findViewById(R.id.pinEntry);
+
+        builder.setView(viewInflated);
+
+        builder.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = builder.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button negative = builder.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        verify(new OnGetDataListener() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(getActivity(), "Transfer successful", Toast.LENGTH_LONG).show();
+                                getActivity().finish();
+                            }
+
+                            @Override
+                            public void onStart() {
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+
+                negative.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        mScannerView.resumeCameraPreview(UserTransferQRScanFragment.this);
+                        builder.dismiss();
+                    }
+                });
+            }
+        });
+        builder.show();
+    }
+
+    public void verify(final OnGetDataListener listener){
+        databaseUser.child(user.getUid()).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String password = snapshot.getValue(String.class);
+                if(securitycode.getText().toString().equals(password)){
+                    Transfer transfer = new Transfer(result, user.getUid(), totalTransfer);
+                    TransferUtil.insert(transfer);
+
+                    setWallet();
+                    listener.onSuccess();
+                }else listener.onFailure();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }

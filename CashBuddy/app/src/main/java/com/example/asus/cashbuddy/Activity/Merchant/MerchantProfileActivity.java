@@ -121,7 +121,7 @@ public class MerchantProfileActivity extends AppCompatActivity implements EditCa
 
         @Override
         public void afterTextChanged(Editable s) {
-            if (email != null && name != null) {
+            if (!email.getText().toString().equals("") && !name.getText().toString().equals("") && !location.getText().toString().equals("")) {
                 if (!merchant.getEmail().equals(email.getText().toString()) || !merchant.getMerchantName().equals(name.getText().toString())
                         || !merchant.getLocation().equals(location.getText().toString())) {
                     if (isEmailValid(email.getText().toString())) {
@@ -137,9 +137,11 @@ public class MerchantProfileActivity extends AppCompatActivity implements EditCa
                     submitButton.setEnabled(false);
                 }
             }else{
-                if(email == null) email.setError("Email is required");
-                if(name == null) name.setError("Name is required");
-                if(location == null) location.setError("Location is required");
+                if(email.getText().toString().equals("")) email.setError("Email is required");
+                if(name.getText().toString().equals("")) name.setError("Name is required");
+                if(location.getText().toString().equals("")) location.setError("Location is required");
+                submitButton.setAlpha(0.5f);
+                submitButton.setEnabled(false);
             }
         }
 

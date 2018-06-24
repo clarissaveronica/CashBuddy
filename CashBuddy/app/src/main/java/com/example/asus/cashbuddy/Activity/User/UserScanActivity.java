@@ -10,10 +10,16 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.alimuzaffar.lib.pin.PinEntryEditText;
 import com.example.asus.cashbuddy.Model.Transaction;
+import com.example.asus.cashbuddy.Model.User;
 import com.example.asus.cashbuddy.R;
 import com.example.asus.cashbuddy.Utils.TransactionUtil;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,7 +44,8 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
     private FirebaseUser user;
     private int transactionAmount, userBalance, merchantBalance;
     private String amount, merchantName;
-    private String s;
+    private String result;
+    private PinEntryEditText securitycode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,37 +83,16 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
 
     @Override
     public void handleResult(final Result rawResult) {
-        s = rawResult.getText();
-
+        result = rawResult.getText();
 
         getInfo(new OnGetDataListener() {
             @Override
             public void onSuccess() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(UserScanActivity.this);
-                builder.setMessage("You are making a " + amount + " transaction with " + merchantName + ". Click confirm to proceed")
-                        .setCancelable(false)
-                        .setPositiveButton(R.string.setPrice_confirm, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                if (userBalance >= transactionAmount) {
-                                    makeTransaction();
-                                    setWallet();
-                                    showSuccess();
-                                } else {
-                                    dialog.cancel();
-                                    showError();
-                                }
-                            }
-                        })
-                        .setNegativeButton(R.string.setPrice_cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                                finish();
-                            }
-                        });
-
-                AlertDialog alert = builder.create();
-                alert.setTitle(R.string.setPrice_title);
-                alert.show();
+                if (userBalance >= transactionAmount) {
+                    showInputSC();
+                } else {
+                    showError();
+                }
             }
 
             @Override
@@ -180,7 +166,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
     public void getInfo(final OnGetDataListener listener){
         listener.onStart();
 
-        databasePrice.child(s).addValueEventListener(new ValueEventListener() {
+        databasePrice.child(result).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -197,7 +183,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
             }
         });
 
-        databaseMerchant.child(s).child("merchantName").addValueEventListener(new ValueEventListener() {
+        databaseMerchant.child(result).child("merchantName").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
@@ -227,41 +213,25 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
 
             }
         });
+
+        databaseMerchant.child(result).child("balance").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    merchantBalance = Integer.parseInt(dataSnapshot.getValue().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void makeTransaction(){
-        Transaction transaction = new Transaction(s, user.getUid(), transactionAmount);
+        Transaction transaction = new Transaction(result, user.getUid(), transactionAmount);
         TransactionUtil.insert(transaction);
-
-        databaseMerchant.child(s).child("balance").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    merchantBalance = Integer.parseInt(dataSnapshot.getValue().toString()) + transactionAmount;
-                    return;
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseUser.child(user.getUid()).child("balance").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    userBalance = Integer.parseInt(dataSnapshot.getValue().toString()) - transactionAmount;
-                    return;
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     private void setWallet(){
@@ -270,7 +240,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
         walletURef.setValue(userBalance - transactionAmount);
 
         //Set balance on merchant's wallet
-        walletMRef = FirebaseDatabase.getInstance().getReference("merchant").child(s).child("balance");
+        walletMRef = FirebaseDatabase.getInstance().getReference("merchant").child(result).child("balance");
         walletMRef.setValue(merchantBalance + transactionAmount);
     }
 
@@ -288,5 +258,77 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
         void onSuccess();
         void onStart();
         void onFailure();
+    }
+
+    public void showInputSC(){
+        final AlertDialog builder = new AlertDialog.Builder(UserScanActivity.this)
+                .setTitle("You are making a " + amount +  " transaction with " + merchantName)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setMessage("Please enter your security code to proceed")
+                .create();
+
+        View viewInflated = LayoutInflater.from(this).inflate(R.layout.input_security_code, null, false);
+
+        securitycode = viewInflated.findViewById(R.id.pinEntry);
+
+        builder.setView(viewInflated);
+
+        builder.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = builder.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button negative = builder.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        verify(new OnGetDataListener() {
+                            @Override
+                            public void onSuccess() {
+                                showSuccess();
+                                builder.dismiss();
+                            }
+
+                            @Override
+                            public void onStart() {
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                Toast.makeText(UserScanActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+
+                negative.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        mScannerView.resumeCameraPreview(UserScanActivity.this);
+                        builder.dismiss();
+                    }
+                });
+            }
+        });
+        builder.show();
+    }
+
+    public void verify(final OnGetDataListener listener){
+        databaseUser.child(user.getUid()).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String password = snapshot.getValue(String.class);
+                if(securitycode.getText().toString().equals(password)){
+                    makeTransaction();
+                    setWallet();
+                    listener.onSuccess();
+                }else listener.onFailure();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 }

@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.asus.cashbuddy.R;
@@ -57,7 +56,7 @@ public class AdminMenuAdapter extends BaseAdapter {
 
                 viewHolder = new ViewHolder();
                 LayoutInflater inflater = LayoutInflater.from(context);
-                convertView = inflater.inflate(R.layout.admin_menu_adapter, parent, false);
+                convertView = inflater.inflate(R.layout.adapter_admin_menu, parent, false);
                 viewHolder.txtName = (TextView) convertView.findViewById(R.id.aNametxt);
                 viewHolder.txtVersion = (TextView) convertView.findViewById(R.id.aVersiontxt);
 
