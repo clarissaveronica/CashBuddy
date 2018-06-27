@@ -2,6 +2,7 @@ package com.example.asus.cashbuddy.Fragment.Admin;
 
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,9 +16,24 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.alimuzaffar.lib.pin.PinEntryEditText;
+import com.example.asus.cashbuddy.Model.History;
 import com.example.asus.cashbuddy.R;
+import com.example.asus.cashbuddy.Utils.HistoryUtil;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
+
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
@@ -27,6 +43,13 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerView.ResultHandler{
 
     private ZXingScannerView mScannerView;
+    private DatabaseReference databaseUser, walletRef;
+    private FirebaseUser user;
+    private FirebaseAuth firebaseAuth;
+    private int userBalance;
+    private String result, userName, transfer;
+    private int totalTransfer;
+    private PinEntryEditText securitycode;
 
     public AdminTopUpQRScanFragment() {
         // Required empty public constructor
@@ -45,6 +68,14 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
         return mScannerView;
     }
 
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        user = firebaseAuth.getCurrentUser();
+        databaseUser = FirebaseDatabase.getInstance().getReference("users");
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -60,15 +91,168 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
 
     @Override
     public void handleResult(Result rawResult) {
-        Log.v("TAG", rawResult.getText()); // Prints scan results
-        Log.v("TAG", rawResult.getBarcodeFormat().toString());
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Scan Result");
-        builder.setMessage(rawResult.getText());
-        AlertDialog alert1 = builder.create();
-        alert1.show();
+        result = rawResult.getText();
+        Bundle bundle = this.getArguments();
+        totalTransfer = Integer.parseInt(bundle.getString("amount"));
 
-        mScannerView.resumeCameraPreview(this);
+        transfer = changeToRupiahFormat(totalTransfer);
+
+        getInfo(new OnGetDataListener() {
+            @Override
+            public void onSuccess() {
+                showInputSC();
+            }
+
+            @Override
+            public void onStart() {
+            }
+
+            @Override
+            public void onFailure() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Unregistered phone number. Please try again")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                mScannerView.resumeCameraPreview(AdminTopUpQRScanFragment.this);
+                            }
+                        });
+
+                AlertDialog alert = builder.create();
+                alert.setTitle("Oops!");
+                alert.show();
+            }
+        });
+    }
+
+    public void getInfo(final OnGetDataListener listener){
+        listener.onStart();
+
+        databaseUser.child(result).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    userName = dataSnapshot.getValue().toString();
+                    listener.onSuccess();
+                }else listener.onFailure();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        databaseUser.child(result).child("balance").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    userBalance = Integer.parseInt(dataSnapshot.getValue().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void setWallet(){
+        //Set balance on merchant's wallet
+        walletRef = FirebaseDatabase.getInstance().getReference("users").child(result).child("balance");
+        walletRef.setValue(userBalance + totalTransfer);
+    }
+
+    public String changeToRupiahFormat(int money){
+        Locale localeID = new Locale("in", "ID");
+        NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(localeID);
+
+        String temp = formatRupiah.format((double)money);
+
+        return temp;
+    }
+
+    public interface OnGetDataListener {
+        //make new interface for call back
+        void onSuccess();
+        void onStart();
+        void onFailure();
+    }
+
+    public void showInputSC(){
+        final AlertDialog builder = new AlertDialog.Builder(getActivity())
+                .setTitle("Top up " + transfer + " to " + userName)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setMessage("Please enter your security code to proceed")
+                .create();
+
+        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.input_security_code, (ViewGroup) getView(), false);
+
+        securitycode = viewInflated.findViewById(R.id.pinEntry);
+
+        builder.setView(viewInflated);
+
+        builder.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                Button button = builder.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button negative = builder.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        verify(new OnGetDataListener() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(getActivity(), "Top up successful", Toast.LENGTH_LONG).show();
+                                getActivity().finish();
+                            }
+
+                            @Override
+                            public void onStart() {
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
+
+                negative.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view){
+                        mScannerView.resumeCameraPreview(AdminTopUpQRScanFragment.this);
+                        builder.dismiss();
+                    }
+                });
+            }
+        });
+        builder.show();
+    }
+
+    public void verify(final OnGetDataListener listener){
+        databaseUser.child(user.getUid()).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String password = snapshot.getValue(String.class);
+                if(securitycode.getText().toString().equals(password)){
+                    //Set history for user
+                    History history = new History("Top Up", "CB Cash", totalTransfer);
+                    HistoryUtil.insert(history, result);
+
+                    setWallet();
+                    listener.onSuccess();
+                }else listener.onFailure();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
 
 }

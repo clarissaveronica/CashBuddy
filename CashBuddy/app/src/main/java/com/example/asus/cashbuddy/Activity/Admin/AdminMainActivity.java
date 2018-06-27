@@ -102,7 +102,7 @@ public class AdminMainActivity extends AppCompatActivity {
                                 firebaseAuth.getInstance().signOut();
                                 Intent intent = new Intent(AdminMainActivity.this, LoginActivity.class);
                                 startActivity(intent);
-                                finish();
+                                finishAffinity();
                             }
                         })
                         .setNegativeButton(R.string.signOut_cancel, new DialogInterface.OnClickListener() {

@@ -65,4 +65,17 @@
         </FrameLayout>
         </LinearLayout>
     </ScrollView>
+    <LinearLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#8C000000"
+        android:gravity="center">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:indeterminate="true" />
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

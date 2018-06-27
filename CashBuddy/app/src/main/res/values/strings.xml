@@ -56,6 +56,7 @@
     <string name="phoneNumVerificationTitle">Phone Number Verification</string>
     <string name="editProfileTitle">Edit Profile</string>
     <string name="securityCodeVerificationTitle">Security Code Verification</string>
+    <string name="dealTitle">Deals</string>
 
     <string-array name="methods">
         <item>Select Method</item>

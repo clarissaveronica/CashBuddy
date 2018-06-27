@@ -144,7 +144,7 @@ public class ProfileFragment extends Fragment {
                         firebaseAuth.getInstance().signOut();
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
                         startActivity(intent);
-                        getActivity().finish();
+                        getActivity().finishAffinity();
                     }
                 })
                 .setNegativeButton(R.string.signOut_cancel, new DialogInterface.OnClickListener() {

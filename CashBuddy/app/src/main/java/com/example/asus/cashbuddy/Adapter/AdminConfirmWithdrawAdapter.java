@@ -5,52 +5,53 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Activity.Admin.AdminConfirmTopUpDetailActivity;
-import com.example.asus.cashbuddy.Model.TopUp;
+import com.example.asus.cashbuddy.Activity.Admin.AdminMerchantWithdrawDetailActivity;
+import com.example.asus.cashbuddy.Model.Withdraw;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
+public class AdminConfirmWithdrawAdapter extends RecyclerView.Adapter<AdminConfirmWithdrawAdapter.ViewHolder> {
 
-public class AdminConfirmTopUpAdapter extends RecyclerView.Adapter<AdminConfirmTopUpAdapter.ViewHolder> {
+    // Withdraw History Items
+    private ArrayList<Withdraw> withdrawHistory;
 
-    // topup History Items
-    private ArrayList<TopUp> topUpHistory;
-
-    public AdminConfirmTopUpAdapter(@NonNull List<TopUp> topup) {
-        this.topUpHistory = new ArrayList<>(topup);
+    public AdminConfirmWithdrawAdapter(@NonNull List<Withdraw> withdraw) {
+        this.withdrawHistory = new ArrayList<>(withdraw);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_admin_confirm_top_up, parent, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_admin_confirm_withdraw, parent, false);
 
         return new ViewHolder(layoutView);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        // Get topup Item
-        final TopUp topup = topUpHistory.get(position);
+        // Get withdraw Item
+        final Withdraw withdraw = withdrawHistory.get(position);
 
-        FirebaseDatabase.getInstance().getReference("users").child(topup.getUid()).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("store").child(withdraw.getUid())
+                .addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                holder.NameTextView.setText(dataSnapshot.child("name").getValue().toString());
+                if(dataSnapshot.child("storeName").getValue() != null) {
+                    holder.NameTextView.setText(dataSnapshot.child("storeName").getValue().toString());
+                }
             }
 
             @Override
@@ -59,29 +60,29 @@ public class AdminConfirmTopUpAdapter extends RecyclerView.Adapter<AdminConfirmT
             }
         });
 
-        holder.topupDateTextView.setText(topup.getRequestDateString(topup.getRequestdate()));
-        holder.AmountTextView.setText(changeToRupiahFormat(topup.getAmount()));
+        holder.withdrawDateTextView.setText(withdraw.getRequestDateString(withdraw.getRequestdate()));
+        holder.AmountTextView.setText("Rp " + String.valueOf(withdraw.getAmount()));
     }
 
     @Override
     public int getItemCount() {
-        return topUpHistory.size();
+        return withdrawHistory.size();
     }
 
-    public void settopupHistory(ArrayList<TopUp> topupHistory) {
-        this.topUpHistory = topupHistory;
+    public void setwithdrawHistory(ArrayList<Withdraw> withdrawHistory) {
+        this.withdrawHistory = withdrawHistory;
     }
 
-    public void addTopUp(TopUp topUp) {
-        if(topUp == null) return;
-        if(!topUpHistory.contains(topUp)) {
-            this.topUpHistory.add(topUp);
+    public void addWithdraw(Withdraw withdraw) {
+        if(withdraw == null) return;
+        if(!withdrawHistory.contains(withdraw)) {
+            this.withdrawHistory.add(withdraw);
         }
         notifyDataSetChanged();
     }
 
-    public void removeTopUp(){
-        topUpHistory.clear();
+    public void removeWithdraw(){
+        withdrawHistory.clear();
         notifyDataSetChanged();
     }
 
@@ -89,41 +90,35 @@ public class AdminConfirmTopUpAdapter extends RecyclerView.Adapter<AdminConfirmT
 
         // TextView of store name
         public TextView NameTextView;
-        // TextView of topup date
-        public TextView topupDateTextView;
+        // TextView of withdraw date
+        public TextView withdrawDateTextView;
         // TextView of payment amount
         public TextView AmountTextView;
         // TextView of LocationTextView
 
         LinearLayout bg;
 
+        /**
+         * Construct {@link ViewHolder} instance
+         * @param view layout view of withdraw items
+         */
         public ViewHolder(View view) {
             super(view);
             final Context context = itemView.getContext();
             // Set the holder attributes
             NameTextView = view.findViewById(R.id.username);
-            topupDateTextView = view.findViewById(R.id.date);
+            withdrawDateTextView = view.findViewById(R.id.date);
             AmountTextView = view.findViewById(R.id.amount);
-            bg = view.findViewById(R.id.bg_topup);
+            bg = view.findViewById(R.id.bg_withdraw);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, AdminConfirmTopUpDetailActivity.class);
-                    intent.putExtra("topup",topUpHistory);
+                    Intent intent = new Intent(context, AdminMerchantWithdrawDetailActivity.class);
+                    intent.putExtra("withdraw",withdrawHistory);
                     intent.putExtra("Position", getAdapterPosition());
                     context.startActivity(intent);
                 }
             });
         }
-    }
-
-    //Change number format to IDR
-    public String changeToRupiahFormat(int money){
-        Locale localeID = new Locale("in", "ID");
-        NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(localeID);
-
-        String temp = formatRupiah.format((double)money);
-
-        return temp;
     }
 }

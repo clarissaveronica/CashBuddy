@@ -102,6 +102,11 @@
         <activity
             android:name=".Activity.Admin.AdminConfirmTopUpDetailActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Admin.AdminMerchantWithdrawDetailActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Activity.User.UserDealsDetailActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

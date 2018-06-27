@@ -17,18 +17,18 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 public class AdminConfirmTopUpActivity extends AppCompatActivity {
 
-    FirebaseAuth firebaseAuth;
-    DatabaseReference emailDatabase;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private ArrayList<TopUp> topups;
     private AdminConfirmTopUpAdapter adapter;
-    private ChildEventListener EventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +41,6 @@ public class AdminConfirmTopUpActivity extends AppCompatActivity {
         TextView textViewTitle = findViewById(R.id.title);
         textViewTitle.setText(R.string.confirmTopUpTitle);
 
-        getSupportActionBar().setTitle("Confirm Top Up");
-
         topups = new ArrayList<TopUp>();
         adapter = new AdminConfirmTopUpAdapter (topups);
         recyclerView = findViewById(R.id.request_recycler_view);
@@ -50,53 +48,43 @@ public class AdminConfirmTopUpActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        attachDatabaseReadListener();
         adapter.notifyDataSetChanged();
+        attachDatabaseReadListener();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        detachDatabaseReadListener();
     }
 
     private void attachDatabaseReadListener() {
-        if (EventListener == null) {
-            EventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    TopUp topUp = dataSnapshot.getValue(TopUp.class);
-                    adapter.addTopUp(topUp);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("topuprequest");
+
+        Query query = ref.orderByChild("requeststatus").equalTo(0);
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                adapter.removeTopUp();
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    TopUp topUp = child.getValue(TopUp.class);
+                    if(topUp.getRequeststatus()==0) {
+                        adapter.addTopUp(topUp);
+                    }
                 }
+            }
 
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-
-            TopUpUtil.query().addChildEventListener(EventListener);
-        }
+            }
+        });
     }
 
-    private void detachDatabaseReadListener() {
-        if(topups != null) {
-            topups = null;
-        }
-    }
     @Override
     public void onBackPressed() {
         finish();

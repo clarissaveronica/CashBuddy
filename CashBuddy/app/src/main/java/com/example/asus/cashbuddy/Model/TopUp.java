@@ -9,6 +9,8 @@ import java.util.TimeZone;
 
 public class TopUp implements Serializable {
 
+    //Status : 0 (new), 1 (accepted), 2 (rejected)
+
     private String transfername,uid,bank, proofpic;
     private int amount;
     private long requestdate;

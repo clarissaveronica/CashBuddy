@@ -10,6 +10,8 @@ import java.util.TimeZone;
 
 public class Withdraw implements Serializable {
 
+    //Status : 0 (new), 1 (accepted), 2 (rejected)
+
     private String transfername,uid,bank;
     private int amount;
     private String accountnumber;

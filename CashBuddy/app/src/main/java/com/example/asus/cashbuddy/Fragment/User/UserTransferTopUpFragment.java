@@ -2,6 +2,7 @@ package com.example.asus.cashbuddy.Fragment.User;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -19,6 +20,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -62,6 +64,8 @@ public class UserTransferTopUpFragment extends Fragment {
     private int topUpBalance;
     private Uri uri;
     private boolean isProfilePictureEdited;
+    private AlertDialog builder;
+    private ViewGroup loading;
 
     // Request permission code
     private static final int REQUEST_READ_EXTERNAL_STORAGE = 100;
@@ -91,6 +95,7 @@ public class UserTransferTopUpFragment extends Fragment {
         proofImageView = view.findViewById(R.id.payment_proof);
         uploadPicture = view.findViewById(R.id.uploadButton);
         submit = view.findViewById(R.id.submitButton);
+        loading = getActivity().findViewById(R.id.loadingPanel);
         isProfilePictureEdited = false;
 
         //Get data
@@ -247,7 +252,7 @@ public class UserTransferTopUpFragment extends Fragment {
     }
 
     public void showInputSC(){
-        final AlertDialog builder = new AlertDialog.Builder(getActivity())
+        builder = new AlertDialog.Builder(getActivity())
                 .setTitle("Requesting " + changeToRupiahFormat(topUpBalance) + " top up")
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
@@ -270,9 +275,13 @@ public class UserTransferTopUpFragment extends Fragment {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        loading.setVisibility(View.VISIBLE);
+                        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         verify(new OnGetDataListener() {
                             @Override
                             public void onSuccess() {
+                                loading.setVisibility(View.GONE);
                                 Toast.makeText(getActivity(), "Top up request has been successfully sent. Your request will be processed in 1x24 hours", Toast.LENGTH_LONG).show();
                                 getActivity().finish();
                             }
@@ -283,6 +292,7 @@ public class UserTransferTopUpFragment extends Fragment {
 
                             @Override
                             public void onFailure() {
+                                loading.setVisibility(View.INVISIBLE);
                                 Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_LONG).show();
                             }
                         });
@@ -306,6 +316,7 @@ public class UserTransferTopUpFragment extends Fragment {
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
                 if(securitycode.getText().toString().equals(password)){
+                    builder.dismiss();
                     final StorageReference profileImageRef = FirebaseStorage.getInstance().getReference("topuprequest/"+ user.getUid() +System.currentTimeMillis()+".jpg");
                     if (uri!=null){
                         profileImageRef.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -317,16 +328,16 @@ public class UserTransferTopUpFragment extends Fragment {
 
                                 TopUp topUp= new TopUp(userName.getText().toString(), user.getUid(), transferproofUrl, bankName.getText().toString(), topUpBalance);
                                 TopUpUtil.insert(topUp);
+                                listener.onSuccess();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Toast.makeText(getActivity(),"Image failed to upload",Toast.LENGTH_LONG).show();
-
+                                listener.onSuccess();
                             }
                         });
                     }
-                    listener.onSuccess();
                 }else listener.onFailure();
             }
             @Override

@@ -29,7 +29,7 @@ import java.util.Locale;
 
 public class UserTransferActivity extends AppCompatActivity {
 
-    FrameLayout content;
+    private FrameLayout content;
     private TextInputEditText amountTransfer;
     private String choose;
     private String newPrice = "0";

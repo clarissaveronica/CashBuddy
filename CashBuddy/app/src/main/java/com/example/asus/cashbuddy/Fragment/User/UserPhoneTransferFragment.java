@@ -17,8 +17,10 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.alimuzaffar.lib.pin.PinEntryEditText;
+import com.example.asus.cashbuddy.Model.History;
 import com.example.asus.cashbuddy.Model.Transfer;
 import com.example.asus.cashbuddy.R;
+import com.example.asus.cashbuddy.Utils.HistoryUtil;
 import com.example.asus.cashbuddy.Utils.TransferUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,7 +46,7 @@ public class UserPhoneTransferFragment extends Fragment {
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
     private int userBalance, receiverBalance;
-    private String receiverName, receiverPhone, receiver, transfer;
+    private String receiverName, receiverPhone, receiver, transfer, senderName;
     private int totalTransfer;
     private PinEntryEditText securitycode;
 
@@ -117,17 +119,19 @@ public class UserPhoneTransferFragment extends Fragment {
     public void getInfo(final OnGetDataListener listener){
         listener.onStart();
 
-        databaseUser.child(receiver).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseUser.child(receiver).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    receiverName = dataSnapshot.getValue().toString();
+                    receiverName = dataSnapshot.child("name").getValue().toString();
+                    receiverBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
 
-                    databaseUser.child(user.getUid()).child("balance").addListenerForSingleValueEvent(new ValueEventListener() {
+                    databaseUser.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             if(dataSnapshot.exists()){
-                                userBalance = Integer.parseInt(dataSnapshot.getValue().toString());
+                                userBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
+                                senderName = dataSnapshot.child("name").getValue().toString();
                                 listener.onSuccess();
                             }
                         }
@@ -138,20 +142,6 @@ public class UserPhoneTransferFragment extends Fragment {
                         }
                     });
                 }else listener.onFailure();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseUser.child(receiver).child("balance").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    receiverBalance = Integer.parseInt(dataSnapshot.getValue().toString());
-                }
             }
 
             @Override
@@ -329,6 +319,14 @@ public class UserPhoneTransferFragment extends Fragment {
                 if(securitycode.getText().toString().equals(password)){
                     Transfer transfer = new Transfer(receiver, user.getUid(), totalTransfer);
                     TransferUtil.insert(transfer);
+
+                    //Set history for sender
+                    History history = new History("Send CB Cash", receiverName, totalTransfer);
+                    HistoryUtil.insert(history, user.getUid());
+
+                    //Set history for receiver
+                    History history2 = new History("Receive CB Cash", senderName, totalTransfer);
+                    HistoryUtil.insert(history2, receiver);
 
                     setWallet();
                     listener.onSuccess();

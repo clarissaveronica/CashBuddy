@@ -15,8 +15,10 @@ import android.widget.Toast;
 
 import com.alimuzaffar.lib.pin.PinEntryEditText;
 import com.bumptech.glide.Glide;
+import com.example.asus.cashbuddy.Model.History;
 import com.example.asus.cashbuddy.Model.TopUp;
 import com.example.asus.cashbuddy.R;
+import com.example.asus.cashbuddy.Utils.HistoryUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,7 +37,7 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
 
     private TextView transactiondate, username, bankname, amount, transfername;
     private ImageView transferproof;
-    private Button accept;
+    private Button accept, decline;
     private TopUp topUp;
     private FirebaseUser user;
     private FirebaseDatabase firebaseDatabase;
@@ -44,6 +46,7 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
     private int pos, userBalance;
     private PinEntryEditText securitycode;
     private ArrayList<TopUp> topupHistory;
+    private boolean isAccepted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +77,7 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
         transfername = findViewById(R.id.trans_name);
         amount = findViewById(R.id.topup_detail_amount);
         accept = findViewById(R.id.accept_request);
+        decline = findViewById(R.id.decline_request);
         transferproof = findViewById(R.id.proofdetail);
 
         //Set views
@@ -81,9 +85,6 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
         transfername.setText(topUp.getTransfername());
         bankname.setText(topUp.getBank());
         amount.setText("Top-up Amount : "+ changeToRupiahFormat(topUp.getAmount()));
-        if(topUp.getRequeststatus()==1) {
-            accept.setEnabled(false);
-        }
 
         if(topUp.getProofpicUrl() != null) {
             Glide.with(transferproof.getContext())
@@ -109,6 +110,15 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
         accept.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                isAccepted = true;
+                showInputSC();
+            }
+        });
+
+        decline.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                isAccepted = false;
                 showInputSC();
             }
         });
@@ -123,8 +133,14 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
                 for(DataSnapshot productSnapshot: dataSnapshot.getChildren()) {
                     if (productSnapshot.child("requestdate").getValue().equals(topUp.getRequestdate())) {
                         HashMap<String, Object> result = new HashMap<>();
-                        result.put("requeststatus", 1);
-                        reference.child(productSnapshot.getKey()).updateChildren(result);
+                        if(isAccepted) {
+                            result.put("requeststatus", 1);
+                            reference.child(productSnapshot.getKey()).updateChildren(result);
+                            setWallet();
+                        }else{
+                            result.put("requeststatus", 2);
+                            reference.child(productSnapshot.getKey()).updateChildren(result);
+                        }
                     }
                 }
             }
@@ -158,22 +174,28 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        verify(new OnGetDataListener() {
-                            @Override
-                            public void onSuccess() {
-                                Toast.makeText(AdminConfirmTopUpDetailActivity.this, "Request accepted", Toast.LENGTH_LONG).show();
-                                finish();
-                            }
+                        if (isAccepted) {
+                            verify(new OnGetDataListener() {
+                                @Override
+                                public void onSuccess() {
+                                    Toast.makeText(AdminConfirmTopUpDetailActivity.this, "Request accepted", Toast.LENGTH_LONG).show();
+                                    finish();
+                                }
 
-                            @Override
-                            public void onStart() {
-                            }
+                                @Override
+                                public void onStart() {
+                                }
 
-                            @Override
-                            public void onFailure() {
-                                Toast.makeText(AdminConfirmTopUpDetailActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
-                            }
-                        });
+                                @Override
+                                public void onFailure() {
+                                    Toast.makeText(AdminConfirmTopUpDetailActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }else{
+                            updateReq();
+                            Toast.makeText(AdminConfirmTopUpDetailActivity.this, "Request declined", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
                     }
                 });
 
@@ -194,6 +216,9 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
                 if(securitycode.getText().toString().equals(password)){
+                    History history = new History("Top Up", "CB Cash", topUp.getAmount());
+                    HistoryUtil.insert(history, topUp.getUid());
+
                     updateReq();
                     setWallet();
                     listener.onSuccess();
@@ -228,4 +253,8 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
         void onFailure();
     }
 
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

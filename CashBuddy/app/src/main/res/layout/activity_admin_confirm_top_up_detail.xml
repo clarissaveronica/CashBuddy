@@ -106,7 +106,9 @@
         android:id="@+id/topup_detail_amount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:background="@color/colorPrimary"
         android:textColor="@color/White"
         android:text="Request amount"/>
@@ -117,10 +119,25 @@
         android:layout_height="match_parent"
         android:layout_weight="1"/>
 
-    <Button
-        android:id="@+id/accept_request"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Accept Request" />
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/accept_request"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/PrimaryColorButton"
+            android:text="Accept Request" />
+
+        <Button
+            android:id="@+id/decline_request"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:theme="@style/PrimaryColorButton"
+            android:text="Decline Request" />
+    </LinearLayout>
 
 </LinearLayout>

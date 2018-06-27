@@ -18,9 +18,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alimuzaffar.lib.pin.PinEntryEditText;
+import com.example.asus.cashbuddy.Model.History;
 import com.example.asus.cashbuddy.Model.Transaction;
 import com.example.asus.cashbuddy.Model.User;
 import com.example.asus.cashbuddy.R;
+import com.example.asus.cashbuddy.Utils.HistoryUtil;
 import com.example.asus.cashbuddy.Utils.TransactionUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,7 +45,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
     private DatabaseReference databasePrice, databaseMerchant, databaseUser, walletMRef, walletURef;
     private FirebaseUser user;
     private int transactionAmount, userBalance, merchantBalance;
-    private String amount, merchantName;
+    private String amount, merchantName, userName;
     private String result;
     private PinEntryEditText securitycode;
 
@@ -183,11 +185,12 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
             }
         });
 
-        databaseMerchant.child(result).child("merchantName").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseMerchant.child(result).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
-                    merchantName = dataSnapshot.getValue().toString();
+                    merchantName = dataSnapshot.child("merchantName").getValue().toString();
+                    merchantBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
                     listener.onSuccess();
                 }else{
                     listener.onFailure();
@@ -200,25 +203,12 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
             }
         });
 
-        databaseUser.child(user.getUid()).child("balance").addValueEventListener(new ValueEventListener() {
+        databaseUser.child(user.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    userBalance = Integer.parseInt(dataSnapshot.getValue().toString());
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseMerchant.child(result).child("balance").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    merchantBalance = Integer.parseInt(dataSnapshot.getValue().toString());
+                    userBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
+                    userName = dataSnapshot.child("name").getValue().toString();
                 }
             }
 
@@ -288,7 +278,6 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
                             @Override
                             public void onSuccess() {
                                 showSuccess();
-                                builder.dismiss();
                             }
 
                             @Override
@@ -321,6 +310,14 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
                 if(securitycode.getText().toString().equals(password)){
+                    //Set history for user
+                    History history = new History("Purchase", userName, transactionAmount);
+                    HistoryUtil.insert(history, user.getUid());
+
+                    //Set history for merchant
+                    History history2 = new History("Successful Transaction", merchantName, transactionAmount);
+                    HistoryUtil.insert(history2, result);
+
                     makeTransaction();
                     setWallet();
                     listener.onSuccess();

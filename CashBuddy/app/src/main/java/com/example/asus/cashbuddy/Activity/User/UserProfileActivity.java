@@ -15,6 +15,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,6 +43,7 @@ public class UserProfileActivity extends AppCompatActivity implements EditCancel
     private User user;
     private Button editButton, submitButton, changePicture;
     private ImageView profilePictureImageView;
+    private ViewGroup loading;
 
     // Boolean for edited
     private boolean isProfilePictureEdited;
@@ -76,6 +78,8 @@ public class UserProfileActivity extends AppCompatActivity implements EditCancel
         submitButton = findViewById(R.id.submitButton);
         changePicture = findViewById(R.id.picture_button);
         profilePictureImageView = findViewById(R.id.profilepic);
+        loading = findViewById(R.id.loadingPanel);
+        loading.setVisibility(View.INVISIBLE);
 
         user = AccountUtil.getCurrentUser();
 
@@ -129,6 +133,7 @@ public class UserProfileActivity extends AppCompatActivity implements EditCancel
 
         Task<Void> updateTask;
         if(isProfilePictureEdited) {
+            loading.setVisibility(View.VISIBLE);
             updateTask = AccountUtil.updateUserOtherInformation(user, profilePictureUri);
         }
         else {
@@ -140,10 +145,12 @@ public class UserProfileActivity extends AppCompatActivity implements EditCancel
             public void onComplete(@NonNull Task<Void> task) {
                 // Check status
                 if(task.isSuccessful()) {
+                    loading.setVisibility(View.INVISIBLE);
                     Toast.makeText(getApplicationContext(), "Profile saved", Toast.LENGTH_SHORT).show();
                     finish();
                 }
                 else {
+                    loading.setVisibility(View.INVISIBLE);
                     Toast.makeText(getApplicationContext(), "Failed to save", Toast.LENGTH_SHORT).show();
                 }
             }

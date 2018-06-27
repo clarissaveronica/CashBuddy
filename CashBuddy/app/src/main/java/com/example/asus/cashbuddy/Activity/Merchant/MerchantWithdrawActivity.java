@@ -17,9 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alimuzaffar.lib.pin.PinEntryEditText;
+import com.example.asus.cashbuddy.Model.History;
 import com.example.asus.cashbuddy.Model.Transfer;
 import com.example.asus.cashbuddy.Model.Withdraw;
 import com.example.asus.cashbuddy.R;
+import com.example.asus.cashbuddy.Utils.HistoryUtil;
 import com.example.asus.cashbuddy.Utils.TransferUtil;
 import com.example.asus.cashbuddy.Utils.WithdrawUtil;
 import com.google.firebase.auth.FirebaseAuth;
@@ -222,6 +224,9 @@ public class MerchantWithdrawActivity extends AppCompatActivity {
                 if(securitycode.getText().toString().equals(password)){
                     Withdraw withdraw= new Withdraw(merchantName.getText().toString(), user.getUid(), bankName.getText().toString(), withdrawBalance, bankNum.getText().toString());
                     WithdrawUtil.insert(withdraw);
+
+                    History history = new History("Withdraw", "CB Cash", withdrawBalance);
+                    HistoryUtil.insert(history, user.getUid());
 
                     setWallet();
 

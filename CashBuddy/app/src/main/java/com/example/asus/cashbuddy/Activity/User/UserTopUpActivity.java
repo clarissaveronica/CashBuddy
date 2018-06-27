@@ -1,10 +1,13 @@
 package com.example.asus.cashbuddy.Activity.User;
 
+import android.content.DialogInterface;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
@@ -18,6 +21,7 @@ import com.example.asus.cashbuddy.R;
 public class UserTopUpActivity extends AppCompatActivity {
 
     FrameLayout content;
+    private ViewGroup loading;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,8 @@ public class UserTopUpActivity extends AppCompatActivity {
         //Initialize view
         final FragmentManager manager = getSupportFragmentManager();
         content = findViewById(R.id.content);
+        loading = findViewById(R.id.loadingPanel);
+        loading.setVisibility(View.INVISIBLE);
 
         //Initialize spinner
         Spinner spinner = findViewById(R.id.spinner);
