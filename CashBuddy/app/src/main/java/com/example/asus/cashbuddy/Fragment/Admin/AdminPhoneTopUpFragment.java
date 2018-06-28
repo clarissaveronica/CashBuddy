@@ -28,6 +28,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -37,7 +38,7 @@ public class AdminPhoneTopUpFragment extends Fragment {
 
     private TextInputEditText phoneNum;
     private Button submit;
-    private DatabaseReference databaseUser, walletRef, phoneRef;
+    private DatabaseReference databaseUser, walletRef, phoneRef, notification;
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
     private int userBalance;
@@ -67,6 +68,7 @@ public class AdminPhoneTopUpFragment extends Fragment {
         user = firebaseAuth.getCurrentUser();
         databaseUser = FirebaseDatabase.getInstance().getReference("users");
         phoneRef = FirebaseDatabase.getInstance().getReference("phonenumbertouid");
+        notification = FirebaseDatabase.getInstance().getReference("notifications");
 
         submit.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -277,6 +279,11 @@ public class AdminPhoneTopUpFragment extends Fragment {
                     //Set history for user
                     History history = new History("Top Up", "CB Cash", totalTransfer);
                     HistoryUtil.insert(history, userID);
+
+                    HashMap<String,String> notificationData = new HashMap<>();
+                    notificationData.put("amount", changeToRupiahFormat(totalTransfer));
+                    notificationData.put("type", "successTopup");
+                    notification.child("acceptTopUp").child(userID).push().setValue(notificationData);
 
                     setWallet();
                     listener.onSuccess();

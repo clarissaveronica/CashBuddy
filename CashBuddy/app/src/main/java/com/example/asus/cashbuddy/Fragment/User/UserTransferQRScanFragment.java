@@ -34,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Locale;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -44,7 +45,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 public class UserTransferQRScanFragment extends Fragment implements ZXingScannerView.ResultHandler {
 
     private ZXingScannerView mScannerView;
-    private DatabaseReference databaseUser, walletSender, walletReceiver;
+    private DatabaseReference databaseUser, walletSender, walletReceiver, notification;
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
     private int userBalance, receiverBalance;
@@ -75,6 +76,7 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         databaseUser = FirebaseDatabase.getInstance().getReference("users");
+        notification = FirebaseDatabase.getInstance().getReference("notifications");
     }
 
     @Override
@@ -264,6 +266,11 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
                     //Set history for receiver
                     History history2 = new History("Receive CB Cash", senderName, totalTransfer);
                     HistoryUtil.insert(history2, result);
+
+                    HashMap<String,String> notificationData = new HashMap<>();
+                    notificationData.put("amount", changeToRupiahFormat(totalTransfer));
+                    notificationData.put("type", "transfer");
+                    notification.child("transfer").child(result).push().setValue(notificationData);
 
                     setWallet();
                     listener.onSuccess();

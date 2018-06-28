@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Locale;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -43,7 +44,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerView.ResultHandler{
 
     private ZXingScannerView mScannerView;
-    private DatabaseReference databaseUser, walletRef;
+    private DatabaseReference databaseUser, walletRef, notification;
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
     private int userBalance;
@@ -74,6 +75,7 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         databaseUser = FirebaseDatabase.getInstance().getReference("users");
+        notification = FirebaseDatabase.getInstance().getReference("notifications");
     }
 
     @Override
@@ -244,6 +246,11 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
                     //Set history for user
                     History history = new History("Top Up", "CB Cash", totalTransfer);
                     HistoryUtil.insert(history, result);
+
+                    HashMap<String,String> notificationData = new HashMap<>();
+                    notificationData.put("amount", changeToRupiahFormat(totalTransfer));
+                    notificationData.put("type", "successTopup");
+                    notification.child("acceptTopUp").child(result).push().setValue(notificationData);
 
                     setWallet();
                     listener.onSuccess();

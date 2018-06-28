@@ -42,7 +42,7 @@ public class UserPhoneTransferFragment extends Fragment {
 
     private TextInputEditText phoneNum;
     private Button submit;
-    private DatabaseReference databaseUser, walletSender, walletReceiver, phoneRef;
+    private DatabaseReference databaseUser, walletSender, walletReceiver, phoneRef, notification;
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
     private int userBalance, receiverBalance;
@@ -72,6 +72,7 @@ public class UserPhoneTransferFragment extends Fragment {
         user = firebaseAuth.getCurrentUser();
         databaseUser = FirebaseDatabase.getInstance().getReference("users");
         phoneRef = FirebaseDatabase.getInstance().getReference("phonenumbertouid");
+        notification = FirebaseDatabase.getInstance().getReference("notifications");
 
         submit.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -327,6 +328,11 @@ public class UserPhoneTransferFragment extends Fragment {
                     //Set history for receiver
                     History history2 = new History("Receive CB Cash", senderName, totalTransfer);
                     HistoryUtil.insert(history2, receiver);
+
+                    HashMap<String,String> notificationData = new HashMap<>();
+                    notificationData.put("amount", changeToRupiahFormat(totalTransfer));
+                    notificationData.put("type", "transfer");
+                    notification.child("transfer").child(receiver).push().setValue(notificationData);
 
                     setWallet();
                     listener.onSuccess();

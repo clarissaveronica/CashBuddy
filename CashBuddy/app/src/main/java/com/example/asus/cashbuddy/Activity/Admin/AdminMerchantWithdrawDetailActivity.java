@@ -36,7 +36,7 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
     private Button accept;
     private Withdraw withdraw;
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference reference, databaseUser;
+    private DatabaseReference reference, databaseUser, notification;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private Intent intent;
@@ -57,6 +57,7 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         reference = firebaseDatabase.getReference("withdrawrequest");
+        notification = FirebaseDatabase.getInstance().getReference("notifications");
         intent = getIntent();
         pos = intent.getIntExtra("Position",0);
         withdrawHistory = (ArrayList<Withdraw>) intent.getSerializableExtra("withdraw");
@@ -190,6 +191,11 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
                 if(securitycode.getText().toString().equals(password)){
+                    HashMap<String,String> notificationData = new HashMap<>();
+                    notificationData.put("amount", changeToRupiahFormat(withdraw.getAmount()));
+                    notificationData.put("type", "withdraw");
+                    notification.child("withdraw").child(withdraw.getUid()).push().setValue(notificationData);
+
                     updateReq();
                     listener.onSuccess();
                 }else listener.onFailure();

@@ -41,7 +41,7 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
     private TopUp topUp;
     private FirebaseUser user;
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference reference, databaseUser, walletRef;
+    private DatabaseReference reference, databaseUser, walletRef, notification;
     private Intent intent;
     private int pos, userBalance;
     private PinEntryEditText securitycode;
@@ -62,6 +62,7 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
         //Get data firebase
         firebaseDatabase = FirebaseDatabase.getInstance();
         reference = firebaseDatabase.getReference("topuprequest");
+        notification = FirebaseDatabase.getInstance().getReference("notifications");
         databaseUser = firebaseDatabase.getReference("users");
         intent = getIntent();
         pos = intent.getIntExtra("Position",0);
@@ -134,10 +135,20 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
                     if (productSnapshot.child("requestdate").getValue().equals(topUp.getRequestdate())) {
                         HashMap<String, Object> result = new HashMap<>();
                         if(isAccepted) {
+                            HashMap<String,String> notificationData = new HashMap<>();
+                            notificationData.put("amount", changeToRupiahFormat(topUp.getAmount()));
+                            notificationData.put("type", "successTopup");
+                            notification.child("acceptTopUp").child(topUp.getUid()).push().setValue(notificationData);
+
                             result.put("requeststatus", 1);
                             reference.child(productSnapshot.getKey()).updateChildren(result);
                             setWallet();
                         }else{
+                            HashMap<String,String> notificationData = new HashMap<>();
+                            notificationData.put("amount", changeToRupiahFormat(topUp.getAmount()));
+                            notificationData.put("type", "declineTopup");
+                            notification.child("declineTopUp").child(topUp.getUid()).push().setValue(notificationData);
+
                             result.put("requeststatus", 2);
                             reference.child(productSnapshot.getKey()).updateChildren(result);
                         }

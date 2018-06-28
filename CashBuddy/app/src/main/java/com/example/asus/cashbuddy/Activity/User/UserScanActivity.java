@@ -34,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Locale;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
@@ -42,7 +43,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
 
     private ZXingScannerView mScannerView;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference databasePrice, databaseMerchant, databaseUser, walletMRef, walletURef;
+    private DatabaseReference databasePrice, databaseMerchant, databaseUser, walletMRef, walletURef, notification;
     private FirebaseUser user;
     private int transactionAmount, userBalance, merchantBalance;
     private String amount, merchantName, userName;
@@ -68,6 +69,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
         databasePrice = FirebaseDatabase.getInstance().getReference("prices");
         databaseUser = FirebaseDatabase.getInstance().getReference("users");
         databaseMerchant = FirebaseDatabase.getInstance().getReference("merchant");
+        notification = FirebaseDatabase.getInstance().getReference("notifications");
     }
 
     @Override
@@ -317,6 +319,11 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
                     //Set history for merchant
                     History history2 = new History("Successful Transaction", merchantName, transactionAmount);
                     HistoryUtil.insert(history2, result);
+
+                    HashMap<String,String> notificationData = new HashMap<>();
+                    notificationData.put("amount", changeToRupiahFormat(transactionAmount));
+                    notificationData.put("type", "purchase");
+                    notification.child("purchase").child(result).push().setValue(notificationData);
 
                     makeTransaction();
                     setWallet();

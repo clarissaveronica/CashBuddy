@@ -44,13 +44,13 @@ public class AdminConfirmWithdrawAdapter extends RecyclerView.Adapter<AdminConfi
         // Get withdraw Item
         final Withdraw withdraw = withdrawHistory.get(position);
 
-        FirebaseDatabase.getInstance().getReference("store").child(withdraw.getUid())
+        FirebaseDatabase.getInstance().getReference("merchant").child(withdraw.getUid())
                 .addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("storeName").getValue() != null) {
-                    holder.NameTextView.setText(dataSnapshot.child("storeName").getValue().toString());
+                if(dataSnapshot.child("merchantName").getValue() != null) {
+                    holder.NameTextView.setText(dataSnapshot.child("merchantName").getValue().toString());
                 }
             }
 
