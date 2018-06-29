@@ -117,4 +117,9 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         if(userReference != null) userReference.removeEventListener(userEventListener);
     }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

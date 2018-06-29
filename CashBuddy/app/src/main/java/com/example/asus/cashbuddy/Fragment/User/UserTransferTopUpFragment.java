@@ -42,6 +42,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -282,7 +283,7 @@ public class UserTransferTopUpFragment extends Fragment {
                             @Override
                             public void onSuccess() {
                                 loading.setVisibility(View.GONE);
-                                Toast.makeText(getActivity(), "Top up request has been successfully sent. Your request will be processed in 1x24 hours", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Top up request has been successfully sent. Your request will be processed in 1x24 hours", Toast.LENGTH_SHORT).show();
                                 getActivity().finish();
                             }
 
@@ -293,7 +294,7 @@ public class UserTransferTopUpFragment extends Fragment {
                             @Override
                             public void onFailure() {
                                 loading.setVisibility(View.INVISIBLE);
-                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -315,7 +316,7 @@ public class UserTransferTopUpFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
-                if(securitycode.getText().toString().equals(password)){
+                if(hash(securitycode.getText().toString()).equals(password)){
                     builder.dismiss();
                     final StorageReference profileImageRef = FirebaseStorage.getInstance().getReference("topuprequest/"+ user.getUid() +System.currentTimeMillis()+".jpg");
                     if (uri!=null){
@@ -333,7 +334,7 @@ public class UserTransferTopUpFragment extends Fragment {
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(getActivity(),"Image failed to upload",Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(),"Image failed to upload",Toast.LENGTH_SHORT).show();
                                 listener.onSuccess();
                             }
                         });
@@ -351,5 +352,23 @@ public class UserTransferTopUpFragment extends Fragment {
         void onSuccess();
         void onStart();
         void onFailure();
+    }
+
+    public String hash (String pass){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(pass.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 }

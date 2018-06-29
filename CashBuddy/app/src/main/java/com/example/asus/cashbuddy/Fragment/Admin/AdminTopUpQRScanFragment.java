@@ -32,6 +32,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 
+import java.security.MessageDigest;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -209,7 +210,7 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
                         verify(new OnGetDataListener() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(getActivity(), "Top up successful", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Top up successful", Toast.LENGTH_SHORT).show();
                                 getActivity().finish();
                             }
 
@@ -219,7 +220,7 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
 
                             @Override
                             public void onFailure() {
-                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -242,7 +243,7 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
-                if(securitycode.getText().toString().equals(password)){
+                if(hash(securitycode.getText().toString()).equals(password)){
                     //Set history for user
                     History history = new History("Top Up", "CB Cash", totalTransfer);
                     HistoryUtil.insert(history, result);
@@ -262,4 +263,21 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
         });
     }
 
+    public String hash (String pass){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(pass.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
 }

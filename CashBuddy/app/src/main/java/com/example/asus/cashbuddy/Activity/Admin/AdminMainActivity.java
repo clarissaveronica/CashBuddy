@@ -99,7 +99,7 @@ public class AdminMainActivity extends AppCompatActivity {
                         .setCancelable(false)
                         .setPositiveButton(R.string.signOut_confirm, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                firebaseAuth.getInstance().signOut();
+                                FirebaseAuth.getInstance().signOut();
                                 Intent intent = new Intent(AdminMainActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finishAffinity();

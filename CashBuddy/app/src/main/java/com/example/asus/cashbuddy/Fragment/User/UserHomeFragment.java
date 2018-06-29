@@ -120,10 +120,12 @@ public class UserHomeFragment extends Fragment {
                 String money = changeToRupiahFormat(user.getBalance());
                 balance.setText(money);
                 //Set image
-                if(user.getProfilePictureUrl() != null) {
-                    Glide.with(getActivity())
-                            .load(user.getProfilePictureUrl())
-                            .into(profile);
+                if(getActivity() != null) {
+                    if (user.getProfilePictureUrl() != null) {
+                        Glide.with(getActivity().getApplicationContext())
+                                .load(user.getProfilePictureUrl())
+                                .into(profile);
+                    }
                 }
             }
 

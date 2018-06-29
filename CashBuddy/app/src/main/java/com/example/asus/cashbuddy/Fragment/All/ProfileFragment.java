@@ -141,7 +141,7 @@ public class ProfileFragment extends Fragment {
                 .setCancelable(false)
                 .setPositiveButton(R.string.signOut_confirm, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        firebaseAuth.getInstance().signOut();
+                        FirebaseAuth.getInstance().signOut();
                         Intent intent = new Intent(getActivity(), LoginActivity.class);
                         startActivity(intent);
                         getActivity().finishAffinity();

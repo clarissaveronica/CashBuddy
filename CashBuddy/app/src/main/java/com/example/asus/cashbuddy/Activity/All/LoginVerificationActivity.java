@@ -131,9 +131,9 @@ public class LoginVerificationActivity extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 if(e instanceof FirebaseAuthInvalidCredentialsException){
-                    Toast.makeText(LoginVerificationActivity.this, "Invalid credential", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Invalid credential", Toast.LENGTH_LONG).show();
                 }else if(e instanceof FirebaseTooManyRequestsException){
-                    Toast.makeText(LoginVerificationActivity.this, "SMS Quota exceeded", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "SMS Quota exceeded", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -160,7 +160,7 @@ public class LoginVerificationActivity extends AppCompatActivity {
                         } else {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {
-                                Toast.makeText(LoginVerificationActivity.this, "Verification pin is wrong", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Verification pin is wrong", Toast.LENGTH_SHORT).show();
                                 pinEntry.setText("");
                             }
                         }
@@ -169,7 +169,7 @@ public class LoginVerificationActivity extends AppCompatActivity {
     }
 
     public void resendCode(String num) {
-        Toast.makeText(LoginVerificationActivity.this, "New verification pin has been sent", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "New verification pin has been sent", Toast.LENGTH_LONG).show();
 
         setUpVerificationCallbacks();
 

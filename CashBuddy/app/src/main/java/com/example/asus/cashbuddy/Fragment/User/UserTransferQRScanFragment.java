@@ -33,6 +33,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.Result;
 
+import java.security.MessageDigest;
 import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -222,7 +223,7 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
                         verify(new OnGetDataListener() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(getActivity(), "Transfer successful", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Transfer successful", Toast.LENGTH_SHORT).show();
                                 getActivity().finish();
                             }
 
@@ -232,7 +233,7 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
 
                             @Override
                             public void onFailure() {
-                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -255,7 +256,7 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
-                if(securitycode.getText().toString().equals(password)){
+                if(hash(securitycode.getText().toString()).equals(password)){
                     Transfer transfer = new Transfer(result, user.getUid(), totalTransfer);
                     TransferUtil.insert(transfer);
 
@@ -280,5 +281,23 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+
+    public String hash (String pass){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(pass.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 }

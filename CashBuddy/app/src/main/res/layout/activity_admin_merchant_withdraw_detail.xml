@@ -19,13 +19,13 @@
             android:layout_height="wrap_content"
             android:text="Date : "
             android:textColor="@color/colorPrimary"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
 
         <TextView
             android:id="@+id/withdrawDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:text="date"/>
 
     </LinearLayout>
@@ -42,15 +42,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Request by : "
-            android:textSize="20sp"
+            android:text="Requested by : "
+            android:textSize="18sp"
             android:textColor="@color/colorPrimary"
             android:layout_gravity="center"/>
 
         <TextView
             android:id="@+id/withdrawReqName"
             android:layout_width="wrap_content"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_height="wrap_content"
             android:text="Name" />
     </LinearLayout>
@@ -68,17 +68,18 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Transfer name : "
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textColor="@color/colorPrimary" />
 
-    <TextView
-        android:id="@+id/trans_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:layout_gravity="center"
-        android:text="Name" />
-</LinearLayout>
+        <TextView
+            android:id="@+id/trans_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_gravity="center"
+            android:text="Name" />
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -87,12 +88,11 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp" >
 
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bank : "
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_gravity="center"
             android:textColor="@color/colorPrimary"/>
 
@@ -100,7 +100,7 @@
             android:id="@+id/bank_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:layout_gravity="center"
             android:text="Name" />
 
@@ -117,7 +117,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textColor="@color/colorPrimary"
             android:text="Account No: "/>
 
@@ -125,22 +125,37 @@
             android:id="@+id/request_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:text="Number"/>
 
 
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/withdraw_detail_amount"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:paddingStart="32dp"
         android:paddingTop="8dp"
-        android:textColor="@color/colorPrimary"
-        android:text="Request amount"
-        android:textSize="20sp" />
+        android:paddingBottom="8dp" >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/colorPrimary"
+            android:text="Withdraw amount : "/>
+
+        <TextView
+            android:id="@+id/withdraw_detail_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rp"
+            android:textSize="18sp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -153,7 +168,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:theme="@style/PrimaryColorButton"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:text="Complete Request" />
     </LinearLayout>
 

@@ -17,6 +17,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.security.MessageDigest;
+
 public class ChangeSecurityCodeActivity extends AppCompatActivity {
 
     PinEntryEditText pinEntry;
@@ -54,20 +56,44 @@ public class ChangeSecurityCodeActivity extends AppCompatActivity {
             pinEntry.setOnPinEnteredListener(new PinEntryEditText.OnPinEnteredListener() {
                 @Override
                 public void onPinEntered(CharSequence str) {
-                    if (str.toString().length()==6) {
+                if (str.toString().length()==6) {
 
-                        if(role.equals("user")){
-                            FirebaseDatabase.getInstance().getReference("users").child(uid).child("password").setValue(str.toString());
-                        }else if(role.equals("merchant")){
-                            FirebaseDatabase.getInstance().getReference("merchant").child(uid).child("password").setValue(str.toString());
-                        }
-                        Toast.makeText(ChangeSecurityCodeActivity.this, "Security code has successfully been changed", Toast.LENGTH_SHORT).show();
+                    String pass = hash(str.toString());
 
-                        finish();
+                    if(role.equals("user")){
+                        FirebaseDatabase.getInstance().getReference("users").child(uid).child("password").setValue(pass);
+                    }else if(role.equals("merchant")){
+                        FirebaseDatabase.getInstance().getReference("merchant").child(uid).child("password").setValue(pass);
                     }
+                    Toast.makeText(getApplicationContext(), "Security code has successfully been changed", Toast.LENGTH_SHORT).show();
+
+                    finish();
+                }
                 }
             });
         }
     }
 
+    public String hash (String pass){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(pass.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

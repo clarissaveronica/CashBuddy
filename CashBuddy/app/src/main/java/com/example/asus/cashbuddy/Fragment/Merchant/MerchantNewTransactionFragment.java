@@ -1,6 +1,7 @@
 package com.example.asus.cashbuddy.Fragment.Merchant;
 
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 
 import com.example.asus.cashbuddy.R;
@@ -93,6 +95,10 @@ public class MerchantNewTransactionFragment extends Fragment {
         makeTransaction.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                price.clearFocus();
+                InputMethodManager inputMethodManager =(InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setMessage("Set the transaction price to Rp" + price.getText().toString() + "?")
                         .setCancelable(false)

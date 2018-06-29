@@ -20,6 +20,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.MessageDigest;
+
 public class ChangeSecurityCodeVerificationActivity extends AppCompatActivity {
 
     PinEntryEditText pinEntry;
@@ -55,7 +57,7 @@ public class ChangeSecurityCodeVerificationActivity extends AppCompatActivity {
                 @Override
                 public void onPinEntered(CharSequence str) {
                     if (str.toString().length()==6) {
-                        pin = str.toString();
+                        pin = hash(str.toString());
                         verify();
                     }
                 }
@@ -65,21 +67,16 @@ public class ChangeSecurityCodeVerificationActivity extends AppCompatActivity {
 
     //Verify user's password input
     private void verify(){
-        userDatabase.child("role").child(uid).addValueEventListener(new ValueEventListener() {
+        userDatabase.child("role").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     String role = snapshot.getValue().toString();
 
-                    switch (role){
-                        case "USER":
-                            checkUser();
-                            break;
-                        case "MERCHANT":
-                            checkMerchant();
-                            break;
-                        default: break;
-
+                    if(role.equals("USER")){
+                        checkUser();
+                    }else if(role.equals("MERCHANT")){
+                        checkMerchant();
                     }
                 }
             }
@@ -91,7 +88,7 @@ public class ChangeSecurityCodeVerificationActivity extends AppCompatActivity {
 
     //Check user's role
     private void checkUser(){
-        userDatabase.child("users").child(uid).child("password").addValueEventListener(new ValueEventListener() {
+        userDatabase.child("users").child(uid).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
@@ -101,7 +98,7 @@ public class ChangeSecurityCodeVerificationActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }else{
-                    Toast.makeText(ChangeSecurityCodeVerificationActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
                     pinEntry.setText("");
                 }
             }
@@ -113,7 +110,7 @@ public class ChangeSecurityCodeVerificationActivity extends AppCompatActivity {
 
     //Check if user is a merchant
     private void checkMerchant(){
-        userDatabase.child("merchant").child(uid).child("password").addValueEventListener(new ValueEventListener() {
+        userDatabase.child("merchant").child(uid).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
@@ -123,7 +120,7 @@ public class ChangeSecurityCodeVerificationActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 }else{
-                    Toast.makeText(ChangeSecurityCodeVerificationActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
                     pinEntry.setText("");
                 }
             }
@@ -133,4 +130,26 @@ public class ChangeSecurityCodeVerificationActivity extends AppCompatActivity {
         });
     }
 
+    public String hash (String pass){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(pass.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

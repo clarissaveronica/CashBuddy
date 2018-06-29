@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
+import java.security.MessageDigest;
 import java.util.concurrent.TimeUnit;
 
 public class RegisterVerificationActivity extends AppCompatActivity {
@@ -124,7 +125,6 @@ public class RegisterVerificationActivity extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 if(e instanceof FirebaseAuthInvalidCredentialsException){
-                    //Toast.makeText(RegisterVerificationActivity.this, "Invalid credential", Toast.LENGTH_LONG).show();
                     AlertDialog.Builder builder = new AlertDialog.Builder(RegisterVerificationActivity.this);
                     builder.setMessage("Invalid Credential. Please enter a correct phone number")
                             .setCancelable(false)
@@ -138,7 +138,7 @@ public class RegisterVerificationActivity extends AppCompatActivity {
                     alert.setTitle("Oops!");
                     alert.show();
                 }else if(e instanceof FirebaseTooManyRequestsException){
-                    Toast.makeText(RegisterVerificationActivity.this, "SMS Quota exceeded", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "SMS Quota exceeded", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -162,12 +162,12 @@ public class RegisterVerificationActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             if(role.equals("newUser")) {
-                                AccountUtil.createUserOtherInformation(name, num, email, password, null, 0);
+                                AccountUtil.createUserOtherInformation(name, num, email, hash(password), null, 0);
                                 Intent intent = new Intent(RegisterVerificationActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finishAffinity();
                             }else if(role.equals("newMerchant")){
-                                AccountUtil.createMerchantOtherInformation(name, num, password, email, location, 0);
+                                AccountUtil.createMerchantOtherInformation(name, num, hash(password), email, location, 0);
                                 Intent intent = new Intent(RegisterVerificationActivity.this, LoginActivity.class);
                                 startActivity(intent);
                                 finishAffinity();
@@ -175,7 +175,7 @@ public class RegisterVerificationActivity extends AppCompatActivity {
                         } else {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {
-                                Toast.makeText(RegisterVerificationActivity.this, "Verification pin is wrong", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Verification pin is wrong", Toast.LENGTH_SHORT).show();
                                 pinEntry.setText("");
                             }
                         }
@@ -184,7 +184,7 @@ public class RegisterVerificationActivity extends AppCompatActivity {
     }
 
     public void resendCode(String num) {
-        Toast.makeText(RegisterVerificationActivity.this, "New verification pin has been sent", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "New verification pin has been sent", Toast.LENGTH_SHORT).show();
 
         setUpVerificationCallbacks();
 
@@ -217,6 +217,24 @@ public class RegisterVerificationActivity extends AppCompatActivity {
     void cancelTimer() {
         if(cTimer!=null)
             cTimer.cancel();
+    }
+
+    public String hash (String pass){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(pass.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 
 }

@@ -26,6 +26,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.security.MessageDigest;
+
 public class SecurityCodeVerificationActivity extends AppCompatActivity {
 
     PinEntryEditText pinEntry;
@@ -34,7 +36,7 @@ public class SecurityCodeVerificationActivity extends AppCompatActivity {
     DatabaseReference userDatabase, mUser, mMerchant;
     private FirebaseUser user;
     private String uid;
-    private String pin;
+    private String pin, role, currentUser, deviceToken;
     private FirebaseAuth firebaseAuth;
 
     @Override
@@ -53,6 +55,8 @@ public class SecurityCodeVerificationActivity extends AppCompatActivity {
         user = firebaseAuth.getCurrentUser();
         uid = user.getUid();
         userDatabase = FirebaseDatabase.getInstance().getReference();
+        currentUser = firebaseAuth.getCurrentUser().getUid();
+        deviceToken = FirebaseInstanceId.getInstance().getToken();
 
         mUser = FirebaseDatabase.getInstance().getReference().child("users");
         mMerchant = FirebaseDatabase.getInstance().getReference().child("merchant");
@@ -74,11 +78,11 @@ public class SecurityCodeVerificationActivity extends AppCompatActivity {
 
     //Verify user's password input
     private void verify(){
-        userDatabase.child("role").child(uid).addValueEventListener(new ValueEventListener() {
+        userDatabase.child("role").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    String role = snapshot.getValue().toString();
+                    role = snapshot.getValue().toString();
 
                     switch (role){
                         case "USER":
@@ -101,69 +105,25 @@ public class SecurityCodeVerificationActivity extends AppCompatActivity {
         });
     }
 
-    //Login user when password is verified
-    private void login(){
-        userDatabase.child("role").child(uid).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String role = snapshot.getValue().toString();
-                    Intent intent;
-
-                    String currentUser = firebaseAuth.getCurrentUser().getUid();
-                    String deviceToken = FirebaseInstanceId.getInstance().getToken();
-                    switch (role){
-                        case "USER":
-                            mUser.child(currentUser).child("device_token").setValue(deviceToken);
-                            intent = new Intent(SecurityCodeVerificationActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                            break;
-                        case "MERCHANT":
-                            mMerchant.child(currentUser).child("device_token").setValue(deviceToken);
-                            intent = new Intent(SecurityCodeVerificationActivity.this, MerchantMainActivity.class);
-                            startActivity(intent);
-                            finish();
-                            break;
-                        case "UNVERIFIED_MERCHANT":
-                            AlertDialog alertDialog = new AlertDialog.Builder(
-                                    SecurityCodeVerificationActivity.this).create();
-                            alertDialog.setTitle("Merchant not verified!");
-                            alertDialog.setMessage("Please wait for our admin to verify your account");
-                            alertDialog.setIcon(R.drawable.logo);
-                            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            });
-                            alertDialog.show();
-                            FirebaseAuth.getInstance().signOut();
-                            break;
-                        case "ADMIN":
-                            intent = new Intent(SecurityCodeVerificationActivity.this, AdminMainActivity.class);
-                            startActivity(intent);
-                            finish();
-                            break;
-                        default: break;
-
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-    //Check user's role
+    //Check user's role & login
     private void checkUser(){
-        userDatabase.child("users").child(uid).child("password").addValueEventListener(new ValueEventListener() {
+        userDatabase.child("users").child(uid).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
-                if(pin.equals(password)){
-                    login();
-                }else{
-                    Toast.makeText(SecurityCodeVerificationActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
+                if(hash(pin).equals(password)){
+                    if(role.equals("USER")){
+                        mUser.child(currentUser).child("device_token").setValue(deviceToken);
+                        Intent intent = new Intent(SecurityCodeVerificationActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }else{
+                        Intent intent = new Intent(SecurityCodeVerificationActivity.this, AdminMainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }else if(!hash(pin).equals(password)){
+                    Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
                     pinEntry.setText("");
                 }
             }
@@ -173,16 +133,19 @@ public class SecurityCodeVerificationActivity extends AppCompatActivity {
         });
     }
 
-    //Check if user is a merchant
+    //Check if user is a merchant & login
     private void checkMerchant(){
-        userDatabase.child("merchant").child(uid).child("password").addValueEventListener(new ValueEventListener() {
+        userDatabase.child("merchant").child(uid).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
-                if(pin.equals(password)){
-                    login();
-                }else{
-                    Toast.makeText(SecurityCodeVerificationActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
+                if(hash(pin).equals(password)){
+                    mMerchant.child(currentUser).child("device_token").setValue(deviceToken);
+                    Intent intent = new Intent(SecurityCodeVerificationActivity.this, MerchantMainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }else if(!hash(pin).equals(password)){
+                    Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
                     pinEntry.setText("");
                 }
             }
@@ -192,4 +155,26 @@ public class SecurityCodeVerificationActivity extends AppCompatActivity {
         });
     }
 
+    public String hash (String pass){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(pass.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+    }
 }

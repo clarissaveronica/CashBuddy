@@ -139,7 +139,7 @@ public class ChangePhoneNumberVerificationActivity extends AppCompatActivity {
                     alert.setTitle("Oops!");
                     alert.show();
                 }else if(e instanceof FirebaseTooManyRequestsException){
-                    Toast.makeText(ChangePhoneNumberVerificationActivity.this, "SMS Quota exceeded", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "SMS Quota exceeded", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -175,7 +175,7 @@ public class ChangePhoneNumberVerificationActivity extends AppCompatActivity {
                         } else {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {
-                                Toast.makeText(ChangePhoneNumberVerificationActivity.this, "Verification pin is wrong", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Verification pin is wrong", Toast.LENGTH_SHORT).show();
                                 pinEntry.setText("");
                             }
                         }
@@ -191,7 +191,7 @@ public class ChangePhoneNumberVerificationActivity extends AppCompatActivity {
 
 
     public void resendCode(String num) {
-        Toast.makeText(ChangePhoneNumberVerificationActivity.this, "New verification pin has been sent", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "New verification pin has been sent", Toast.LENGTH_SHORT).show();
 
         setUpVerificationCallbacks();
 

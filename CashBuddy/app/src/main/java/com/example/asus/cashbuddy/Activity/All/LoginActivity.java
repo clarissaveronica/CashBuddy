@@ -115,13 +115,13 @@ public class LoginActivity extends AppCompatActivity {
 
                     switch (role){
                         case "USER":
-                            Toast.makeText(LoginActivity.this, "OTP has been sent", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "OTP has been sent", Toast.LENGTH_SHORT).show();
                             intent = new Intent(LoginActivity.this, LoginVerificationActivity.class);
                             intent.putExtra("number", loginPhoneNumEditText.getText().toString());
                             startActivity(intent);
                             break;
                         case "MERCHANT":
-                            Toast.makeText(LoginActivity.this, "OTP has been sent", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "OTP has been sent", Toast.LENGTH_SHORT).show();
                             intent = new Intent(LoginActivity.this, LoginVerificationActivity.class);
                             intent.putExtra("number", loginPhoneNumEditText.getText().toString());
                             startActivity(intent);
@@ -141,7 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                             loadingPanel.setVisibility(View.INVISIBLE);
                             break;
                         case "ADMIN":
-                            Toast.makeText(LoginActivity.this, "OTP has been sent", Toast.LENGTH_LONG).show();
+                            Toast.makeText(LoginActivity.this, "OTP has been sent", Toast.LENGTH_SHORT).show();
                             intent = new Intent(LoginActivity.this, LoginVerificationActivity.class);
                             intent.putExtra("number", loginPhoneNumEditText.getText().toString());
                             startActivity(intent);

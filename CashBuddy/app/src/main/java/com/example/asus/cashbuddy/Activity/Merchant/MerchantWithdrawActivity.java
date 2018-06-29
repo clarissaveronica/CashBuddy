@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
@@ -165,7 +166,7 @@ public class MerchantWithdrawActivity extends AppCompatActivity {
                           verify(new OnGetDataListener() {
                               @Override
                               public void onSuccess() {
-                                  Toast.makeText(MerchantWithdrawActivity.this, "Withdraw request has been successfully sent. Your request will be processed in 1x24 hours", Toast.LENGTH_LONG).show();
+                                  Toast.makeText(getApplicationContext(), "Withdraw request has been successfully sent. Your request will be processed in 1x24 hours", Toast.LENGTH_SHORT).show();
                                   finish();
                               }
 
@@ -175,7 +176,7 @@ public class MerchantWithdrawActivity extends AppCompatActivity {
 
                               @Override
                               public void onFailure() {
-                                  Toast.makeText(MerchantWithdrawActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
+                                  Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
                               }
                           });
                       }
@@ -222,7 +223,7 @@ public class MerchantWithdrawActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
-                if(securitycode.getText().toString().equals(password)){
+                if(hash(securitycode.getText().toString()).equals(password)){
                     Withdraw withdraw= new Withdraw(merchantName.getText().toString(), user.getUid(), bankName.getText().toString(), withdrawBalance, bankNum.getText().toString());
                     WithdrawUtil.insert(withdraw);
 
@@ -314,5 +315,23 @@ public class MerchantWithdrawActivity extends AppCompatActivity {
         void onSuccess();
         void onStart();
         void onFailure();
+    }
+
+    public String hash (String pass){
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(pass.getBytes("UTF-8"));
+            StringBuffer hexString = new StringBuffer();
+
+            for (int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+
+            return hexString.toString();
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 }
