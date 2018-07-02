@@ -7,60 +7,50 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-
-public class Withdraw implements Serializable {
+public class PaymentRequest implements Serializable {
 
     //Status : 0 (new), 1 (accepted), 2 (rejected)
 
-    private String transfername,uid,bank;
+    private String receiverRequest, senderRequest;
     private int amount;
-    private String accountnumber;
     private long requestdate;
     private int requeststatus;
-    private String role;
+    private String from;
 
-    public Withdraw() {}
+    public PaymentRequest() {}
 
-    public Withdraw(@NonNull String transfername, String uid, String bank, int amount, String accountnumber, String role) {
-        this.transfername = transfername;
-        this.uid = uid;
-        this.bank = bank;
+    public PaymentRequest(@NonNull String receiverRequest, String senderRequest, int amount, String from) {
+        this.senderRequest = senderRequest;
+        this.receiverRequest = receiverRequest;
         this.amount = amount;
-        this.accountnumber = accountnumber;
-        this.role = role;
+        this.from = from;
         this.requestdate = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime();;
         requeststatus=0;
     }
 
 
-    public String getUid() {
-        return this.uid;
+    public String getSenderRequest() {
+        return this.senderRequest;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setSenderRequest(String senderRequest) {
+        this.senderRequest = senderRequest;
     }
 
-    public String getTransfername() {
-        return transfername;
+    public String getFrom() {
+        return this.from;
     }
 
-    public void setTransfername(String transfername) {
-        this.transfername = transfername;
+    public void setFrom(String from) {
+        this.from = from;
     }
 
-    public String getBank() {
-        return bank;
+    public String getReceiverRequest() {
+        return receiverRequest;
     }
 
-    public void setBank(String bank) {
-        this.bank = bank;
-    }
-
-    public String getAccountnumber() { return accountnumber; }
-
-    public void setAccountnumber(String accountnumber) {
-        this.accountnumber = accountnumber;
+    public void setReceiverRequest(String receiverRequest) {
+        this.receiverRequest = receiverRequest;
     }
 
     public int getAmount() {
@@ -70,10 +60,6 @@ public class Withdraw implements Serializable {
     public void setAmount(int amount) {
         this.amount = amount;
     }
-
-    public String getRole() {return role;}
-
-    public void setRole(String role) {this.role = role;}
 
     public long getRequestdate() {
         return requestdate;
@@ -95,6 +81,4 @@ public class Withdraw implements Serializable {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
         return sdf.format(x);
     }
-
-
 }

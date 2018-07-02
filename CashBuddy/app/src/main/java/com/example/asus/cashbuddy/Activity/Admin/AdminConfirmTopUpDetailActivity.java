@@ -135,9 +135,9 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
                 for(DataSnapshot productSnapshot: dataSnapshot.getChildren()) {
                     if (productSnapshot.child("requestdate").getValue().equals(topUp.getRequestdate())) {
                         HashMap<String, Object> result = new HashMap<>();
+                        HashMap<String,String> notificationData = new HashMap<>();
+                        notificationData.put("amount", changeToRupiahFormat(topUp.getAmount()));
                         if(isAccepted) {
-                            HashMap<String,String> notificationData = new HashMap<>();
-                            notificationData.put("amount", changeToRupiahFormat(topUp.getAmount()));
                             notificationData.put("type", "successTopup");
                             notification.child("acceptTopUp").child(topUp.getUid()).push().setValue(notificationData);
 
@@ -145,8 +145,6 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
                             reference.child(productSnapshot.getKey()).updateChildren(result);
                             setWallet();
                         }else{
-                            HashMap<String,String> notificationData = new HashMap<>();
-                            notificationData.put("amount", changeToRupiahFormat(topUp.getAmount()));
                             notificationData.put("type", "declineTopup");
                             notification.child("declineTopUp").child(topUp.getUid()).push().setValue(notificationData);
 
@@ -186,28 +184,24 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (isAccepted) {
-                            verify(new OnGetDataListener() {
-                                @Override
-                                public void onSuccess() {
+                        verify(new OnGetDataListener() {
+                            @Override
+                            public void onSuccess() {
+                                if(isAccepted) {
                                     Toast.makeText(getApplicationContext(), "Request accepted", Toast.LENGTH_SHORT).show();
-                                    finish();
-                                }
+                                }else Toast.makeText(getApplicationContext(), "Request declined", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
 
-                                @Override
-                                public void onStart() {
-                                }
+                            @Override
+                            public void onStart() {
+                            }
 
-                                @Override
-                                public void onFailure() {
-                                    Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }else{
-                            updateReq();
-                            Toast.makeText(getApplicationContext(), "Request declined", Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
+                            @Override
+                            public void onFailure() {
+                                Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
                 });
 
@@ -228,12 +222,17 @@ public class AdminConfirmTopUpDetailActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
                 if(hash(securitycode.getText().toString()).equals(password)){
-                    History history = new History("Top Up", "CB Cash", topUp.getAmount());
-                    HistoryUtil.insert(history, topUp.getUid());
+                    if(isAccepted) {
+                        History history = new History("Top Up", "CB Cash", topUp.getAmount());
+                        HistoryUtil.insert(history, topUp.getUid());
 
-                    updateReq();
-                    setWallet();
-                    listener.onSuccess();
+                        updateReq();
+                        setWallet();
+                        listener.onSuccess();
+                    }else{
+                        updateReq();
+                        listener.onSuccess();
+                    }
                 }else listener.onFailure();
             }
             @Override

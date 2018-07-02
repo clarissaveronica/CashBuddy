@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.asus.cashbuddy.Activity.Admin.AdminMerchantWithdrawDetailActivity"
+    tools:context="com.example.asus.cashbuddy.Activity.Admin.AdminConfirmWithdrawalDetailActivity"
     android:orientation="vertical">
 
     <LinearLayout
@@ -161,15 +161,24 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:layout_marginBottom="50sp"
         android:orientation="horizontal" >
 
-    <Button
-        android:id="@+id/accept_request"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:theme="@style/PrimaryColorButton"
-        android:textSize="18sp"
-        android:text="Complete Request" />
+        <Button
+            android:id="@+id/accept_request"
+            android:layout_width="100sp"
+            android:layout_height="wrap_content"
+            android:theme="@style/PrimaryColorButton"
+            android:textSize="16sp"
+            android:text="Accept" />
+
+        <Button
+            android:id="@+id/decline_request"
+            android:layout_width="100sp"
+            android:layout_height="wrap_content"
+            android:theme="@style/PrimaryColorButton"
+            android:textSize="16sp"
+            android:text="Decline" />
     </LinearLayout>
 
 </LinearLayout>

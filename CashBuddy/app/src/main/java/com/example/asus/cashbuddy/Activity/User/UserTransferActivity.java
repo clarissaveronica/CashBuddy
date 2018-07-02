@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.asus.cashbuddy.Fragment.User.UserBankTransferFragment;
 import com.example.asus.cashbuddy.Fragment.User.UserPhoneTransferFragment;
 import com.example.asus.cashbuddy.Fragment.User.UserTransferQRScanFragment;
 import com.example.asus.cashbuddy.R;
@@ -54,7 +55,7 @@ public class UserTransferActivity extends AppCompatActivity {
 
         //Initialize spinner
         spinner = findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(UserTransferActivity.this, R.array.methods, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(UserTransferActivity.this, R.array.transfer_methods, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -103,7 +104,20 @@ public class UserTransferActivity extends AppCompatActivity {
                         content.setVisibility(View.VISIBLE);
                         manager.beginTransaction().replace(R.id.content, myObj).commit();
                     }
-                }else if(choose.equals("Select Method")){
+                }else if(choose.equals("Bank Account")){
+                    if(Integer.parseInt(newPrice) < 10000){
+                        amountTransfer.setError("Minimal amount for transfer is Rp 10.000");
+                        spinner.setSelection(0);
+                    }else {
+                        UserBankTransferFragment myObj = new UserBankTransferFragment();
+                        bundle.putString("amount", newPrice);
+                        myObj.setArguments(bundle);
+
+                        content.setVisibility(View.VISIBLE);
+                        manager.beginTransaction().replace(R.id.content, myObj).commit();
+                    }
+                }
+                else if(choose.equals("Select Method")){
                     content.setVisibility(View.INVISIBLE);
                 }
             }
@@ -163,6 +177,9 @@ public class UserTransferActivity extends AppCompatActivity {
                         myObj.setArguments(bundle);
                     } else if (choose.equals("Telephone Number")) {
                         UserPhoneTransferFragment myObj = new UserPhoneTransferFragment();
+                        myObj.setArguments(bundle);
+                    }else if(choose.equals("Bank Account")){
+                        UserBankTransferFragment myObj = new UserBankTransferFragment();
                         myObj.setArguments(bundle);
                     }
                 }

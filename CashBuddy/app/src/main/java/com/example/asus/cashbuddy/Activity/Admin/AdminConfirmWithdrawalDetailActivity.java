@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -14,8 +13,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alimuzaffar.lib.pin.PinEntryEditText;
+import com.example.asus.cashbuddy.Model.History;
 import com.example.asus.cashbuddy.Model.Withdraw;
 import com.example.asus.cashbuddy.R;
+import com.example.asus.cashbuddy.Utils.HistoryUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,24 +32,25 @@ import java.util.HashMap;
 import java.util.Locale;
 
 
-public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
+public class AdminConfirmWithdrawalDetailActivity extends AppCompatActivity {
 
     private TextView transactiondate, username, bankname, amount, transfername, accountnumber;
-    private Button accept;
+    private Button accept, decline;
     private Withdraw withdraw;
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference reference, databaseUser, notification;
+    private DatabaseReference reference, databaseUser, notification, walletRef, ref;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private Intent intent;
-    private int pos;
+    private int pos, balance;
     private PinEntryEditText securitycode;
+    private boolean isAccepted;
     private ArrayList<Withdraw> withdrawHistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_merchant_withdraw_detail);
+        setContentView(R.layout.activity_admin_confirm_withdrawal_detail);
 
         //Custom Action Bar's Title
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -69,6 +71,7 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
 
         databaseUser = firebaseDatabase.getReference("users");
+        ref = firebaseDatabase.getReference(withdraw.getRole());
 
         transactiondate = findViewById(R.id.withdrawDate);
         username = findViewById(R.id.withdrawReqName);
@@ -76,6 +79,7 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
         transfername = findViewById(R.id.trans_name);
         amount = findViewById(R.id.withdraw_detail_amount);
         accept = findViewById(R.id.accept_request);
+        decline = findViewById(R.id.decline_request);
         accountnumber = findViewById(R.id.request_number);
 
         transactiondate.setText(withdraw.getRequestDateString(withdraw.getRequestdate()));
@@ -84,11 +88,13 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
         accountnumber.setText(withdraw.getAccountnumber());
         amount.setText(changeToRupiahFormat(withdraw.getAmount()));
 
-        FirebaseDatabase.getInstance().getReference("merchant").child(withdraw.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference(withdraw.getRole()).child(withdraw.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                username.setText(dataSnapshot.child("merchantName").getValue().toString());
+                if(withdraw.getRole().equals("merchant")) {
+                    username.setText(dataSnapshot.child("merchantName").getValue().toString());
+                }else username.setText(dataSnapshot.child("name").getValue().toString());
             }
 
             @Override
@@ -102,6 +108,16 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isAccepted = true;
+                showInputSC();
+            }
+        });
+
+        decline.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public  void onClick(View v){
+                getInfo();
+                isAccepted = false;
                 showInputSC();
             }
         });
@@ -116,8 +132,14 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
                 for(DataSnapshot productSnapshot: dataSnapshot.getChildren()) {
                     if (productSnapshot.child("requestdate").getValue().equals(withdraw.getRequestdate())) {
                         HashMap<String, Object> result = new HashMap<>();
-                        result.put("requeststatus", 1);
-                        reference.child(productSnapshot.getKey()).updateChildren(result);
+
+                        if(isAccepted) {
+                            result.put("requeststatus", 1);
+                            reference.child(productSnapshot.getKey()).updateChildren(result);
+                        }else{
+                            result.put("requeststatus", 2);
+                            reference.child(productSnapshot.getKey()).updateChildren(result);
+                        }
                     }
 
 
@@ -130,6 +152,22 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void getInfo(){
+        ref.child(withdraw.getUid()).child("balance").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    balance = Integer.parseInt(dataSnapshot.getValue().toString());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void showInputSC(){
@@ -159,7 +197,9 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
                         verify(new OnGetDataListener() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(getApplicationContext(), "Request accepted", Toast.LENGTH_SHORT).show();
+                                if(isAccepted) {
+                                    Toast.makeText(getApplicationContext(), "Request accepted", Toast.LENGTH_SHORT).show();
+                                }else Toast.makeText(getApplicationContext(), "Request declined", Toast.LENGTH_SHORT).show();
                                 finish();
                             }
 
@@ -194,17 +234,35 @@ public class AdminMerchantWithdrawDetailActivity extends AppCompatActivity {
                 if(hash(securitycode.getText().toString()).equals(password)){
                     HashMap<String,String> notificationData = new HashMap<>();
                     notificationData.put("amount", changeToRupiahFormat(withdraw.getAmount()));
-                    notificationData.put("type", "withdraw");
-                    notification.child("withdraw").child(withdraw.getUid()).push().setValue(notificationData);
+                    if(isAccepted) {
+                        notificationData.put("type", "acceptWithdraw");
+                        notification.child("acceptWithdraw").child(withdraw.getRole()).child(withdraw.getUid()).push().setValue(notificationData);
 
-                    updateReq();
-                    listener.onSuccess();
+                        updateReq();
+                        listener.onSuccess();
+                    }else{
+                        notificationData.put("type", "declineWithdraw");
+                        notification.child("declineWithdraw").child(withdraw.getRole()).child(withdraw.getUid()).push().setValue(notificationData);
+
+                        History history = new History("Withdraw Request Rejected", "CB Cash", withdraw.getAmount());
+                        HistoryUtil.insert(history, withdraw.getUid());
+
+                        updateReq();
+                        setWallet();
+                        listener.onSuccess();
+                    }
                 }else listener.onFailure();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+
+    private void setWallet(){
+        //Set balance on user's wallet
+        walletRef = FirebaseDatabase.getInstance().getReference(withdraw.getRole()).child(withdraw.getUid()).child("balance");
+        walletRef.setValue(balance + withdraw.getAmount());
     }
 
     //Change number format to IDR

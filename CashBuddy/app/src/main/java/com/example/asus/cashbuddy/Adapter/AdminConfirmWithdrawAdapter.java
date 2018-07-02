@@ -2,17 +2,15 @@ package com.example.asus.cashbuddy.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Activity.Admin.AdminMerchantWithdrawDetailActivity;
+import com.example.asus.cashbuddy.Activity.Admin.AdminConfirmWithdrawalDetailActivity;
 import com.example.asus.cashbuddy.Model.Withdraw;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.database.DataSnapshot;
@@ -44,13 +42,19 @@ public class AdminConfirmWithdrawAdapter extends RecyclerView.Adapter<AdminConfi
         // Get withdraw Item
         final Withdraw withdraw = withdrawHistory.get(position);
 
-        FirebaseDatabase.getInstance().getReference("merchant").child(withdraw.getUid())
+        FirebaseDatabase.getInstance().getReference(withdraw.getRole()).child(withdraw.getUid())
                 .addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.child("merchantName").getValue() != null) {
-                    holder.NameTextView.setText(dataSnapshot.child("merchantName").getValue().toString());
+                if(withdraw.getRole().equals("merchant")) {
+                    if (dataSnapshot.child("merchantName").getValue() != null) {
+                        holder.NameTextView.setText(dataSnapshot.child("merchantName").getValue().toString());
+                    }
+                }else {
+                    if (dataSnapshot.child("name").getValue() != null) {
+                        holder.NameTextView.setText(dataSnapshot.child("name").getValue().toString());
+                    }
                 }
             }
 
@@ -113,7 +117,7 @@ public class AdminConfirmWithdrawAdapter extends RecyclerView.Adapter<AdminConfi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, AdminMerchantWithdrawDetailActivity.class);
+                    Intent intent = new Intent(context, AdminConfirmWithdrawalDetailActivity.class);
                     intent.putExtra("withdraw",withdrawHistory);
                     intent.putExtra("Position", getAdapterPosition());
                     context.startActivity(intent);

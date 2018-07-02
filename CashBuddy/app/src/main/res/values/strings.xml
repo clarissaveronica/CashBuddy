@@ -57,11 +57,22 @@
     <string name="editProfileTitle">Edit Profile</string>
     <string name="securityCodeVerificationTitle">Security Code Verification</string>
     <string name="dealTitle">Deals</string>
+    <string name="convertTitle">Convert Currency</string>
+    <string name="manageCurrenciesTitle">Manage Currencies</string>
+    <string name="makePaymentRequestTitle">Make Payment Request</string>
+    <string name="paymentRequestTitle">Payment Requests</string>
 
     <string-array name="methods">
         <item>Select Method</item>
         <item>Scan QR</item>
         <item>Telephone Number</item>
+    </string-array>
+
+    <string-array name="transfer_methods">
+        <item>Select Method</item>
+        <item>Scan QR</item>
+        <item>Telephone Number</item>
+        <item>Bank Account</item>
     </string-array>
 
     <string-array name="top_up_methods">

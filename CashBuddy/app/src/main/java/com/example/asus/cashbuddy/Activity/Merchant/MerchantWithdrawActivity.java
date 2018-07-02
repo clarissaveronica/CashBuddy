@@ -224,7 +224,7 @@ public class MerchantWithdrawActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
                 if(hash(securitycode.getText().toString()).equals(password)){
-                    Withdraw withdraw= new Withdraw(merchantName.getText().toString(), user.getUid(), bankName.getText().toString(), withdrawBalance, bankNum.getText().toString());
+                    Withdraw withdraw= new Withdraw(merchantName.getText().toString(), user.getUid(), bankName.getText().toString().toUpperCase(), withdrawBalance, bankNum.getText().toString(), "merchant");
                     WithdrawUtil.insert(withdraw);
 
                     History history = new History("Withdraw", "CB Cash", withdrawBalance);

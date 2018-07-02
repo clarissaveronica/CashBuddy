@@ -1,6 +1,5 @@
 # Local configuration file (sdk path, etc)
 local.properties
-index.js
 
 # Gradle files
 .gradle

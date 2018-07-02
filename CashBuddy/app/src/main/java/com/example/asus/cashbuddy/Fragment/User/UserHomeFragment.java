@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.asus.cashbuddy.Activity.User.UserPendingPaymentActivity;
+import com.example.asus.cashbuddy.Activity.User.UserRequestPaymentActivity;
 import com.example.asus.cashbuddy.Activity.User.UserScanActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTopUpActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTransferActivity;
@@ -43,7 +45,7 @@ import java.util.Locale;
 public class UserHomeFragment extends Fragment {
 
     //Initialize
-    private ImageButton scan, transfer, topup;
+    private ImageButton scan, transfer, topup, request, pending, qr;
     private ImageView profile;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseRef;
@@ -72,6 +74,9 @@ public class UserHomeFragment extends Fragment {
         topup = view.findViewById(R.id.topupButton);
         profile = view.findViewById(R.id.profile);
         balance = view.findViewById(R.id.balance);
+        pending = view.findViewById(R.id.pendingButton);
+        qr = view.findViewById(R.id.generateQRButton);
+        request = view.findViewById(R.id.requestPaymentButton);
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -102,8 +107,24 @@ public class UserHomeFragment extends Fragment {
             }
         });
 
+        //Request payment from another user
+        request.setOnClickListener(new View.OnClickListener(){
+            public void onClick (View v){
+                Intent intent = new Intent(getActivity(), UserRequestPaymentActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        //Request payment from another user
+        pending.setOnClickListener(new View.OnClickListener(){
+            public void onClick (View v){
+                Intent intent = new Intent(getActivity(), UserPendingPaymentActivity.class);
+                startActivity(intent);
+            }
+        });
+
         //Show user's QR when profile button is clicked
-        profile.setOnClickListener(new View.OnClickListener(){
+        qr.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 showQR();

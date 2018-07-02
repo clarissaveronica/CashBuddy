@@ -3,7 +3,6 @@ package com.example.asus.cashbuddy.Activity.Admin;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -24,10 +23,10 @@ public class AdminMainActivity extends AppCompatActivity {
 
     private static final int MENU_LOGOUT = Menu.FIRST;
 
-    String[] name = {"User Top Up","Confirm Top Up", "Merchant Withdrawal","Merchant Verification"};
+    String[] name = {"User Top Up","Confirm Top Up", "Request Withdrawal","Merchant Verification"};
 
     String[] description = {"Add user's balance","Confirm user's top up request",
-            "Confirm merchant's request for balance withdrawal", "Verify unverified merchant"};
+            "Confirm request for balance withdrawal", "Verify unverified merchant"};
 
     String[] TAG = {"TOP_UP","C_TOP_UP","WITHDRAW", "MERCHANT_VERIFICATION"};
 
@@ -65,7 +64,7 @@ public class AdminMainActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case "WITHDRAW":
-                        intent = new Intent(AdminMainActivity. this, AdminMerchantWithdrawActivity.class);
+                        intent = new Intent(AdminMainActivity. this, AdminConfirmWithdrawalActivity.class);
                         startActivity(intent);
                         break;
                     case "C_TOP_UP":
