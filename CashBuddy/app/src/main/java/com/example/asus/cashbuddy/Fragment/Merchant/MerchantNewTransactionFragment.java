@@ -95,10 +95,6 @@ public class MerchantNewTransactionFragment extends Fragment {
         makeTransaction.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                price.clearFocus();
-                InputMethodManager inputMethodManager =(InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setMessage("Set the transaction price to Rp" + price.getText().toString() + "?")
                         .setCancelable(false)
@@ -111,6 +107,8 @@ public class MerchantNewTransactionFragment extends Fragment {
                                 DatabaseReference reference = firebaseDatabase.getReference("prices");
                                 reference.child(firebaseUser.getUid()).setValue(money);
                                 price.setText("");
+                                InputMethodManager imm = (InputMethodManager) getContext().getSystemService(getContext().INPUT_METHOD_SERVICE);
+                                imm.hideSoftInputFromWindow(price.getWindowToken(), 0);
                             }
                         })
                         .setNegativeButton(R.string.setPrice_cancel, new DialogInterface.OnClickListener() {
