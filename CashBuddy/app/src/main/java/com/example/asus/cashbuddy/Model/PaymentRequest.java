@@ -16,14 +16,16 @@ public class PaymentRequest implements Serializable {
     private long requestdate;
     private int requeststatus;
     private String from;
+    private String type;
 
     public PaymentRequest() {}
 
-    public PaymentRequest(@NonNull String receiverRequest, String senderRequest, int amount, String from) {
+    public PaymentRequest(@NonNull String receiverRequest, String senderRequest, int amount, String from, String type) {
         this.senderRequest = senderRequest;
         this.receiverRequest = receiverRequest;
         this.amount = amount;
         this.from = from;
+        this.type = type;
         this.requestdate = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime();;
         requeststatus=0;
     }
@@ -35,6 +37,14 @@ public class PaymentRequest implements Serializable {
 
     public void setSenderRequest(String senderRequest) {
         this.senderRequest = senderRequest;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getFrom() {

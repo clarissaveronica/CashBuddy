@@ -118,7 +118,7 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
             @Override
             public void onFailure() {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Unregistered phone number. Please try again")
+                builder.setMessage("Invalid QR code, Please try again")
                         .setCancelable(false)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {

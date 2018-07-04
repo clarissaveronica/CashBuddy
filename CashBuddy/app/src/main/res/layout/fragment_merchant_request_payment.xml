@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.example.asus.cashbuddy.Activity.User.UserRequestPaymentActivity">
+    tools:context=".Fragment.Merchant.MerchantRequestPaymentFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="32dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -134,26 +132,19 @@
                     android:layout_marginStart="16dp"
                     android:textSize="18sp"
                     android:layout_gravity="center_vertical"
-                    android:text="Please enter what the payment for"/>
+                    android:text="Please choose type of payment"/>
 
             </LinearLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <Spinner
+                android:id="@+id/spinner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
+                android:ems="10"
+                android:layout_marginTop="10dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_gravity="center_vertical">
-
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/type"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Ex : Transportation fee"
-                    android:inputType="text"/>
-            </android.support.design.widget.TextInputLayout>
+                android:layout_gravity="center_vertical"/>
 
             <Button
                 android:id="@+id/submitButton"
@@ -170,4 +161,5 @@
 
         </LinearLayout>
     </ScrollView>
-</android.support.constraint.ConstraintLayout>
+
+</FrameLayout>

@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.asus.cashbuddy.Activity.Merchant.MerchantRequestsActivity;
 import com.example.asus.cashbuddy.Activity.Merchant.MerchantWithdrawActivity;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +41,7 @@ import java.util.Locale;
  */
 public class MerchantHomeFragment extends Fragment {
 
-    private ImageButton qrButton, withdrawButton;
+    private ImageButton qrButton, withdrawButton, requests;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseWallet;
     private FirebaseUser merchant;
@@ -66,6 +67,7 @@ public class MerchantHomeFragment extends Fragment {
         withdrawButton = view.findViewById(R.id.withdrawButton);
         qrButton = view.findViewById(R.id.generateQRButton);
         balance = view.findViewById(R.id.balance);
+        requests = view.findViewById(R.id.requestPaymentButton);
 
         firebaseAuth = FirebaseAuth.getInstance();
         merchant = firebaseAuth.getCurrentUser();
@@ -82,6 +84,14 @@ public class MerchantHomeFragment extends Fragment {
             @Override
             public void onClick(View view){
                 Intent intent = new Intent(getActivity(), MerchantWithdrawActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        requests.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Intent intent = new Intent(getActivity(), MerchantRequestsActivity.class);
                 startActivity(intent);
             }
         });

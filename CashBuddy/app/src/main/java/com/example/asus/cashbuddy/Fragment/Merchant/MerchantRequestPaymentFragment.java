@@ -1,25 +1,23 @@
-package com.example.asus.cashbuddy.Activity.User;
+package com.example.asus.cashbuddy.Fragment.Merchant;
 
-import android.app.Activity;
+
 import android.content.DialogInterface;
-import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,40 +40,67 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class UserRequestPaymentActivity extends AppCompatActivity {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class MerchantRequestPaymentFragment extends Fragment {
 
-    private TextInputEditText amountRequested, phoneNum, type;
+    private TextInputEditText amountRequested, phoneNum;
     private Button submit;
+    private Spinner spinner;
+    private String choose;
     private int newPrice;
     private String receiver, receiverName, receiverPhone;
     private boolean valid;
     private PinEntryEditText securitycode;
-    private DatabaseReference databaseUser, phoneRef, notification;
+    private DatabaseReference databaseUser, phoneRef, notification, databaseMerchant;
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_request_payment);
+    public MerchantRequestPaymentFragment() {
+        // Required empty public constructor
+    }
 
-        //Custom Action Bar's Title
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.actionbar_layout);
-        TextView textViewTitle = findViewById(R.id.title);
-        textViewTitle.setText(R.string.makePaymentRequestTitle);
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_merchant_request_payment, container, false);
+    }
+
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //Initialize view
-        amountRequested = findViewById(R.id.amountTransfer);
-        phoneNum = findViewById(R.id.phoneNum);
-        submit = findViewById(R.id.submitButton);
-        type = findViewById(R.id.type);
+        amountRequested = view.findViewById(R.id.amountTransfer);
+        phoneNum = view.findViewById(R.id.phoneNum);
+        submit = view.findViewById(R.id.submitButton);
+        spinner = view.findViewById(R.id.spinner);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.typePaymentRequest, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
         databaseUser = FirebaseDatabase.getInstance().getReference("users");
+        databaseMerchant = FirebaseDatabase.getInstance().getReference("merchant");
         phoneRef = FirebaseDatabase.getInstance().getReference("phonenumbertouid");
         notification = FirebaseDatabase.getInstance().getReference("notifications");
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                choose = parent.getItemAtPosition(position).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         submit.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -160,8 +185,6 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
 
     public boolean validateInfo(){
         String phone = phoneNum.getText().toString();
-        String typeReq = type.getText().toString();
-
         valid = true;
 
         if(TextUtils.isEmpty(phone)) {
@@ -179,8 +202,10 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
             receiverPhone = changeNum(phoneNum.getText().toString());
         }
 
-        if(TextUtils.isEmpty(typeReq)){
-            type.setError("Type of payment is required");
+        if(choose.equals("Select Type")){
+            TextView errorText = (TextView)spinner.getSelectedView();
+            errorText.setError("Type of payment is required");
+            errorText.setTextColor(Color.RED);
             valid = false;
         }
 
@@ -190,11 +215,6 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
         }
 
         return valid;
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 
     public interface OnGetDataListener {
@@ -248,14 +268,14 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
     }
 
     public void showInputSC(){
-        final AlertDialog builder = new AlertDialog.Builder(UserRequestPaymentActivity.this)
+        final AlertDialog builder = new AlertDialog.Builder(getContext())
                 .setTitle("Requesting " + changeToRupiahFormat(newPrice) + " from " + receiverName)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setMessage("Please enter your security code to proceed")
                 .create();
 
-        View viewInflated = LayoutInflater.from(this).inflate(R.layout.input_security_code, null, false);
+        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.input_security_code, (ViewGroup) getView(), false);
 
         securitycode = viewInflated.findViewById(R.id.pinEntry);
 
@@ -274,8 +294,8 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
                         verify(new OnGetDataListener() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(getApplicationContext(), "Payment request delivered!", Toast.LENGTH_SHORT).show();
-                                finish();
+                                Toast.makeText(getActivity(), "Payment request delivered!", Toast.LENGTH_SHORT).show();
+                                getActivity().finish();
                             }
 
                             @Override
@@ -284,7 +304,7 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure() {
-                                Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -302,12 +322,12 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
     }
 
     public void verify(final OnGetDataListener listener){
-        databaseUser.child(user.getUid()).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseMerchant.child(user.getUid()).child("password").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 String password = snapshot.getValue(String.class);
                 if(hash(securitycode.getText().toString()).equals(password)){
-                    PaymentRequest paymentRequest = new PaymentRequest(receiver, user.getUid(), newPrice, "users", type.getText().toString());
+                    PaymentRequest paymentRequest = new PaymentRequest(receiver, user.getUid(), newPrice, "merchant", choose);
                     PaymentRequestUtil.insert(paymentRequest);
 
                     HashMap<String,String> notificationData = new HashMap<>();
@@ -351,5 +371,5 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
             throw new RuntimeException(ex);
         }
     }
-}
 
+}

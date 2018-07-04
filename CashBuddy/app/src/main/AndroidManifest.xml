@@ -113,8 +113,9 @@
         <activity android:name=".Activity.All.BalanceActivity" />
         <activity android:name=".Activity.User.UserRequestPaymentActivity" />
         <activity android:name=".Activity.User.UserPendingPaymentActivity" />
-        <activity android:name=".Activity.User.UserSentPaymentDetailActivity" />
-        <activity android:name=".Activity.User.UserReceivedPaymentDetailActivity"></activity>
+        <activity android:name=".Activity.All.SentPaymentDetailActivity" />
+        <activity android:name=".Activity.User.UserReceivedPaymentDetailActivity" />
+        <activity android:name=".Activity.Merchant.MerchantRequestsActivity"></activity>
     </application>
 
 </manifest>

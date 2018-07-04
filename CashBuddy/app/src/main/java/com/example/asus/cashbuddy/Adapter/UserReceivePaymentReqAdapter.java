@@ -10,7 +10,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Activity.User.UserSentPaymentDetailActivity;
+import com.example.asus.cashbuddy.Activity.All.SentPaymentDetailActivity;
+import com.example.asus.cashbuddy.Activity.User.UserReceivedPaymentDetailActivity;
+import com.example.asus.cashbuddy.Fragment.User.UserReceivedPaymentRequestFragment;
 import com.example.asus.cashbuddy.Model.PaymentRequest;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.database.DataSnapshot;
@@ -49,7 +51,11 @@ public class UserReceivePaymentReqAdapter extends RecyclerView.Adapter<UserRecei
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                holder.NameTextView.setText(dataSnapshot.child("name").getValue().toString());
+                if(paymentRequest.getFrom().equals("merchant")){
+                    holder.NameTextView.setText(dataSnapshot.child("merchantName").getValue().toString());
+                }else {
+                    holder.NameTextView.setText(dataSnapshot.child("name").getValue().toString());
+                }
             }
 
             @Override
@@ -107,7 +113,7 @@ public class UserReceivePaymentReqAdapter extends RecyclerView.Adapter<UserRecei
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, UserSentPaymentDetailActivity.class);
+                    Intent intent = new Intent(context, UserReceivedPaymentDetailActivity.class);
                     intent.putExtra("paymentReq",paymentRequests);
                     intent.putExtra("Position", getAdapterPosition());
                     context.startActivity(intent);

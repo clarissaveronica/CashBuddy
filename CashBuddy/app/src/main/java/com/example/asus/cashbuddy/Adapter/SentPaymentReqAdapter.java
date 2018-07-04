@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Activity.User.UserSentPaymentDetailActivity;
+import com.example.asus.cashbuddy.Activity.All.SentPaymentDetailActivity;
 import com.example.asus.cashbuddy.Model.PaymentRequest;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.database.DataSnapshot;
@@ -24,18 +24,18 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class UserSentPaymentReqAdapter extends RecyclerView.Adapter<UserSentPaymentReqAdapter.ViewHolder> {
+public class SentPaymentReqAdapter extends RecyclerView.Adapter<SentPaymentReqAdapter.ViewHolder> {
 
     //Pending Payment Items
     private ArrayList<PaymentRequest> paymentRequests;
 
-    public UserSentPaymentReqAdapter(@NonNull List<PaymentRequest> paymentRequests) {
+    public SentPaymentReqAdapter(@NonNull List<PaymentRequest> paymentRequests) {
         this.paymentRequests = new ArrayList<>(paymentRequests);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_user_sent_payment_req, parent, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_sent_payment_req, parent, false);
 
         return new ViewHolder(layoutView);
     }
@@ -67,6 +67,9 @@ public class UserSentPaymentReqAdapter extends RecyclerView.Adapter<UserSentPaym
         }else if(paymentRequest.getRequeststatus() == 1){
             holder.statusTextView.setTextColor(holder.context.getResources().getColor(R.color.green));
             holder.statusTextView.setText("Accepted");
+        }else if(paymentRequest.getRequeststatus() == 0){
+            holder.statusTextView.setTextColor(holder.context.getResources().getColor(R.color.black_overlay));
+            holder.statusTextView.setText("Pending");
         }
     }
 
@@ -114,7 +117,7 @@ public class UserSentPaymentReqAdapter extends RecyclerView.Adapter<UserSentPaym
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                Intent intent = new Intent(context, UserSentPaymentDetailActivity.class);
+                Intent intent = new Intent(context, SentPaymentDetailActivity.class);
                 intent.putExtra("paymentReq",paymentRequests);
                 intent.putExtra("Position", getAdapterPosition());
                 context.startActivity(intent);

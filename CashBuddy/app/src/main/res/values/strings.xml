@@ -61,6 +61,8 @@
     <string name="manageCurrenciesTitle">Manage Currencies</string>
     <string name="makePaymentRequestTitle">Make Payment Request</string>
     <string name="paymentRequestTitle">Payment Requests</string>
+    <string name="sentReqTitle">Sent Requests</string>
+    <string name="receivedReqTitle">Received Requests</string>
 
     <string-array name="methods">
         <item>Select Method</item>
@@ -79,6 +81,12 @@
         <item>Select Method</item>
         <item>Bank Transfer</item>
         <item>Cash Buddy Zone</item>
+    </string-array>
+
+    <string-array name="typePaymentRequest">
+        <item>Select Type</item>
+        <item>Goods</item>
+        <item>Services</item>
     </string-array>
 
 </resources>

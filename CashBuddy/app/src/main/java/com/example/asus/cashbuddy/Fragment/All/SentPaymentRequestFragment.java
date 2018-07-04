@@ -11,8 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.asus.cashbuddy.Adapter.UserReceivePaymentReqAdapter;
-import com.example.asus.cashbuddy.Adapter.UserSentPaymentReqAdapter;
+import com.example.asus.cashbuddy.Adapter.SentPaymentReqAdapter;
 import com.example.asus.cashbuddy.Model.PaymentRequest;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,7 +34,7 @@ public class SentPaymentRequestFragment extends Fragment {
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private ArrayList<PaymentRequest> paymentReq;
-    private UserSentPaymentReqAdapter adapter;
+    private SentPaymentReqAdapter adapter;
     private FirebaseUser user;
 
     public SentPaymentRequestFragment() {
@@ -57,7 +56,7 @@ public class SentPaymentRequestFragment extends Fragment {
         user = firebaseAuth.getCurrentUser();
 
         paymentReq = new ArrayList<PaymentRequest>();
-        adapter = new UserSentPaymentReqAdapter(paymentReq);
+        adapter = new SentPaymentReqAdapter(paymentReq);
         recyclerView = view.findViewById(R.id.request_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
 

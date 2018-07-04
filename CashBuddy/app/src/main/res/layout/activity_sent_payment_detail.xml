@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginEnd="32dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -91,29 +91,29 @@
                     android:layout_marginStart="16dp"
                     android:textSize="16sp"
                     android:layout_gravity="center_vertical"
-                    android:text="Payment request was sent by"/>
+                    android:text="Payment request was sent to"/>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="72dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="72dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16sp"
-                    android:ems="10"
-                    android:id="@+id/name"
-                    android:textSize="14sp"
-                    android:layout_gravity="center_vertical"
-                    android:text="name"/>
-            </LinearLayout>
+                android:layout_weight="1"
+                android:layout_marginStart="16sp"
+                android:ems="10"
+                android:id="@+id/name"
+                android:textSize="14sp"
+                android:layout_gravity="center_vertical"
+                android:text="name"/>
+        </LinearLayout>
 
 
             <LinearLayout
@@ -141,7 +141,7 @@
                     android:layout_marginStart="16dp"
                     android:textSize="16sp"
                     android:layout_gravity="center_vertical"
-                    android:text="Payment is for"/>
+                    android:text="Payment request is for"/>
 
             </LinearLayout>
 
@@ -217,26 +217,51 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:layout_marginTop="30sp"
-                android:orientation="horizontal" >
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/accept_request"
-                    android:layout_width="100sp"
+                <ImageView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:theme="@style/PrimaryColorButton"
-                    android:textSize="16sp"
-                    android:text="Accept" />
+                    android:layout_gravity="center_vertical"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_email_black"
+                    android:tint="@color/White"
+                    android:background="@drawable/circle_primary_color"
+                    />
 
-                <Button
-                    android:id="@+id/decline_request"
-                    android:layout_width="100sp"
+                <TextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:theme="@style/PrimaryColorButton"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp"
                     android:textSize="16sp"
-                    android:text="Decline" />
+                    android:layout_gravity="center_vertical"
+                    android:text="Status"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="72dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:id="@+id/status"
+                    android:textSize="14sp"
+                    android:layout_marginStart="16sp"
+                    android:layout_gravity="center_vertical"
+                    android:text="status"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

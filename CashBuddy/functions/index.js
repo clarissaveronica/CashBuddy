@@ -11,7 +11,7 @@ exports.transferNotification = functions.database.ref('/notifications/transfer/{
     const user_id = event.params.user_id;
     const notification = event.params.notification;
 
-    console.log('Sent notification to : ', user_id);
+    console.log('Sent transfer notification to : ', user_id);
 
     if(!event.data.val()){
         return console.log('A Notification has been deleted from the database : ', notification_id);
@@ -41,7 +41,7 @@ exports.purchaseNotification = functions.database.ref('/notifications/purchase/{
     const user_id = event.params.user_id;
     const notification = event.params.notification;
 
-    console.log('Sent notification to : ', user_id);
+    console.log('Sent purchase notification to : ', user_id);
 
     if(!event.data.val()){
         return console.log('A Notification has been deleted from the database : ', notification_id);
@@ -71,7 +71,7 @@ exports.acceptTopUpNotification = functions.database.ref('/notifications/acceptT
     const user_id = event.params.user_id;
     const notification = event.params.notification;
 
-    console.log('Sent notification to : ', user_id);
+    console.log('Sent accepted top up notification to : ', user_id);
 
     if(!event.data.val()){
         return console.log('A Notification has been deleted from the database : ', notification_id);
@@ -96,18 +96,19 @@ exports.acceptTopUpNotification = functions.database.ref('/notifications/acceptT
 
 });
 
-//Notification for accepted withdraw (merchant)
-exports.acceptMerchantWithdrawNotification = functions.database.ref('/notifications/acceptWithdraw/merchant/{user_id}/{notification_id}').onWrite(event =>{
+//Notification for accepted withdraw
+exports.acceptWithdrawNotification = functions.database.ref('/notifications/acceptWithdraw/{type}/{user_id}/{notification_id}').onWrite(event =>{
     const user_id = event.params.user_id;
+    const type = event.params.type
     const notification = event.params.notification;
 
-    console.log('Sent notification to : ', user_id);
+    console.log('Sent accepted withdraw notification to : ', user_id);
 
     if(!event.data.val()){
         return console.log('A Notification has been deleted from the database : ', notification_id);
     }
 
-    const deviceToken = admin.database().ref(`/merchant/${user_id}/device_token`).once('value');
+    const deviceToken = admin.database().ref(`/${type}/${user_id}/device_token`).once('value');
 
     return deviceToken.then(result =>{
         const token_id = result.val();
@@ -126,78 +127,19 @@ exports.acceptMerchantWithdrawNotification = functions.database.ref('/notificati
 
 });
 
-//Notification for declined withdraw (merchant)
-exports.declineMerchantWithdrawNotification = functions.database.ref('/notifications/declineWithdraw/merchant/{user_id}/{notification_id}').onWrite(event =>{
+//Notification for declined withdraw
+exports.declineWithdrawNotification = functions.database.ref('/notifications/declineWithdraw/{type}/{user_id}/{notification_id}').onWrite(event =>{
     const user_id = event.params.user_id;
+    const type = event.params.type;
     const notification = event.params.notification;
 
-    console.log('Sent notification to : ', user_id);
+    console.log('Sent declined withdraw notification to : ', user_id);
 
     if(!event.data.val()){
         return console.log('A Notification has been deleted from the database : ', notification_id);
     }
 
-    const deviceToken = admin.database().ref(`/merchant/${user_id}/device_token`).once('value');
-
-    return deviceToken.then(result =>{
-        const token_id = result.val();
-
-        const payload = {
-            notification: {
-                title : "Cash Buddy",
-                body : "Oops! Your withdrawal request has been rejected. Please try again!",
-                icon : "logonotif",
-                sound: "default"
-            }
-        };
-
-        return admin.messaging().sendToDevice(token_id, payload);
-    });
-
-});
-
-//Notification for accepted withdraw (users)
-exports.acceptUserWithdrawNotification = functions.database.ref('/notifications/acceptWithdraw/users/{user_id}/{notification_id}').onWrite(event =>{
-    const user_id = event.params.user_id;
-    const notification = event.params.notification;
-
-    console.log('Sent notification to : ', user_id);
-
-    if(!event.data.val()){
-        return console.log('A Notification has been deleted from the database : ', notification_id);
-    }
-
-    const deviceToken = admin.database().ref(`/users/${user_id}/device_token`).once('value');
-
-    return deviceToken.then(result =>{
-        const token_id = result.val();
-
-        const payload = {
-            notification: {
-                title : "Cash Buddy",
-                body : "Yay! Your withdraw request has been processed.",
-                icon : "logonotif",
-                sound: "default"
-            }
-        };
-
-        return admin.messaging().sendToDevice(token_id, payload);
-    });
-
-});
-
-//Notification for declined withdraw (users)
-exports.declineUserWithdrawNotification = functions.database.ref('/notifications/declineWithdraw/users/{user_id}/{notification_id}').onWrite(event =>{
-    const user_id = event.params.user_id;
-    const notification = event.params.notification;
-
-    console.log('Sent notification to : ', user_id);
-
-    if(!event.data.val()){
-        return console.log('A Notification has been deleted from the database : ', notification_id);
-    }
-
-    const deviceToken = admin.database().ref(`/users/${user_id}/device_token`).once('value');
+    const deviceToken = admin.database().ref(`/${type}/${user_id}/device_token`).once('value');
 
     return deviceToken.then(result =>{
         const token_id = result.val();
@@ -221,7 +163,7 @@ exports.declineTopUpNotification = functions.database.ref('/notifications/declin
     const user_id = event.params.user_id;
     const notification = event.params.notification;
 
-    console.log('Sent notification to : ', user_id);
+    console.log('Sent declined top up notification to : ', user_id);
 
     if(!event.data.val()){
         return console.log('A Notification has been deleted from the database : ', notification_id);
@@ -247,11 +189,11 @@ exports.declineTopUpNotification = functions.database.ref('/notifications/declin
 });
 
 //Notification for request payment
-exports.requestPaymentNotification = functions.database.ref('/notifications/requestPayment/{user_id}/{notification_id}').onWrite(event =>{
+exports.requestPaymentNotification = functions.database.ref('/notifications/requestPayment/sent/{user_id}/{notification_id}').onWrite(event =>{
     const user_id = event.params.user_id;
     const notification = event.params.notification;
 
-    console.log('Sent notification to : ', user_id);
+    console.log('Sent request payment notification to : ', user_id);
 
     if(!event.data.val()){
         return console.log('A Notification has been deleted from the database : ', notification_id);
@@ -266,6 +208,68 @@ exports.requestPaymentNotification = functions.database.ref('/notifications/requ
             notification: {
                 title : "Cash Buddy",
                 body : "You received a payment request! Check it out now!",
+                icon : "logonotif",
+                sound: "default"
+            }
+        };
+
+        return admin.messaging().sendToDevice(token_id, payload);
+    });
+
+});
+
+//Notification for accepted request payment
+exports.acceptRequestNotification = functions.database.ref('/notifications/requestPayment/accepted/{type}/{user_id}/{notification_id}').onWrite(event =>{
+    const user_id = event.params.user_id;
+    const type = event.params.type;
+    const notification = event.params.notification;
+
+    console.log('Sent accepted request notification to : ', user_id);
+
+    if(!event.data.val()){
+        return console.log('A Notification has been deleted from the database : ', notification_id);
+    }
+
+    const deviceToken = admin.database().ref(`/${type}/${user_id}/device_token`).once('value');
+
+    return deviceToken.then(result =>{
+        const token_id = result.val();
+
+        const payload = {
+            notification: {
+                title : "Cash Buddy",
+                body : "Yay! Your payment request is accepted!",
+                icon : "logonotif",
+                sound: "default"
+            }
+        };
+
+        return admin.messaging().sendToDevice(token_id, payload);
+    });
+
+});
+
+//Notification for rejeced request payment
+exports.rejectRequestNotification = functions.database.ref('/notifications/requestPayment/rejected/{type}/{user_id}/{notification_id}').onWrite(event =>{
+    const user_id = event.params.user_id;
+    const type = event.params.type;
+    const notification = event.params.notification;
+
+    console.log('Sent rejected request notification to : ', user_id);
+
+    if(!event.data.val()){
+        return console.log('A Notification has been deleted from the database : ', notification_id);
+    }
+
+    const deviceToken = admin.database().ref(`/${type}/${user_id}/device_token`).once('value');
+
+    return deviceToken.then(result =>{
+        const token_id = result.val();
+
+        const payload = {
+            notification: {
+                title : "Cash Buddy",
+                body : "Oops! Your payment request was rejected!",
                 icon : "logonotif",
                 sound: "default"
             }

@@ -112,8 +112,14 @@ public class ChangePhoneNumberActivity extends AppCompatActivity {
                 submitButton.setAlpha(0.5f);
                 submitButton.setEnabled(false);
             }else{
-                submitButton.setAlpha(1);
-                submitButton.setEnabled(true);
+                String temp = "+62" + newPhone.getText().toString().substring(1);
+                if(temp.equals(phone.getText().toString())){
+                    submitButton.setAlpha(0.5f);
+                    submitButton.setEnabled(false);
+                }else {
+                    submitButton.setAlpha(1);
+                    submitButton.setEnabled(true);
+                }
             }
         }
 
@@ -128,7 +134,7 @@ public class ChangePhoneNumberActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
-                   showError();
+                    newPhone.setError("Phone number is already registered");
                 }else{
                     Intent intent = new Intent(ChangePhoneNumberActivity.this, ChangePhoneNumberVerificationActivity.class);
                     intent.putExtra("role", role);
@@ -142,21 +148,6 @@ public class ChangePhoneNumberActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {}
         };
         userNameRef.addListenerForSingleValueEvent(eventListener);
-    }
-
-    public void showError(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(ChangePhoneNumberActivity.this);
-        builder.setMessage("The phone number you entered has already been registered. Please use another phone number")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                });
-
-        AlertDialog alert = builder.create();
-        alert.setTitle("Oops!");
-        alert.show();
     }
 
 }

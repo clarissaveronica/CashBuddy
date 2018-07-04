@@ -193,18 +193,7 @@ public class UserPhoneTransferFragment extends Fragment {
 
                     @Override
                     public void onFailure() {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setMessage("Unregistered phone number. Please try again")
-                                .setCancelable(false)
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-
-                        AlertDialog alert = builder.create();
-                        alert.setTitle("Oops!");
-                        alert.show();
+                        phoneNum.setError("Unregistered phone number");
                     }
                 });
             }
@@ -216,18 +205,7 @@ public class UserPhoneTransferFragment extends Fragment {
 
             @Override
             public void onFailure() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Wrong phone number. Please try again")
-                        .setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog alert = builder.create();
-                alert.setTitle("Oops!");
-                alert.show();
+                phoneNum.setError("Unregistered phone number");
             }
         });
     }

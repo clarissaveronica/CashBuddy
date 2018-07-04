@@ -1,22 +1,21 @@
-package com.example.asus.cashbuddy.Activity.User;
+package com.example.asus.cashbuddy.Activity.Merchant;
 
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
 import com.example.asus.cashbuddy.Fragment.All.SentPaymentRequestFragment;
-import com.example.asus.cashbuddy.Fragment.User.UserReceivedPaymentRequestFragment;
+import com.example.asus.cashbuddy.Fragment.Merchant.MerchantRequestPaymentFragment;
 import com.example.asus.cashbuddy.R;
 
 import java.util.ArrayList;
 
-public class UserPendingPaymentActivity extends AppCompatActivity {
+public class MerchantRequestsActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     TabLayout tabLayout;
@@ -27,7 +26,7 @@ public class UserPendingPaymentActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_pending_payment);
+        setContentView(R.layout.activity_merchant_requests);
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -35,7 +34,7 @@ public class UserPendingPaymentActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         mViewPager = (ViewPager) findViewById(R.id.container);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-        viewPagerAdapter.addFragments(new UserReceivedPaymentRequestFragment(), "Received");
+        viewPagerAdapter.addFragments(new MerchantRequestPaymentFragment(), "Create");
         viewPagerAdapter.addFragments(new SentPaymentRequestFragment(), "Sent");
 
         mViewPager.setAdapter(viewPagerAdapter);
@@ -79,6 +78,5 @@ public class UserPendingPaymentActivity extends AppCompatActivity {
             return tabTitles.get(position);
         }
     }
-
 }
 
