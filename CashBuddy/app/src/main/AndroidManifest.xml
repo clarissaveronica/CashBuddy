@@ -108,14 +108,20 @@
         <activity
             android:name=".Activity.User.UserDealsDetailActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".Activity.All.ManageCurrenciesActivity" />
-        <activity android:name=".Activity.All.ConvertCurrencyActivity" />
-        <activity android:name=".Activity.All.BalanceActivity" />
-        <activity android:name=".Activity.User.UserRequestPaymentActivity" />
-        <activity android:name=".Activity.User.UserPendingPaymentActivity" />
-        <activity android:name=".Activity.All.SentPaymentDetailActivity" />
-        <activity android:name=".Activity.User.UserReceivedPaymentDetailActivity" />
-        <activity android:name=".Activity.Merchant.MerchantRequestsActivity"></activity>
+        <activity
+            android:name=".Activity.User.UserRequestPaymentActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Activity.User.UserPendingPaymentActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Activity.All.SentPaymentDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.User.UserReceivedPaymentDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Activity.Merchant.MerchantRequestsActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
