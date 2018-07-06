@@ -124,7 +124,7 @@ public class UserHomeFragment extends Fragment {
         });
 
         //Show user's QR when profile button is clicked
-        qr.setOnClickListener(new View.OnClickListener(){
+        profile.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 showQR();

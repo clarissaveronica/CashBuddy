@@ -165,7 +165,7 @@ public class UserReceivedPaymentDetailActivity extends AppCompatActivity {
 
     private void setWallet(){
         //Set balance on user's wallet
-        walletReceiver = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("balance");;
+        walletReceiver = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("balance");
         walletReceiver.setValue(userBalance - paymentRequest.getAmount());
 
         //Set balance on sender's wallet

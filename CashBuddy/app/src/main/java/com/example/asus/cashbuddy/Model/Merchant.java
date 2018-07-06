@@ -16,6 +16,7 @@ public class Merchant implements Parcelable {
     private String email;
     private int balance;
     private String device_token;
+    private int price;
 
     public Merchant() {}
 
@@ -34,6 +35,7 @@ public class Merchant implements Parcelable {
         this.password = password;
         this.balance = balance;
         this.device_token = device_token;
+        this.price = 0;
     }
 
     protected Merchant(Parcel in) {
@@ -79,6 +81,8 @@ public class Merchant implements Parcelable {
 
     public void setBalance(int balance){this.balance = balance;}
 
+    public void setPrice(int price){this.price = price;}
+
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
@@ -114,6 +118,8 @@ public class Merchant implements Parcelable {
     }
 
     public int getBalance(){return balance;}
+
+    public int getPrice(){return price;}
 
     @Override
     public int describeContents() {

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +40,8 @@ public class UserReceivedPaymentRequestFragment extends Fragment {
     private ArrayList<PaymentRequest> paymentReq;
     private UserReceivePaymentReqAdapter adapter;
     private FirebaseUser user;
+    private DatabaseReference refReq;
+    private PaymentRequest paymentRequest;
 
     public UserReceivedPaymentRequestFragment() {
         // Required empty public constructor
@@ -53,6 +59,7 @@ public class UserReceivedPaymentRequestFragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
+        refReq = FirebaseDatabase.getInstance().getReference("paymentrequest");
 
         paymentReq = new ArrayList<PaymentRequest>();
         adapter = new UserReceivePaymentReqAdapter(paymentReq);
@@ -84,9 +91,16 @@ public class UserReceivedPaymentRequestFragment extends Fragment {
             public void onDataChange(DataSnapshot snapshot) {
                 adapter.removePaymentRequest();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    PaymentRequest paymentRequest = child.getValue(PaymentRequest.class);
+                    paymentRequest = child.getValue(PaymentRequest.class);
                     if(paymentRequest.getRequeststatus()==0) {
-                        adapter.addPaymentRequest(paymentRequest);
+                        if(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime() < paymentRequest.getRequestdate() + (5 * 24 * 60 * 60 * 1000)) {
+                            adapter.addPaymentRequest(paymentRequest);
+                        }else{
+                            HashMap<String, Object> result = new HashMap<>();
+                            result.put("requeststatus", 2);
+                            refReq.child(child.getKey()).updateChildren(result);
+                            Log.i("adf", "adf" + child.getKey());
+                        }
                     }
                     layoutManager.setReverseLayout(true);
                     layoutManager.setStackFromEnd(true);

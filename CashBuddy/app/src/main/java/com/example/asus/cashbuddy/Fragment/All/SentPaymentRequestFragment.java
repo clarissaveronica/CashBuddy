@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.TimeZone;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +40,7 @@ public class SentPaymentRequestFragment extends Fragment {
     private ArrayList<PaymentRequest> paymentReq;
     private SentPaymentReqAdapter adapter;
     private FirebaseUser user;
+    private DatabaseReference refReq;
 
     public SentPaymentRequestFragment() {
         // Required empty public constructor
@@ -54,6 +59,7 @@ public class SentPaymentRequestFragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
+        refReq = FirebaseDatabase.getInstance().getReference("paymentrequest");
 
         paymentReq = new ArrayList<PaymentRequest>();
         adapter = new SentPaymentReqAdapter(paymentReq);
@@ -87,6 +93,12 @@ public class SentPaymentRequestFragment extends Fragment {
                 for (DataSnapshot child : snapshot.getChildren()) {
                     PaymentRequest paymentRequest = child.getValue(PaymentRequest.class);
                     adapter.addPaymentRequest(paymentRequest);
+                    if(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime() > paymentRequest.getRequestdate() + (5 * 24 * 60 * 60 * 1000)) {
+                        HashMap<String, Object> result = new HashMap<>();
+                        result.put("requeststatus", 2);
+                        refReq.child(child.getKey()).updateChildren(result);
+                        Log.i("adf", "adf" + child.getKey());
+                    }
                     layoutManager.setReverseLayout(true);
                     layoutManager.setStackFromEnd(true);
                 }

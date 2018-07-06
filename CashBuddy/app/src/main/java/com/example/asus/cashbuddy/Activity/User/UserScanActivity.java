@@ -44,7 +44,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
 
     private ZXingScannerView mScannerView;
     private FirebaseAuth firebaseAuth;
-    private DatabaseReference databasePrice, databaseMerchant, databaseUser, walletMRef, walletURef, notification;
+    private DatabaseReference databaseMerchant, databaseUser, walletMRef, walletURef, notification;
     private FirebaseUser user;
     private int transactionAmount, userBalance, merchantBalance;
     private String amount, merchantName, userName;
@@ -67,7 +67,6 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
-        databasePrice = FirebaseDatabase.getInstance().getReference("prices");
         databaseUser = FirebaseDatabase.getInstance().getReference("users");
         databaseMerchant = FirebaseDatabase.getInstance().getReference("merchant");
         notification = FirebaseDatabase.getInstance().getReference("notifications");
@@ -171,28 +170,18 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
     public void getInfo(final OnGetDataListener listener){
         listener.onStart();
 
-        databasePrice.child(result).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseMerchant.child(result).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    transactionAmount = Integer.parseInt(dataSnapshot.getValue().toString());
+                    transactionAmount = Integer.parseInt(dataSnapshot.child("price").getValue().toString());
                     amount = changeToRupiahFormat(transactionAmount);
 
-                    databaseMerchant.child(result).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.exists()) {
-                                merchantName = dataSnapshot.child("merchantName").getValue().toString();
-                                merchantBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
-                                listener.onSuccess();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
+                    if(transactionAmount != 0) {
+                        merchantName = dataSnapshot.child("merchantName").getValue().toString();
+                        merchantBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
+                        listener.onSuccess();
+                    }else listener.onFailure();
                 }else{
                     listener.onFailure();
                 }

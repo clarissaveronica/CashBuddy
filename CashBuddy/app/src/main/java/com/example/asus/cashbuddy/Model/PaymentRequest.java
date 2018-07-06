@@ -26,7 +26,7 @@ public class PaymentRequest implements Serializable {
         this.amount = amount;
         this.from = from;
         this.type = type;
-        this.requestdate = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime();;
+        this.requestdate = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime();
         requeststatus=0;
     }
 

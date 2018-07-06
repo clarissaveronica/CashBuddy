@@ -65,9 +65,9 @@ public class MerchantNewTransactionFragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
-        databasePrice = FirebaseDatabase.getInstance().getReference("prices");
+        databasePrice = FirebaseDatabase.getInstance().getReference("merchant");
 
-        databasePrice.child(user.getUid()).addValueEventListener(new ValueEventListener() {
+        databasePrice.child(user.getUid()).child("price").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
@@ -104,8 +104,8 @@ public class MerchantNewTransactionFragment extends Fragment {
                                 firebaseAuth = FirebaseAuth.getInstance();
                                 FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
                                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                                DatabaseReference reference = firebaseDatabase.getReference("prices");
-                                reference.child(firebaseUser.getUid()).setValue(money);
+
+                                databasePrice.child(user.getUid()).child("price").setValue(money);
                                 price.setText("");
                                 InputMethodManager imm = (InputMethodManager) getContext().getSystemService(getContext().INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(price.getWindowToken(), 0);

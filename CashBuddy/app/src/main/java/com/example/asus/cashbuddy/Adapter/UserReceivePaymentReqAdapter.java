@@ -22,8 +22,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 
 public class UserReceivePaymentReqAdapter extends RecyclerView.Adapter<UserReceivePaymentReqAdapter.ViewHolder> {
@@ -46,6 +48,8 @@ public class UserReceivePaymentReqAdapter extends RecyclerView.Adapter<UserRecei
     public void onBindViewHolder(final ViewHolder holder, int position) {
         // Get Payment Requests Item
         final PaymentRequest paymentRequest = paymentRequests.get(position);
+        long remaining = paymentRequest.getRequestdate() + (5 * 24 * 60 * 60 * 1000) - Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime() ;
+        long day = (remaining / (60*60*24*1000));
 
         FirebaseDatabase.getInstance().getReference(paymentRequest.getFrom()).child(paymentRequest.getSenderRequest()).addValueEventListener(new ValueEventListener() {
 
@@ -66,6 +70,7 @@ public class UserReceivePaymentReqAdapter extends RecyclerView.Adapter<UserRecei
 
         holder.dateTextView.setText(paymentRequest.getRequestDateString(paymentRequest.getRequestdate()));
         holder.AmountTextView.setText(changeToRupiahFormat(paymentRequest.getAmount()));
+        holder.expiry.setText(day + "D");
     }
 
     @Override
@@ -92,13 +97,10 @@ public class UserReceivePaymentReqAdapter extends RecyclerView.Adapter<UserRecei
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        // TextView of store name
         public TextView NameTextView;
-        // TextView of topup date
         public TextView dateTextView;
-        // TextView of payment amount
         public TextView AmountTextView;
-        // TextView of LocationTextView
+        public TextView expiry;
 
         LinearLayout bg;
 
@@ -109,6 +111,7 @@ public class UserReceivePaymentReqAdapter extends RecyclerView.Adapter<UserRecei
             NameTextView = view.findViewById(R.id.username);
             dateTextView = view.findViewById(R.id.date);
             AmountTextView = view.findViewById(R.id.amount);
+            expiry = view.findViewById(R.id.expiry);
             bg = view.findViewById(R.id.bg_pending);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
