@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.asus.cashbuddy.Activity.User.UserBillsActivity;
 import com.example.asus.cashbuddy.Activity.User.UserPendingPaymentActivity;
 import com.example.asus.cashbuddy.Activity.User.UserRequestPaymentActivity;
 import com.example.asus.cashbuddy.Activity.User.UserScanActivity;
@@ -45,7 +46,7 @@ import java.util.Locale;
 public class UserHomeFragment extends Fragment {
 
     //Initialize
-    private ImageButton scan, transfer, topup, request, pending, qr;
+    private ImageButton scan, transfer, topup, request, pending, split;
     private ImageView profile;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseRef;
@@ -75,7 +76,7 @@ public class UserHomeFragment extends Fragment {
         profile = view.findViewById(R.id.profile);
         balance = view.findViewById(R.id.balance);
         pending = view.findViewById(R.id.pendingButton);
-        qr = view.findViewById(R.id.generateQRButton);
+        split = view.findViewById(R.id.generateQRButton);
         request = view.findViewById(R.id.requestPaymentButton);
 
         firebaseAuth = FirebaseAuth.getInstance();
@@ -128,6 +129,14 @@ public class UserHomeFragment extends Fragment {
             @Override
             public void onClick(View view){
                 showQR();
+            }
+        });
+
+        split.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), UserBillsActivity.class);
+                startActivity(intent);
             }
         });
 

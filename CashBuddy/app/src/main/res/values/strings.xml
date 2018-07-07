@@ -63,6 +63,8 @@
     <string name="paymentRequestTitle">Payment Requests</string>
     <string name="sentReqTitle">Sent Requests</string>
     <string name="receivedReqTitle">Received Requests</string>
+    <string name="splitBillsTitle">Split Bills</string>
+    <string name="splitBillsDetailTitle">Split Bills Details</string>
 
     <string-array name="methods">
         <item>Select Method</item>
@@ -87,6 +89,13 @@
         <item>Select Type</item>
         <item>Goods</item>
         <item>Services</item>
+    </string-array>
+
+    <string-array name="splitBill">
+        <item>1 person</item>
+        <item>2 people</item>
+        <item>3 people</item>
+        <item>4 people</item>
     </string-array>
 
 </resources>

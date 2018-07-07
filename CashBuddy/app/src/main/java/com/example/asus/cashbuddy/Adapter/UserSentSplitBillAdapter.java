@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.asus.cashbuddy.Activity.All.SentPaymentDetailActivity;
-import com.example.asus.cashbuddy.Model.PaymentRequest;
+import com.example.asus.cashbuddy.Activity.User.UserSentSplitBillDetailActivity;
+import com.example.asus.cashbuddy.Model.SplitBill;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,18 +24,18 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class SentPaymentReqAdapter extends RecyclerView.Adapter<SentPaymentReqAdapter.ViewHolder> {
+public class UserSentSplitBillAdapter extends RecyclerView.Adapter<UserSentSplitBillAdapter.ViewHolder> {
 
     //Pending Payment Items
-    private ArrayList<PaymentRequest> paymentRequests;
+    private ArrayList<SplitBill> splitBills;
 
-    public SentPaymentReqAdapter(@NonNull List<PaymentRequest> paymentRequests) {
-        this.paymentRequests = new ArrayList<>(paymentRequests);
+    public UserSentSplitBillAdapter(@NonNull List<SplitBill> splitBills) {
+        this.splitBills = new ArrayList<>(splitBills);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_sent_payment_req, parent, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_user_sent_split_bill, parent, false);
 
         return new ViewHolder(layoutView);
     }
@@ -43,9 +43,9 @@ public class SentPaymentReqAdapter extends RecyclerView.Adapter<SentPaymentReqAd
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         // Get Payment Requests Item
-        final PaymentRequest paymentRequest = paymentRequests.get(position);
+        final SplitBill splitBill = splitBills.get(position);
 
-        FirebaseDatabase.getInstance().getReference("users").child(paymentRequest.getReceiverRequest()).addValueEventListener(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("users").child(splitBill.getReceiver()).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -58,19 +58,19 @@ public class SentPaymentReqAdapter extends RecyclerView.Adapter<SentPaymentReqAd
             }
         });
 
-        holder.dateTextView.setText(paymentRequest.getRequestDateString(paymentRequest.getRequestdate()));
-        holder.AmountTextView.setText(changeToRupiahFormat(paymentRequest.getAmount()));
+        holder.dateTextView.setText(splitBill.getRequestDateString(splitBill.getRequestdate()));
+        holder.AmountTextView.setText(changeToRupiahFormat(splitBill.getAmount()));
 
-        if(paymentRequest.getRequeststatus() == 2){
+        if(splitBill.getRequeststatus() == 2){
             holder.statusTextView.setTextColor(holder.context.getResources().getColor(R.color.red));
             holder.statusTextView.setText("Rejected");
-        }else if(paymentRequest.getRequeststatus() == 1){
+        }else if(splitBill.getRequeststatus() == 1){
             holder.statusTextView.setTextColor(holder.context.getResources().getColor(R.color.green));
             holder.statusTextView.setText("Accepted");
-        }else if(paymentRequest.getRequeststatus() == 0){
+        }else if(splitBill.getRequeststatus() == 0){
             holder.statusTextView.setTextColor(holder.context.getResources().getColor(R.color.black_overlay));
             holder.statusTextView.setText("Pending");
-        }else if(paymentRequest.getRequeststatus() == 3){
+        }else if(splitBill.getRequeststatus() == 3){
             holder.statusTextView.setTextColor(holder.context.getResources().getColor(R.color.red));
             holder.statusTextView.setText("Expired");
         }
@@ -78,23 +78,23 @@ public class SentPaymentReqAdapter extends RecyclerView.Adapter<SentPaymentReqAd
 
     @Override
     public int getItemCount() {
-        return paymentRequests.size();
+        return splitBills.size();
     }
 
-    public void setPaymentRequests(ArrayList<PaymentRequest> paymentRequests) {
-        this.paymentRequests = paymentRequests;
+    public void setSplitBills(ArrayList<SplitBill> splitBills) {
+        this.splitBills = splitBills;
     }
 
-    public void addPaymentRequest (PaymentRequest paymentRequest) {
-        if(paymentRequest == null) return;
-        if(!paymentRequests.contains(paymentRequest)) {
-            this.paymentRequests.add(paymentRequest);
+    public void addSplitBills (SplitBill splitBill) {
+        if(splitBill == null) return;
+        if(!splitBills.contains(splitBills)) {
+            this.splitBills.add(splitBill);
         }
         notifyDataSetChanged();
     }
 
-    public void removePaymentRequest(){
-        paymentRequests.clear();
+    public void removeSplitBills(){
+        splitBills.clear();
         notifyDataSetChanged();
     }
 
@@ -120,8 +120,8 @@ public class SentPaymentReqAdapter extends RecyclerView.Adapter<SentPaymentReqAd
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                Intent intent = new Intent(context, SentPaymentDetailActivity.class);
-                intent.putExtra("paymentReq",paymentRequests);
+                Intent intent = new Intent(context, UserSentSplitBillDetailActivity.class);
+                intent.putExtra("splitbills",splitBills);
                 intent.putExtra("Position", getAdapterPosition());
                 context.startActivity(intent);
                 }

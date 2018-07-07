@@ -110,17 +110,26 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.User.UserRequestPaymentActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.User.UserPendingPaymentActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.All.SentPaymentDetailActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".Activity.User.UserReceivedPaymentDetailActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.User.UserReceivedPaymentDetailActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.Merchant.MerchantRequestsActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Activity.User.UserSentSplitBillDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.User.UserReceiveSplitBillDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.User.UserBillsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Activity.User.UserSplitBillDetailActivity"
             android:screenOrientation="portrait"></activity>
     </application>
 

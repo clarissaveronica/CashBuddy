@@ -1,4 +1,4 @@
-package com.example.asus.cashbuddy.Fragment.All;
+package com.example.asus.cashbuddy.Fragment.User;
 
 
 import android.os.Bundle;
@@ -7,13 +7,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.asus.cashbuddy.Adapter.SentPaymentReqAdapter;
-import com.example.asus.cashbuddy.Model.PaymentRequest;
+import com.example.asus.cashbuddy.Adapter.UserSplitBillAdapter;
+import com.example.asus.cashbuddy.Model.Transaction;
 import com.example.asus.cashbuddy.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,17 +31,17 @@ import java.util.TimeZone;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class SentPaymentRequestFragment extends Fragment {
+public class UserSplitBillFragment extends Fragment {
 
     private FirebaseAuth firebaseAuth;
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
-    private ArrayList<PaymentRequest> paymentReq;
-    private SentPaymentReqAdapter adapter;
+    private ArrayList<Transaction> transactions;
+    private UserSplitBillAdapter adapter;
     private FirebaseUser user;
-    private DatabaseReference refReq;
+    private Transaction transaction;
 
-    public SentPaymentRequestFragment() {
+    public UserSplitBillFragment() {
         // Required empty public constructor
     }
 
@@ -51,7 +50,7 @@ public class SentPaymentRequestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sent_payment_request, container, false);
+        return inflater.inflate(R.layout.fragment_user_split_bill, container, false);
     }
 
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -59,11 +58,10 @@ public class SentPaymentRequestFragment extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
-        refReq = FirebaseDatabase.getInstance().getReference("paymentrequest");
 
-        paymentReq = new ArrayList<PaymentRequest>();
-        adapter = new SentPaymentReqAdapter(paymentReq);
-        recyclerView = view.findViewById(R.id.request_recycler_view);
+        transactions = new ArrayList<Transaction>();
+        adapter = new UserSplitBillAdapter(transactions);
+        recyclerView = view.findViewById(R.id.split_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);
@@ -83,20 +81,19 @@ public class SentPaymentRequestFragment extends Fragment {
     }
 
     private void attachDatabaseReadListener() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("paymentrequest");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("transactions");
 
-        Query query = ref.orderByChild("senderRequest").equalTo(user.getUid());
+        Query query = ref.orderByChild("uid").equalTo(user.getUid());
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-                adapter.removePaymentRequest();
+                adapter.removeTransactions();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    PaymentRequest paymentRequest = child.getValue(PaymentRequest.class);
-                    adapter.addPaymentRequest(paymentRequest);
-                    if(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime() > paymentRequest.getRequestdate() + (5 * 24 * 60 * 60 * 1000)) {
-                        HashMap<String, Object> result = new HashMap<>();
-                        result.put("requeststatus", 3);
-                        refReq.child(child.getKey()).updateChildren(result);
+                    transaction = child.getValue(Transaction.class);
+                    if(transaction.getSplit() == 0) {
+                        if(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime() < transaction.getPurchaseDate() + (5 * 24 * 60 * 60 * 1000)) {
+                            adapter.addTransaction(transaction);
+                        }
                     }
                     layoutManager.setReverseLayout(true);
                     layoutManager.setStackFromEnd(true);
@@ -109,4 +106,5 @@ public class SentPaymentRequestFragment extends Fragment {
             }
         });
     }
+
 }

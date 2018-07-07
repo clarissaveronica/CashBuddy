@@ -9,15 +9,11 @@ import java.util.TimeZone;
 
 public class Transaction implements Serializable {
 
-    private String name;
-    // Store Identity Variable
     private String sid;
-    // User Identity Variable
     private String uid;
-    // Total price
     private int totalPrice;
-    // Purchase Date
     private long purchaseDate;
+    private int split;
 
     // Empty Constructor
     public Transaction() {
@@ -29,6 +25,7 @@ public class Transaction implements Serializable {
         this.uid = user_id;
         this.totalPrice = totalPrice;
         this.purchaseDate = Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime();
+        split = 0;
     }
 
     public void setSid(String sid) {
@@ -47,6 +44,10 @@ public class Transaction implements Serializable {
         this.totalPrice = totalPrice;
     }
 
+    public void setSplit(int split){this.split = split;}
+
+    public int getSplit(){return split;}
+
     public String getSid() {
         return sid;
     }
@@ -61,10 +62,6 @@ public class Transaction implements Serializable {
 
     public int getTotalPrice() {
         return totalPrice;
-    }
-
-    public String getName(){
-        return this.name;
     }
 
     public static String getPurchasedDateString(long time) {

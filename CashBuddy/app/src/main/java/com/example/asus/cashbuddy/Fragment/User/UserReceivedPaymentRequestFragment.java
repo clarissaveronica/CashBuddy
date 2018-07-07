@@ -97,9 +97,8 @@ public class UserReceivedPaymentRequestFragment extends Fragment {
                             adapter.addPaymentRequest(paymentRequest);
                         }else{
                             HashMap<String, Object> result = new HashMap<>();
-                            result.put("requeststatus", 2);
+                            result.put("requeststatus", 3);
                             refReq.child(child.getKey()).updateChildren(result);
-                            Log.i("adf", "adf" + child.getKey());
                         }
                     }
                     layoutManager.setReverseLayout(true);
