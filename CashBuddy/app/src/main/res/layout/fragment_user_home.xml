@@ -188,18 +188,18 @@
                 android:orientation="vertical">
 
                 <ImageButton
-                    android:id="@+id/pendingButton"
+                    android:id="@+id/splitButton"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/rounded_button"
-                    android:src="@drawable/ic_format_list_bulleted_black_40dp"
+                    android:src="@drawable/ic_content_cut_black_30dp"
                     android:tint="@color/White" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pending"
+                    android:text="Split Bills"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -215,13 +215,13 @@
                     android:layout_height="50dp"
                     android:layout_margin="10dp"
                     android:background="@drawable/rounded_button"
-                    android:src="@drawable/ic_content_cut_black_30dp"
+                    android:src="@drawable/ic_generate_qr_30dp"
                     android:tint="@color/White" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Split Bills"
+                    android:text="My QR"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>

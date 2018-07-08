@@ -101,8 +101,10 @@ public class AdminPhoneTopUpFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    userID = dataSnapshot.getValue().toString();
-                    listener.onSuccess();
+                    if(!user.getUid().equals(dataSnapshot.getValue().toString())) {
+                        userID = dataSnapshot.getValue().toString();
+                        listener.onSuccess();
+                    }else listener.onFailure();
                 }else listener.onFailure();
 
             }

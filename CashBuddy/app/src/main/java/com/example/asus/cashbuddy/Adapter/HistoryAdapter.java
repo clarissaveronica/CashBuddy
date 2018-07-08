@@ -41,7 +41,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         holder.desc.setText(history.getDesc());
         holder.type.setText(history.getType());
         holder.date.setText(history.getDateString(history.getDate()));
-        if(history.getType().equals("Payment Request") || history.getType().equals("Withdraw") || history.getType().equals("Send CB Cash") || history.getType().equals("Purchase")) {
+        if(history.getType().equals("Split Bill") || history.getType().equals("Payment Request") || history.getType().equals("Withdraw") || history.getType().equals("Send CB Cash") || history.getType().equals("Purchase")) {
             holder.amount.setTextColor(holder.context.getResources().getColor(R.color.red));
             holder.amount.setText("-" + changeToRupiahFormat(history.getAmount()));
         }else{

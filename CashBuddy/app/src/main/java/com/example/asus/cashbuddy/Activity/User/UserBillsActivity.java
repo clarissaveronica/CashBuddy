@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 
+import com.example.asus.cashbuddy.Fragment.User.UserCreateSplitBillFragment;
 import com.example.asus.cashbuddy.Fragment.User.UserReceiveSplitBillFragment;
 import com.example.asus.cashbuddy.Fragment.User.UserSentSplitBillFragment;
 import com.example.asus.cashbuddy.Fragment.User.UserSplitBillFragment;
@@ -35,6 +36,7 @@ public class UserBillsActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         mViewPager = (ViewPager) findViewById(R.id.container);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPagerAdapter.addFragments(new UserCreateSplitBillFragment(), "Create");
         viewPagerAdapter.addFragments(new UserSplitBillFragment(), "Bills");
         viewPagerAdapter.addFragments(new UserReceiveSplitBillFragment(), "Received");
         viewPagerAdapter.addFragments(new UserSentSplitBillFragment(), "Sent");

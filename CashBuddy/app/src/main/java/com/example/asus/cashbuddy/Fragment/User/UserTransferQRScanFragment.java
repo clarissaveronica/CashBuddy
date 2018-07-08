@@ -11,7 +11,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,36 +100,42 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
 
         transfer = changeToRupiahFormat(totalTransfer);
 
-        getInfo(new OnGetDataListener() {
-            @Override
-            public void onSuccess() {
-                if (userBalance >= totalTransfer) {
-                    showInputSC();
-                }else {
-                    showError();
+        if(!user.getUid().equals(result)) {
+            getInfo(new OnGetDataListener() {
+                @Override
+                public void onSuccess() {
+                    if (userBalance >= totalTransfer) {
+                        showInputSC();
+                    } else {
+                        showError();
+                    }
                 }
-            }
 
-            @Override
-            public void onStart() {
-            }
+                @Override
+                public void onStart() {
+                }
 
-            @Override
-            public void onFailure() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Invalid QR code, Please try again")
-                        .setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                mScannerView.resumeCameraPreview(UserTransferQRScanFragment.this);
-                            }
-                        });
+                @Override
+                public void onFailure() {
+                    showInvalidQR();
+                }
+            });
+        }else showInvalidQR();
+    }
 
-                AlertDialog alert = builder.create();
-                alert.setTitle("Oops!");
-                alert.show();
-            }
-        });
+    public void showInvalidQR(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Invalid QR code, Please try again")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mScannerView.resumeCameraPreview(UserTransferQRScanFragment.this);
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.setTitle("Oops!");
+        alert.show();
     }
 
     public void showError(){
@@ -149,8 +154,6 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
     }
 
     public void getInfo(final OnGetDataListener listener){
-        listener.onStart();
-
         databaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

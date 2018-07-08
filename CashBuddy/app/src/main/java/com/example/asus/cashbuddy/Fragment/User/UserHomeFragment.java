@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.example.asus.cashbuddy.Activity.User.UserBillsActivity;
 import com.example.asus.cashbuddy.Activity.User.UserPendingPaymentActivity;
-import com.example.asus.cashbuddy.Activity.User.UserRequestPaymentActivity;
 import com.example.asus.cashbuddy.Activity.User.UserScanActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTopUpActivity;
 import com.example.asus.cashbuddy.Activity.User.UserTransferActivity;
@@ -46,7 +44,7 @@ import java.util.Locale;
 public class UserHomeFragment extends Fragment {
 
     //Initialize
-    private ImageButton scan, transfer, topup, request, pending, split;
+    private ImageButton scan, transfer, topup, request, qr, split;
     private ImageView profile;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseRef;
@@ -75,9 +73,9 @@ public class UserHomeFragment extends Fragment {
         topup = view.findViewById(R.id.topupButton);
         profile = view.findViewById(R.id.profile);
         balance = view.findViewById(R.id.balance);
-        pending = view.findViewById(R.id.pendingButton);
-        split = view.findViewById(R.id.generateQRButton);
         request = view.findViewById(R.id.requestPaymentButton);
+        split = view.findViewById(R.id.splitButton);
+        qr = view.findViewById(R.id.generateQRButton);
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -111,27 +109,20 @@ public class UserHomeFragment extends Fragment {
         //Request payment from another user
         request.setOnClickListener(new View.OnClickListener(){
             public void onClick (View v){
-                Intent intent = new Intent(getActivity(), UserRequestPaymentActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        //Request payment from another user
-        pending.setOnClickListener(new View.OnClickListener(){
-            public void onClick (View v){
                 Intent intent = new Intent(getActivity(), UserPendingPaymentActivity.class);
                 startActivity(intent);
             }
         });
 
-        //Show user's QR when profile button is clicked
-        profile.setOnClickListener(new View.OnClickListener(){
+        //Show user's QR
+        qr.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 showQR();
             }
         });
 
+        //Split bills with other user
         split.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

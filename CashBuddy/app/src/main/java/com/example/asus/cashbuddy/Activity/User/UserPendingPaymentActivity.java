@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.asus.cashbuddy.Fragment.All.SentPaymentRequestFragment;
 import com.example.asus.cashbuddy.Fragment.User.UserReceivedPaymentRequestFragment;
+import com.example.asus.cashbuddy.Fragment.User.UserRequestPaymentFragment;
 import com.example.asus.cashbuddy.R;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class UserPendingPaymentActivity extends AppCompatActivity {
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         mViewPager = (ViewPager) findViewById(R.id.container);
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        viewPagerAdapter.addFragments(new UserRequestPaymentFragment(), "Create");
         viewPagerAdapter.addFragments(new UserReceivedPaymentRequestFragment(), "Received");
         viewPagerAdapter.addFragments(new SentPaymentRequestFragment(), "Sent");
 

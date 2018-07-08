@@ -109,9 +109,6 @@
             android:name=".Activity.User.UserDealsDetailActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.User.UserRequestPaymentActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".Activity.User.UserPendingPaymentActivity"
             android:screenOrientation="portrait" />
         <activity

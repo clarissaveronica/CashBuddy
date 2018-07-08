@@ -18,12 +18,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class SentPaymentDetailActivity extends AppCompatActivity {
 
     private TextView amount, sentTo, type, date, status;
-    private FirebaseDatabase firebaseDatabase;
     private PaymentRequest paymentRequest;
     private Intent intent;
     private ArrayList<PaymentRequest> paymentRequestArrayList;
@@ -44,9 +45,6 @@ public class SentPaymentDetailActivity extends AppCompatActivity {
         paymentRequestArrayList = (ArrayList<PaymentRequest>) intent.getSerializableExtra("paymentReq");
         paymentRequest = paymentRequestArrayList.get(pos);
 
-        //Get data firebase
-        firebaseDatabase = FirebaseDatabase.getInstance();
-
         //Initialize views
         amount = findViewById(R.id.amount);
         sentTo = findViewById(R.id.name);
@@ -63,7 +61,12 @@ public class SentPaymentDetailActivity extends AppCompatActivity {
         }else if(paymentRequest.getRequeststatus() == 1){
             status.setText("Accepted");
         }else if(paymentRequest.getRequeststatus() == 0){
-            status.setText("Pending");
+            long remaining = paymentRequest.getRequestdate() + (5 * 24 * 60 * 60 * 1000) - Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime().getTime() ;
+            long day = (remaining / (60*60*24*1000));
+
+            status.setText("Pending - " + day + " day(s) left");
+        }else if(paymentRequest.getRequeststatus() == 3){
+            status.setText("Expired");
         }
 
         FirebaseDatabase.getInstance().getReference("users").child(paymentRequest.getReceiverRequest()).child("name").addListenerForSingleValueEvent(new ValueEventListener() {

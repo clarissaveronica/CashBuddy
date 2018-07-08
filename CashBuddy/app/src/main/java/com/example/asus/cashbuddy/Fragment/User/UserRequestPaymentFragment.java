@@ -1,27 +1,20 @@
-package com.example.asus.cashbuddy.Activity.User;
+package com.example.asus.cashbuddy.Fragment.User;
 
-import android.app.Activity;
+
 import android.content.DialogInterface;
-import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alimuzaffar.lib.pin.PinEntryEditText;
@@ -42,7 +35,10 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class UserRequestPaymentActivity extends AppCompatActivity {
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class UserRequestPaymentFragment extends Fragment {
 
     private TextInputEditText amountRequested, phoneNum, type;
     private Button submit;
@@ -54,22 +50,26 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseUser user;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_request_payment);
+    public UserRequestPaymentFragment() {
+        // Required empty public constructor
+    }
 
-        //Custom Action Bar's Title
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.actionbar_layout);
-        TextView textViewTitle = findViewById(R.id.title);
-        textViewTitle.setText(R.string.makePaymentRequestTitle);
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_user_request_payment, container, false);
+    }
+
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //Initialize view
-        amountRequested = findViewById(R.id.amountTransfer);
-        phoneNum = findViewById(R.id.phoneNum);
-        submit = findViewById(R.id.submitButton);
-        type = findViewById(R.id.type);
+        amountRequested = view.findViewById(R.id.amountTransfer);
+        phoneNum = view.findViewById(R.id.phoneNum);
+        submit = view.findViewById(R.id.submitButton);
+        type = view.findViewById(R.id.type);
 
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
@@ -96,7 +96,7 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onFailure() {
-                                    phoneNum.setError("Unregistered phone number");
+                                    phoneNum.setError("Invalid phone number");
                                 }
                             });
                         }
@@ -108,7 +108,7 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure() {
-                            phoneNum.setError("Unregistered phone number");
+                            phoneNum.setError("Invalid phone number");
                         }
                     });
                 }
@@ -192,11 +192,6 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
         return valid;
     }
 
-    @Override
-    public void onBackPressed() {
-        finish();
-    }
-
     public interface OnGetDataListener {
         //make new interface for call back
         void onSuccess();
@@ -215,8 +210,10 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    receiver = dataSnapshot.getValue().toString();
-                    listener.onSuccess();
+                    if(!user.getUid().equals(dataSnapshot.getValue().toString())) {
+                        receiver = dataSnapshot.getValue().toString();
+                        listener.onSuccess();
+                    }else listener.onFailure();
                 }else listener.onFailure();
 
             }
@@ -248,14 +245,14 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
     }
 
     public void showInputSC(){
-        final AlertDialog builder = new AlertDialog.Builder(UserRequestPaymentActivity.this)
+        final AlertDialog builder = new AlertDialog.Builder(getContext())
                 .setTitle("Requesting " + changeToRupiahFormat(newPrice) + " from " + receiverName)
                 .setPositiveButton(android.R.string.ok, null)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setMessage("Please enter your security code to proceed")
                 .create();
 
-        View viewInflated = LayoutInflater.from(this).inflate(R.layout.input_security_code, null, false);
+        View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.input_security_code, (ViewGroup) getView(), false);
 
         securitycode = viewInflated.findViewById(R.id.pinEntry);
 
@@ -274,8 +271,8 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
                         verify(new OnGetDataListener() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(getApplicationContext(), "Payment request delivered!", Toast.LENGTH_SHORT).show();
-                                finish();
+                                Toast.makeText(getActivity(), "Payment request delivered!", Toast.LENGTH_SHORT).show();
+                                getActivity().finish();
                             }
 
                             @Override
@@ -284,7 +281,7 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure() {
-                                Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "Wrong security code", Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
@@ -352,4 +349,3 @@ public class UserRequestPaymentActivity extends AppCompatActivity {
         }
     }
 }
-

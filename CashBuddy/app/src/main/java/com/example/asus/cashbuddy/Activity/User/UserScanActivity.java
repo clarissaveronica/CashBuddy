@@ -86,6 +86,12 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mScannerView.stopCamera();
+    }
+
+    @Override
     public void handleResult(final Result rawResult) {
         result = rawResult.getText();
 
@@ -138,7 +144,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
     }
 
     public void showError(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(UserScanActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Insufficient funds. Please top up to proceed with the transaction")
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -152,21 +158,6 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
         alert.show();
     }
 
-    public void showSuccess(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(UserScanActivity.this);
-        builder.setMessage("Your transaction is completed. Thank you for using Cash Buddy!")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
-                });
-
-        AlertDialog alert = builder.create();
-        alert.setTitle("Yay!");
-        alert.show();
-    }
-
     public void getInfo(final OnGetDataListener listener){
         listener.onStart();
 
@@ -176,29 +167,28 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
                 if(dataSnapshot.exists()){
                     transactionAmount = Integer.parseInt(dataSnapshot.child("price").getValue().toString());
                     amount = changeToRupiahFormat(transactionAmount);
+                    merchantName = dataSnapshot.child("merchantName").getValue().toString();
+                    merchantBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
 
                     if(transactionAmount != 0) {
-                        merchantName = dataSnapshot.child("merchantName").getValue().toString();
-                        merchantBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
-                        listener.onSuccess();
+                        databaseUser.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()){
+                                    userBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
+                                    userName = dataSnapshot.child("name").getValue().toString();
+                                    listener.onSuccess();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
                     }else listener.onFailure();
                 }else{
                     listener.onFailure();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseUser.child(user.getUid()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    userBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
-                    userName = dataSnapshot.child("name").getValue().toString();
                 }
             }
 
@@ -267,7 +257,8 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
                         verify(new OnGetDataListener() {
                             @Override
                             public void onSuccess() {
-                                showSuccess();
+                                Toast.makeText(getApplicationContext(), "Yay! Your transaction is completed!", Toast.LENGTH_SHORT).show();
+                                finish();
                             }
 
                             @Override

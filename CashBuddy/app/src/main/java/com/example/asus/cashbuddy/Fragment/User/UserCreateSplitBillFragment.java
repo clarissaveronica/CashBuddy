@@ -1,27 +1,27 @@
-package com.example.asus.cashbuddy.Activity.User;
+package com.example.asus.cashbuddy.Fragment.User;
 
-import android.content.Intent;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.asus.cashbuddy.Activity.Admin.AdminTopUpActivity;
 import com.example.asus.cashbuddy.Model.SplitBill;
-import com.example.asus.cashbuddy.Model.Transaction;
 import com.example.asus.cashbuddy.R;
 import com.example.asus.cashbuddy.Utils.SplitBillUtil;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,87 +30,76 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 
-public class UserSplitBillDetailActivity extends AppCompatActivity {
+public class UserCreateSplitBillFragment extends Fragment {
 
-    private TextView totalPrice;
     private String uid, uid2, uid3, uid4, uid5;
-    private TextInputEditText person2, person3, person4, person5, price1, price2, price3, price4, price5;
-    private int totalPerson, splitPrice, pricePerson1, pricePerson2, pricePerson3, pricePerson4, pricePerson5;
+    private TextInputEditText totalPrice, person2, person3, person4, person5, price1, price2, price3, price4, price5;
+    private int totalBill, totalPerson, splitPrice, pricePerson1, pricePerson2, pricePerson3, pricePerson4, pricePerson5;
     private LinearLayout layout3, layoutPrice3, layout4, layoutPrice4, layout5, layoutPrice5;
-    private DatabaseReference reference;
-    private Transaction transaction;
     private FirebaseUser user;
     private FirebaseAuth firebaseAuth;
-    private Intent intent;
     private Button splitButton;
     private CheckBox splitEvenly;
     private Spinner spinner;
     private boolean valid, valid2, valid3, valid4, valid5;
-    private ArrayList<Transaction> transactionArrayList;
+
+    public UserCreateSplitBillFragment() {
+        // Required empty public constructor
+    }
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user_split_bill_detail);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_user_create_split_bill, container, false);
+    }
 
-        //Custom Action Bar's Title
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.actionbar_layout);
-        TextView textViewTitle = findViewById(R.id.title);
-        textViewTitle.setText(R.string.splitBillsDetailTitle);
-
-        intent = getIntent();
-        int pos = intent.getIntExtra("Position",0);
-        transactionArrayList = (ArrayList<Transaction>) intent.getSerializableExtra("transaction");
-        transaction = transactionArrayList.get(pos);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //Get data firebase
         firebaseAuth = FirebaseAuth.getInstance();
         user = firebaseAuth.getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("splitbill");
 
         //Initialize views
-        totalPrice = findViewById(R.id.totalPrice);
-        splitEvenly = findViewById(R.id.checkBox);
-        splitButton = findViewById(R.id.splitButton);
-        price1 = findViewById(R.id.price1);
-        price2 = findViewById(R.id.price2);
-        price3 = findViewById(R.id.price3);
-        price4 = findViewById(R.id.price4);
-        price5 = findViewById(R.id.price5);
-        person2 = findViewById(R.id.person2);
-        person3 = findViewById(R.id.person3);
-        person4 = findViewById(R.id.person4);
-        person5 = findViewById(R.id.person5);
-        layout3 = findViewById(R.id.layout3);
-        layoutPrice3 = findViewById(R.id.layoutPrice3);
-        layout4 = findViewById(R.id.layout4);
-        layoutPrice4 = findViewById(R.id.layoutPrice4);
-        layout5 = findViewById(R.id.layout5);
-        layoutPrice5 = findViewById(R.id.layoutPrice5);
+        totalPrice = view.findViewById(R.id.insertPrice);
+        splitEvenly = view.findViewById(R.id.checkBox);
+        splitButton = view.findViewById(R.id.splitButton);
+        price1 = view.findViewById(R.id.price1);
+        price2 = view.findViewById(R.id.price2);
+        price3 = view.findViewById(R.id.price3);
+        price4 = view.findViewById(R.id.price4);
+        price5 = view.findViewById(R.id.price5);
+        person2 = view.findViewById(R.id.person2);
+        person3 = view.findViewById(R.id.person3);
+        person4 = view.findViewById(R.id.person4);
+        person5 = view.findViewById(R.id.person5);
+        layout3 = view.findViewById(R.id.layout3);
+        layoutPrice3 = view.findViewById(R.id.layoutPrice3);
+        layout4 = view.findViewById(R.id.layout4);
+        layoutPrice4 = view.findViewById(R.id.layoutPrice4);
+        layout5 = view.findViewById(R.id.layout5);
+        layoutPrice5 = view.findViewById(R.id.layoutPrice5);
 
-        spinner = findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(UserSplitBillDetailActivity.this, R.array.splitBill, android.R.layout.simple_spinner_item);
+        spinner = view.findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this.getActivity(), R.array.splitBill, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
         splitEvenly.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(splitEvenly.isChecked()){
+                totalPrice.clearFocus();
+                if (splitEvenly.isChecked()) {
                     splitEven();
-                }else{
+                } else {
                     price1.setEnabled(true);
                     price2.setEnabled(true);
                     price3.setEnabled(true);
@@ -135,13 +124,12 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
         price3.addTextChangedListener(generalTextWatcher);
         price4.addTextChangedListener(generalTextWatcher);
         price5.addTextChangedListener(generalTextWatcher);
-
-        totalPrice.setText(changeToRupiahFormat(transaction.getTotalPrice()));
+        totalPrice.addTextChangedListener(generalTextWatcher);
 
         splitButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(pricePerson1 + pricePerson2 + pricePerson3 + pricePerson4 + pricePerson5 == transaction.getTotalPrice()){
+                if(pricePerson1 + pricePerson2 + pricePerson3 + pricePerson4 + pricePerson5 == totalBill){
                     price1.setError(null);
                     price2.setError(null);
                     price3.setError(null);
@@ -168,9 +156,8 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
                                 split(uid5, pricePerson5);
                             }
 
-                            updateReq();
-                            Toast.makeText(getApplicationContext(), "Split bill request sent", Toast.LENGTH_SHORT).show();
-                            finish();
+                            Toast.makeText(getActivity(), "Split bill request sent", Toast.LENGTH_SHORT).show();
+                            getActivity().finish();
                         }
 
                         @Override
@@ -262,26 +249,6 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
         });
     }
 
-    public void updateReq(){
-        final DatabaseReference ref= FirebaseDatabase.getInstance().getReference().child("transactions");
-
-        ref.orderByChild("uid").equalTo(transaction.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot productSnapshot: dataSnapshot.getChildren()) {
-                    if (productSnapshot.child("purchaseDate").getValue().equals(transaction.getPurchaseDate())) {
-                        HashMap<String, Object> result = new HashMap<>();
-                        result.put("split", 1);
-                        ref.child(productSnapshot.getKey()).updateChildren(result);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) { }
-        });
-    }
-
     public void split(String receiver, int amount){
         if(splitEvenly.isChecked()) {
             SplitBill splitBill = new SplitBill(receiver, user.getUid(), splitPrice);
@@ -298,6 +265,7 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
         String price3Text = price3.getText().toString();
         String price4Text = price4.getText().toString();
         String price5Text = price5.getText().toString();
+        String totalPrices = totalPrice.getText().toString();
         String person2Text = person2.getText().toString();
         String person3Text = person3.getText().toString();
         String person4Text = person4.getText().toString();
@@ -315,11 +283,22 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
             valid = false;
         }
 
+        if(TextUtils.isEmpty(totalPrices)){
+            totalPrice.setError("Price is required");
+            valid = false;
+        }else if(totalPrices.equals("Rp")){
+            totalPrice.setError("Price is required");
+            valid = false;
+        }else if(totalBill < 10000){
+            totalPrice.setError("Minimum bill to split is Rp10.000");
+            valid = false;
+        }
+
         if(!TextUtils.isEmpty(price1Text) && !TextUtils.isEmpty(price2Text)) {
             if (!splitEvenly.isChecked()) {
                 pricePerson1 = Integer.parseInt(price1Text.replace(",", ""));;
                 pricePerson2 = Integer.parseInt(price2Text.replace(",", ""));
-                if(pricePerson1 + pricePerson2 != transaction.getTotalPrice()) {
+                if(pricePerson1 + pricePerson2 != totalBill) {
                     price1.setError("Invalid amount");
                     price2.setError("Invalid amount");
                     valid = false;
@@ -360,7 +339,7 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
                     pricePerson1 = Integer.parseInt(price1Text.replace(",", ""));
                     pricePerson2 = Integer.parseInt(price2Text.replace(",", ""));
                     pricePerson3 = Integer.parseInt(price3Text.replace(",", ""));
-                    if(pricePerson1 + pricePerson2 + pricePerson3 != transaction.getTotalPrice()) {
+                    if(pricePerson1 + pricePerson2 + pricePerson3 != totalBill) {
                         price1.setError("Invalid amount");
                         price2.setError("Invalid amount");
                         price3.setError("Invalid amount");
@@ -408,7 +387,7 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
                     pricePerson2 = Integer.parseInt(price2Text.replace(",", ""));
                     pricePerson3 = Integer.parseInt(price3Text.replace(",", ""));
                     pricePerson4 = Integer.parseInt(price4Text.replace(",", ""));
-                    if(pricePerson1 + pricePerson2 + pricePerson3 + pricePerson4 != transaction.getTotalPrice()) {
+                    if(pricePerson1 + pricePerson2 + pricePerson3 + pricePerson4 != totalBill) {
                         price1.setError("Invalid amount");
                         price2.setError("Invalid amount");
                         price3.setError("Invalid amount");
@@ -473,7 +452,7 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
                     pricePerson3 = Integer.parseInt(price3Text.replace(",", ""));
                     pricePerson4 = Integer.parseInt(price4Text.replace(",", ""));
                     pricePerson5 = Integer.parseInt(price5Text.replace(",", ""));
-                    if(pricePerson1 + pricePerson2 + pricePerson3 + pricePerson4 + pricePerson5 != transaction.getTotalPrice()) {
+                    if(pricePerson1 + pricePerson2 + pricePerson3 + pricePerson4 + pricePerson5 != totalBill) {
                         price1.setError("Invalid amount");
                         price2.setError("Invalid amount");
                         price3.setError("Invalid amount");
@@ -486,11 +465,6 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
         }
 
         return valid;
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 
     private TextWatcher generalTextWatcher = new TextWatcher() {
@@ -512,6 +486,7 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
             price3.removeTextChangedListener(this);
             price4.removeTextChangedListener(this);
             price5.removeTextChangedListener(this);
+            totalPrice.removeTextChangedListener(this);
 
             try {
                 String originalString = s.toString();
@@ -519,6 +494,10 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
                 Long longval;
                 if (originalString.contains(",")) {
                     originalString = originalString.replaceAll(",", "");
+                }
+
+                if(originalString.contains("Rp")){
+                    originalString = originalString.replaceAll("Rp", "");
                 }
                 longval = Long.parseLong(originalString);
 
@@ -542,6 +521,26 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
                 }else if(price5.hasFocus()){
                     price5.setText(formattedString);
                     price5.setSelection(price5.getText().length());
+                }else if(totalPrice.hasFocus()){
+                    totalPrice.setText("Rp" + formattedString);
+                    totalPrice.setSelection(totalPrice.getText().length());
+
+                    if(!totalPrice.getText().toString().equals("")){
+                        totalBill = Integer.parseInt(totalPrice.getText().toString().replace(",", "").replace("Rp", ""));
+
+                        if(totalBill >= 10000){
+                            splitEvenly.setClickable(true);
+                            splitEvenly.setEnabled(true);
+                            splitEvenly.setFocusableInTouchMode(true);
+                        }else{
+                            splitEvenly.setClickable(false);
+                            splitEvenly.setEnabled(false);
+                        }
+                    }
+
+                    if(splitEvenly.isChecked()){
+                        splitEven();
+                    }
                 }
             } catch (NumberFormatException nfe) {
                 nfe.printStackTrace();
@@ -551,6 +550,7 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
             price3.addTextChangedListener(this);
             price4.addTextChangedListener(this);
             price5.addTextChangedListener(this);
+            totalPrice.addTextChangedListener(this);
         }
 
     };
@@ -567,7 +567,7 @@ public class UserSplitBillDetailActivity extends AppCompatActivity {
         price5.setEnabled(false);
         price5.setFocusable(false);
 
-        splitPrice = transaction.getTotalPrice()/totalPerson;
+        splitPrice = totalBill/totalPerson;
 
         DecimalFormat formatter = new DecimalFormat("#,###,###");
         String splitted = formatter.format(splitPrice);

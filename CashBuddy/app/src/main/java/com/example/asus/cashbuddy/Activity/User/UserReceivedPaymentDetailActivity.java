@@ -33,7 +33,7 @@ import java.util.Locale;
 
 public class UserReceivedPaymentDetailActivity extends AppCompatActivity {
 
-    private TextView amount, sentBy, type, date;
+    private TextView amount, sentBy, type, date, expired;
     private Button accept, decline;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference walletSender, walletReceiver, notification, reference;
@@ -51,6 +51,7 @@ public class UserReceivedPaymentDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_received_payment_detail);
+
         //Custom Action Bar's Title
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_layout);
@@ -76,11 +77,13 @@ public class UserReceivedPaymentDetailActivity extends AppCompatActivity {
         date = findViewById(R.id.date);
         accept = findViewById(R.id.accept_request);
         decline = findViewById(R.id.decline_request);
+        expired = findViewById(R.id.expiry);
 
         //Set views
         amount.setText(changeToRupiahFormat(paymentRequest.getAmount()));
         type.setText(paymentRequest.getType());
         date.setText(paymentRequest.getRequestDateString(paymentRequest.getRequestdate()));
+        expired.setText(paymentRequest.getRequestDateString(paymentRequest.getRequestdate() +(5 * 24 * 60 * 60 * 1000)));
 
         FirebaseDatabase.getInstance().getReference(paymentRequest.getFrom()).child(paymentRequest.getSenderRequest()).addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -275,7 +278,7 @@ public class UserReceivedPaymentDetailActivity extends AppCompatActivity {
                         HistoryUtil.insert(history, user.getUid());
 
                         //Set history for request's sender
-                        History history2 = new History("Payment Request Accepted", userName, paymentRequest.getAmount());
+                        History history2 = new History("Accepted Request", userName, paymentRequest.getAmount());
                         HistoryUtil.insert(history2, paymentRequest.getSenderRequest());
 
                         HashMap<String, String> notificationData = new HashMap<>();

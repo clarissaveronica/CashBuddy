@@ -100,32 +100,40 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
 
         transfer = changeToRupiahFormat(totalTransfer);
 
-        getInfo(new OnGetDataListener() {
-            @Override
-            public void onSuccess() {
-                showInputSC();
-            }
+        if(!user.getUid().equals(result)) {
+            getInfo(new OnGetDataListener() {
+                @Override
+                public void onSuccess() {
+                    showInputSC();
+                }
 
-            @Override
-            public void onStart() {
-            }
+                @Override
+                public void onStart() {
+                }
 
-            @Override
-            public void onFailure() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Invalid QR code. Please try again")
-                        .setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                mScannerView.resumeCameraPreview(AdminTopUpQRScanFragment.this);
-                            }
-                        });
+                @Override
+                public void onFailure() {
+                    invalidQR();
+                }
+            });
+        }else{
+            invalidQR();
+        }
+    }
 
-                AlertDialog alert = builder.create();
-                alert.setTitle("Oops!");
-                alert.show();
-            }
-        });
+    public void invalidQR(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Invalid QR code. Please try again")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mScannerView.resumeCameraPreview(AdminTopUpQRScanFragment.this);
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.setTitle("Oops!");
+        alert.show();
     }
 
     public void getInfo(final OnGetDataListener listener){

@@ -105,8 +105,10 @@ public class UserPhoneTransferFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    receiver = dataSnapshot.getValue().toString();
-                    listener.onSuccess();
+                    if(!user.getUid().equals(dataSnapshot.getValue().toString())) {
+                        receiver = dataSnapshot.getValue().toString();
+                        listener.onSuccess();
+                    }else listener.onFailure();
                 }else listener.onFailure();
 
             }
@@ -193,7 +195,7 @@ public class UserPhoneTransferFragment extends Fragment {
 
                     @Override
                     public void onFailure() {
-                        phoneNum.setError("Unregistered phone number");
+                        phoneNum.setError("Invalid phone number");
                     }
                 });
             }
@@ -205,7 +207,7 @@ public class UserPhoneTransferFragment extends Fragment {
 
             @Override
             public void onFailure() {
-                phoneNum.setError("Unregistered phone number");
+                phoneNum.setError("Invalid phone number");
             }
         });
     }
