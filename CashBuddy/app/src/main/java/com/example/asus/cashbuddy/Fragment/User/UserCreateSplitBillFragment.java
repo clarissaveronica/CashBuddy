@@ -100,21 +100,7 @@ public class UserCreateSplitBillFragment extends Fragment {
                 if (splitEvenly.isChecked()) {
                     splitEven();
                 } else {
-                    price1.setEnabled(true);
-                    price2.setEnabled(true);
-                    price3.setEnabled(true);
-                    price4.setEnabled(true);
-                    price5.setEnabled(true);
-                    price1.setFocusable(true);
-                    price1.setFocusableInTouchMode(true);
-                    price2.setFocusable(true);
-                    price2.setFocusableInTouchMode(true);
-                    price3.setFocusable(true);
-                    price3.setFocusableInTouchMode(true);
-                    price4.setFocusable(true);
-                    price4.setFocusableInTouchMode(true);
-                    price5.setFocusable(true);
-                    price5.setFocusableInTouchMode(true);
+                    enabled();
                 }
             }
         });
@@ -247,6 +233,24 @@ public class UserCreateSplitBillFragment extends Fragment {
 
             }
         });
+    }
+
+    public void enabled(){
+        price1.setEnabled(true);
+        price2.setEnabled(true);
+        price3.setEnabled(true);
+        price4.setEnabled(true);
+        price5.setEnabled(true);
+        price1.setFocusable(true);
+        price1.setFocusableInTouchMode(true);
+        price2.setFocusable(true);
+        price2.setFocusableInTouchMode(true);
+        price3.setFocusable(true);
+        price3.setFocusableInTouchMode(true);
+        price4.setFocusable(true);
+        price4.setFocusableInTouchMode(true);
+        price5.setFocusable(true);
+        price5.setFocusableInTouchMode(true);
     }
 
     public void split(String receiver, int amount){
@@ -527,15 +531,6 @@ public class UserCreateSplitBillFragment extends Fragment {
 
                     if(!totalPrice.getText().toString().equals("")){
                         totalBill = Integer.parseInt(totalPrice.getText().toString().replace(",", "").replace("Rp", ""));
-
-                        if(totalBill >= 10000){
-                            splitEvenly.setClickable(true);
-                            splitEvenly.setEnabled(true);
-                            splitEvenly.setFocusableInTouchMode(true);
-                        }else{
-                            splitEvenly.setClickable(false);
-                            splitEvenly.setEnabled(false);
-                        }
                     }
 
                     if(splitEvenly.isChecked()){
@@ -555,7 +550,7 @@ public class UserCreateSplitBillFragment extends Fragment {
 
     };
 
-    private void splitEven(){
+    private void disabled(){
         price1.setEnabled(false);
         price1.setFocusable(false);
         price2.setEnabled(false);
@@ -566,7 +561,10 @@ public class UserCreateSplitBillFragment extends Fragment {
         price4.setFocusable(false);
         price5.setEnabled(false);
         price5.setFocusable(false);
+    }
 
+    private void splitEven(){
+        disabled();
         splitPrice = totalBill/totalPerson;
 
         DecimalFormat formatter = new DecimalFormat("#,###,###");
