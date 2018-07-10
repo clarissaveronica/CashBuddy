@@ -105,7 +105,6 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:textAllCaps="true"
-                android:maxLength="6"
                 android:hint="Bank's name"
                 android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
@@ -152,7 +151,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:maxLength="6"
                 android:hint="Your name on your bank account"
                 android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
@@ -199,7 +197,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:maxLength="6"
                 android:hint="Your bank account's number"
                 android:inputType="number" />
         </android.support.design.widget.TextInputLayout>
