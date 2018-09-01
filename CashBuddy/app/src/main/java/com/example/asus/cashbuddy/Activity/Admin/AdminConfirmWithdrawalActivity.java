@@ -35,7 +35,7 @@ public class AdminConfirmWithdrawalActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_layout);
         TextView textViewTitle = findViewById(R.id.title);
-        textViewTitle.setText(R.string.merchantWithdrawalTitle);
+        textViewTitle.setText(R.string.confirmWithdrawalTitle);
 
         withdraws = new ArrayList<Withdraw>();
         adapter = new AdminConfirmWithdrawAdapter(withdraws);

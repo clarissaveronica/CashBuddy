@@ -17,6 +17,7 @@
             android:layout_marginTop="32sp">
 
             <TextView
+                android:id="@+id/text"
                 android:layout_width="0sp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

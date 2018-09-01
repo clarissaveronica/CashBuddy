@@ -297,7 +297,7 @@ public class MerchantWithdrawActivity extends AppCompatActivity {
 
     public void showError(){
         AlertDialog.Builder builder = new AlertDialog.Builder(MerchantWithdrawActivity.this);
-        builder.setMessage("Insufficient funds. Please top up to proceed with the transaction")
+        builder.setMessage("Insufficient funds!")
                 .setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {

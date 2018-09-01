@@ -112,11 +112,11 @@ public class SecurityCodeVerificationActivity extends AppCompatActivity {
                         mUser.child(currentUser).child("device_token").setValue(deviceToken);
                         Intent intent = new Intent(SecurityCodeVerificationActivity.this, MainActivity.class);
                         startActivity(intent);
-                        finish();
+                        finishAffinity();
                     }else{
                         Intent intent = new Intent(SecurityCodeVerificationActivity.this, AdminMainActivity.class);
                         startActivity(intent);
-                        finish();
+                        finishAffinity();
                     }
                 }else if(!hash(pin).equals(password)){
                     Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
@@ -139,7 +139,7 @@ public class SecurityCodeVerificationActivity extends AppCompatActivity {
                     mMerchant.child(currentUser).child("device_token").setValue(deviceToken);
                     Intent intent = new Intent(SecurityCodeVerificationActivity.this, MerchantMainActivity.class);
                     startActivity(intent);
-                    finish();
+                    finishAffinity();
                 }else if(!hash(pin).equals(password)){
                     Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
                     pinEntry.setText("");
@@ -171,6 +171,9 @@ public class SecurityCodeVerificationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if(getIntent().getIntExtra("newLogin", 0) == 1){
+            FirebaseAuth.getInstance().signOut();
+        }
         finish();
     }
 }

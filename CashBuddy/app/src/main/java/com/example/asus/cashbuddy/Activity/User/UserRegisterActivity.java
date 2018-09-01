@@ -57,12 +57,11 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
         submitButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(validateForm()) {
-                    String email = emailEditText.getText().toString();
-                    String password = passwordEditText.getText().toString();
-                    String name = nameEditText.getText().toString();
-                    String number = phoneNumberEditText.getText().toString();
-
+                String email = emailEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                String name = nameEditText.getText().toString();
+                String number = phoneNumberEditText.getText().toString();
+                if(validateForm(email, password, name, number)) {
                     Intent intent = new Intent(UserRegisterActivity.this, RegisterVerificationActivity.class);
                     intent.putExtra("email", email);
                     intent.putExtra("password", password);
@@ -75,12 +74,7 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
         });
     }
 
-    public boolean validateForm() {
-        String email = emailEditText.getText().toString();
-        String password = passwordEditText.getText().toString();
-        String name = nameEditText.getText().toString();
-        String phoneNumber = phoneNumberEditText.getText().toString();
-
+    public boolean validateForm(String email, String password, String name, String phoneNumber) {
         if(TextUtils.isEmpty(email)) {
             emailEditText.setError("Email is required");
             valid = false;
@@ -157,7 +151,7 @@ public class UserRegisterActivity extends AppCompatActivity implements Registrat
         userNameRef.addListenerForSingleValueEvent(eventListener);
     }
 
-    public static boolean isEmailValid(String email) {
+    public boolean isEmailValid(String email) {
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);

@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -95,30 +96,32 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
     @Override
     public void handleResult(Result rawResult) {
         result = rawResult.getText();
-        Bundle bundle = this.getArguments();
-        totalTransfer = Integer.parseInt(bundle.getString("amount"));
+        if(!Patterns.WEB_URL.matcher(result).matches()) {
+            Bundle bundle = this.getArguments();
+            totalTransfer = Integer.parseInt(bundle.getString("amount"));
 
-        transfer = changeToRupiahFormat(totalTransfer);
+            transfer = changeToRupiahFormat(totalTransfer);
 
-        if(!user.getUid().equals(result)) {
-            getInfo(new OnGetDataListener() {
-                @Override
-                public void onSuccess() {
-                    showInputSC();
-                }
+            if (!user.getUid().equals(result)) {
+                getInfo(new OnGetDataListener() {
+                    @Override
+                    public void onSuccess() {
+                        showInputSC();
+                    }
 
-                @Override
-                public void onStart() {
-                }
+                    @Override
+                    public void onStart() {
+                    }
 
-                @Override
-                public void onFailure() {
-                    invalidQR();
-                }
-            });
-        }else{
-            invalidQR();
-        }
+                    @Override
+                    public void onFailure() {
+                        invalidQR();
+                    }
+                });
+            } else {
+                invalidQR();
+            }
+        }else invalidQR();
     }
 
     public void invalidQR(){
@@ -139,27 +142,14 @@ public class AdminTopUpQRScanFragment extends Fragment implements ZXingScannerVi
     public void getInfo(final OnGetDataListener listener){
         listener.onStart();
 
-        databaseUser.child(result).child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseUser.child(result).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    userName = dataSnapshot.getValue().toString();
+                    userName = dataSnapshot.child("name").getValue().toString();
+                    userBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
                     listener.onSuccess();
                 }else listener.onFailure();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        databaseUser.child(result).child("balance").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.exists()){
-                    userBalance = Integer.parseInt(dataSnapshot.getValue().toString());
-                }
             }
 
             @Override

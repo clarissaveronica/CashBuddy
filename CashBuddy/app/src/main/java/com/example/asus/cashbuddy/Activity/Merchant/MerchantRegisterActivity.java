@@ -61,18 +61,18 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
         signUpBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(validateForm()) {
-                    String email = emailEditText.getText().toString();
-                    String password = passwordEditText.getText().toString();
-                    String name = nameEditText.getText().toString();
-                    String phoneNumber = phoneNumberEditText.getText().toString();
-                    String location = locationEditText.getText().toString();
+                String email = emailEditText.getText().toString();
+                String password = passwordEditText.getText().toString();
+                String name = nameEditText.getText().toString();
+                String number = phoneNumberEditText.getText().toString();
+                String location = locationEditText.getText().toString();
+                if(validateForm(email, password, name, number, location)) {
 
                     Intent intent = new Intent(MerchantRegisterActivity.this, RegisterVerificationActivity.class);
                     intent.putExtra("email", email);
                     intent.putExtra("password", password);
                     intent.putExtra("name", name);
-                    intent.putExtra("number", phoneNumber);
+                    intent.putExtra("number", number);
                     intent.putExtra("location", location);
                     intent.putExtra("role", "newMerchant");
                     startActivity(intent);
@@ -81,13 +81,7 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
         });
     }
 
-    public boolean validateForm() {
-        String email = emailEditText.getText().toString();
-        String password = passwordEditText.getText().toString();
-        String name = nameEditText.getText().toString();
-        String phoneNumber = phoneNumberEditText.getText().toString();
-        String location = locationEditText.getText().toString();
-
+    public boolean validateForm(String email, String password, String name, String phoneNumber, String location) {
         if (TextUtils.isEmpty(email)) {
             emailEditText.setError("Email is required");
             valid = false;
@@ -146,7 +140,7 @@ public class MerchantRegisterActivity extends AppCompatActivity implements Regis
         return valid;
     }
 
-    public static boolean isEmailValid(String email) {
+    public boolean isEmailValid(String email) {
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);

@@ -5,22 +5,20 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alimuzaffar.lib.pin.PinEntryEditText;
 import com.example.asus.cashbuddy.Model.History;
 import com.example.asus.cashbuddy.Model.Transaction;
-import com.example.asus.cashbuddy.Model.User;
 import com.example.asus.cashbuddy.R;
 import com.example.asus.cashbuddy.Utils.HistoryUtil;
 import com.example.asus.cashbuddy.Utils.TransactionUtil;
@@ -95,36 +93,42 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
     public void handleResult(final Result rawResult) {
         result = rawResult.getText();
 
-        getInfo(new OnGetDataListener() {
-            @Override
-            public void onSuccess() {
-                if (userBalance >= transactionAmount) {
-                    showInputSC();
-                } else {
-                    showError();
+        if(!Patterns.WEB_URL.matcher(result).matches()) {
+            getInfo(new OnGetDataListener() {
+                @Override
+                public void onSuccess() {
+                    if (userBalance >= transactionAmount) {
+                        showInputSC();
+                    } else {
+                        showError();
+                    }
                 }
-            }
 
-            @Override
-            public void onStart() {
-            }
+                @Override
+                public void onStart() {
+                }
 
-            @Override
-            public void onFailure() {
-                AlertDialog.Builder builder = new AlertDialog.Builder(UserScanActivity.this);
-                builder.setMessage("Invalid QR code. Please try again")
-                        .setCancelable(false)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                mScannerView.resumeCameraPreview(UserScanActivity.this);
-                            }
-                        });
+                @Override
+                public void onFailure() {
+                    showInvalidError();
+                }
+            });
+        }else showInvalidError();
+    }
 
-                AlertDialog alert = builder.create();
-                alert.setTitle("Oops!");
-                alert.show();
-            }
-        });
+    public void showInvalidError(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Invalid QR code. Please try again")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mScannerView.resumeCameraPreview(UserScanActivity.this);
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.setTitle("Oops!");
+        alert.show();
     }
 
     @Override
@@ -292,11 +296,11 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
                 String password = snapshot.getValue(String.class);
                 if(hash(securitycode.getText().toString()).equals(password)){
                     //Set history for user
-                    History history = new History("Purchase", userName, transactionAmount);
+                    History history = new History("Purchase", merchantName, transactionAmount);
                     HistoryUtil.insert(history, user.getUid());
 
                     //Set history for merchant
-                    History history2 = new History("Successful Transaction", merchantName, transactionAmount);
+                    History history2 = new History("Successful Transaction", userName, transactionAmount);
                     HistoryUtil.insert(history2, result);
 
                     HashMap<String,String> notificationData = new HashMap<>();

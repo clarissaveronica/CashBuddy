@@ -56,7 +56,7 @@ public class AdminConfirmWithdrawalDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_layout);
         TextView textViewTitle = findViewById(R.id.title);
-        textViewTitle.setText(R.string.merchantWithdrawalTitle);
+        textViewTitle.setText(R.string.confirmWithdrawalTitle);
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         reference = firebaseDatabase.getReference("withdrawrequest");

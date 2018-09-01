@@ -26,8 +26,7 @@
     <string name="signUpText"><u>Sign Up</u></string>
 
     <!-- Login and register error -->
-    <string name="requires_phonenum">Phone Number is required.</string>
-    <string name="requires_password">Password is required.</string>
+    <string name="requires_phonenum">Phone Number is required</string>
 
     <!-- Authentication -->
     <string name="authentication_success">Authentication success.</string>
@@ -48,7 +47,7 @@
 
     <!--Titles-->
     <string name="confirmTopUpTitle">Confirm Top Up</string>
-    <string name="merchantWithdrawalTitle">Merchant Withdrawal</string>
+    <string name="confirmWithdrawalTitle">Confirm Withdrawal</string>
     <string name="verifyMerchantTitle">Merchant Verification</string>
     <string name="aboutTitle">About Cash Buddy</string>
     <string name="changeSecurityCodeTitle">Change Security Code</string>
@@ -65,6 +64,18 @@
     <string name="receivedReqTitle">Received Requests</string>
     <string name="splitBillsTitle">Split Bills</string>
     <string name="splitBillsDetailTitle">Split Bills Details</string>
+
+    <!--Error-->
+    <string name="emailNull">Email is required</string>
+    <string name="passwordNull">Security code is required</string>
+    <string name="nameNull">Name is required</string>
+    <string name="phoneNumberNull">Phone number is required</string>
+    <string name="locationNull">Location is required</string>
+    <string name="emailError">Invalid email</string>
+    <string name="passwordError">Your security code must be 6 digits</string>
+    <string name="phoneNumberError">Invalid phone number</string>
+    <string name="phoneNumberRegistered">Phone number is already used</string>
+    <string name="wrongOTP">Verification pin is wrong</string>
 
     <string-array name="methods">
         <item>Select Method</item>

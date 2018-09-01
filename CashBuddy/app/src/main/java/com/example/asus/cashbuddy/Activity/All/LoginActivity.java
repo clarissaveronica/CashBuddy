@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
     private String uid;
     private String tempUid;
     private boolean valid;
-    private boolean check;
 
     DatabaseReference userDatabase, mUser, mMerchant;
 
@@ -73,12 +73,11 @@ public class LoginActivity extends AppCompatActivity {
         signIn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                if(!validateLoginInfo()) {
-                    loadingPanel.setVisibility(View.INVISIBLE);
-                    return;
-                }else {
-                    newLoginSession();
-                }
+            if(!validateLoginInfo()) {
+                loadingPanel.setVisibility(View.INVISIBLE);
+            }else {
+                newLoginSession();
+            }
 
             }
         });
@@ -106,7 +105,7 @@ public class LoginActivity extends AppCompatActivity {
         //Check user's role
         userDatabase = FirebaseDatabase.getInstance().getReference();
 
-        userDatabase.child("role").child(tempUid).addValueEventListener(new ValueEventListener() {
+        userDatabase.child("role").child(tempUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -127,17 +126,19 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(intent);
                             break;
                         case "UNVERIFIED_MERCHANT":
-                            AlertDialog alertDialog = new AlertDialog.Builder(
-                                    LoginActivity.this).create();
-                            alertDialog.setTitle("Merchant not verified!");
-                            alertDialog.setMessage("Please wait for our admin to verify your store.");
-                            alertDialog.setIcon(R.drawable.logo);
-                            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    FirebaseAuth.getInstance().signOut();
-                                }
-                            });
-                            alertDialog.show();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                            builder.setTitle("Merchant not verified!");
+                            builder.setIcon(R.drawable.logo);
+                            builder.setMessage("Please wait for our admin to verify your store.")
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            FirebaseAuth.getInstance().signOut();
+                                        }
+                                    });
+
+                            AlertDialog alert = builder.create();
+                            alert.show();
                             loadingPanel.setVisibility(View.INVISIBLE);
                             break;
                         case "ADMIN":
@@ -165,7 +166,7 @@ public class LoginActivity extends AppCompatActivity {
         uid = user.getUid();
         userDatabase = FirebaseDatabase.getInstance().getReference();
 
-        userDatabase.child("role").child(uid).addValueEventListener(new ValueEventListener() {
+        userDatabase.child("role").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.exists()) {
@@ -188,17 +189,19 @@ public class LoginActivity extends AppCompatActivity {
                             finish();
                             break;
                         case "UNVERIFIED_MERCHANT":
-                            AlertDialog alertDialog = new AlertDialog.Builder(
-                                    LoginActivity.this).create();
-                            alertDialog.setTitle("Merchant not verified!");
-                            alertDialog.setMessage("Please wait for our admin to verify your store.");
-                            alertDialog.setIcon(R.drawable.logo);
-                            alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            });
-                            alertDialog.show();
-                            FirebaseAuth.getInstance().signOut();
+                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                            builder.setTitle("Merchant not verified!");
+                            builder.setIcon(R.drawable.logo);
+                            builder.setMessage("Please wait for our admin to verify your store.")
+                                    .setCancelable(false)
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            FirebaseAuth.getInstance().signOut();
+                                        }
+                                    });
+
+                            AlertDialog alert = builder.create();
+                            alert.show();
                             loadingPanel.setVisibility(View.INVISIBLE);
                             break;
                         case "ADMIN":
@@ -228,15 +231,13 @@ public class LoginActivity extends AppCompatActivity {
         if(!TextUtils.isEmpty(username)) {
             validateNum(new OnGetDataListener() {
                 @Override
-                public void onSuccess(boolean checked) {
+                public void onSuccess() {
                     loginPhoneNumEditText.setError("Phone number is not registered");
                     valid = false;
                 }
 
                 @Override
-                public void onStart() {
-
-                }
+                public void onStart() { }
 
                 @Override
                 public void onFailure() {
@@ -250,34 +251,29 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void validateNum(final OnGetDataListener listener){
-        listener.onStart();
-
         String num = "+62" + loginPhoneNumEditText.getText().toString().substring(1);
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference userNameRef = rootRef.child("phonenumbertouid").child(num);
-        ValueEventListener eventListener = new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("phonenumbertouid").child(num).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.exists()) {
-                    check = false;
-                    listener.onSuccess(check);
-                }else{
+                if(dataSnapshot.exists()){
                     tempUid = dataSnapshot.getValue().toString();
-                    check = true;
                     listener.onFailure();
+                }else{
+                    listener.onSuccess();
                 }
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {listener.onFailure();}
-        };
-        userNameRef.addListenerForSingleValueEvent(eventListener);
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public interface OnGetDataListener {
         //make new interface for call back
-        void onSuccess(boolean checked);
+        void onSuccess();
         void onStart();
         void onFailure();
     }

@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,31 +96,34 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
     @Override
     public void handleResult(Result rawResult) {
         result = rawResult.getText();
-        Bundle bundle = this.getArguments();
-        totalTransfer = Integer.parseInt(bundle.getString("amount"));
 
-        transfer = changeToRupiahFormat(totalTransfer);
+        if(!Patterns.WEB_URL.matcher(result).matches()) {
+            Bundle bundle = this.getArguments();
+            totalTransfer = Integer.parseInt(bundle.getString("amount"));
 
-        if(!user.getUid().equals(result)) {
-            getInfo(new OnGetDataListener() {
-                @Override
-                public void onSuccess() {
-                    if (userBalance >= totalTransfer) {
-                        showInputSC();
-                    } else {
-                        showError();
+            transfer = changeToRupiahFormat(totalTransfer);
+
+            if (!user.getUid().equals(result)) {
+                getInfo(new OnGetDataListener() {
+                    @Override
+                    public void onSuccess() {
+                        if (userBalance >= totalTransfer) {
+                            showInputSC();
+                        } else {
+                            showError();
+                        }
                     }
-                }
 
-                @Override
-                public void onStart() {
-                }
+                    @Override
+                    public void onStart() {
+                    }
 
-                @Override
-                public void onFailure() {
-                    showInvalidQR();
-                }
-            });
+                    @Override
+                    public void onFailure() {
+                        showInvalidQR();
+                    }
+                });
+            } else showInvalidQR();
         }else showInvalidQR();
     }
 
@@ -154,15 +158,28 @@ public class UserTransferQRScanFragment extends Fragment implements ZXingScanner
     }
 
     public void getInfo(final OnGetDataListener listener){
-        databaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseUser.child(result).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
-                    receiverName = dataSnapshot.child(result).child("name").getValue().toString();
-                    receiverBalance = Integer.parseInt(dataSnapshot.child(result).child("balance").getValue().toString());
-                    userBalance = Integer.parseInt(dataSnapshot.child(user.getUid()).child("balance").getValue().toString());
-                    senderName = dataSnapshot.child(user.getUid()).child("name").getValue().toString();
-                    listener.onSuccess();
+                    receiverName = dataSnapshot.child("name").getValue().toString();
+                    receiverBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
+
+                    databaseUser.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                userBalance = Integer.parseInt(dataSnapshot.child("balance").getValue().toString());
+                                senderName = dataSnapshot.child("name").getValue().toString();
+                                listener.onSuccess();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
                 }else listener.onFailure();
             }
 

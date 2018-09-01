@@ -77,12 +77,11 @@ public class UserBankTransferFragment extends Fragment {
         bankNum = view.findViewById(R.id.bankNumber);
         withdraw = view.findViewById(R.id.submitButton);
 
-        Bundle bundle = this.getArguments();
-        withdrawBalance = Integer.parseInt(bundle.getString("amount"));
-
         withdraw.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
+                Bundle bundle = getArguments();
+                withdrawBalance = Integer.parseInt(bundle.getString("amount"));
                 if(validateForm()){
                     getInfo(new OnGetDataListener() {
                         @Override

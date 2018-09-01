@@ -201,24 +201,19 @@ public class LoginVerificationActivity extends AppCompatActivity {
                     switch (role){
                         case "USER":
                             mUser.child(currentUser).child("device_token").setValue(deviceToken);
-                            intent = new Intent(LoginVerificationActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            finishAffinity();
+                            finish();
                             break;
                         case "MERCHANT":
                             mMerchant.child(currentUser).child("device_token").setValue(deviceToken);
-                            intent = new Intent(LoginVerificationActivity.this, MerchantMainActivity.class);
-                            startActivity(intent);
-                            finishAffinity();
-                            break;
-                        case "ADMIN":
-                            intent = new Intent(LoginVerificationActivity.this, AdminMainActivity.class);
-                            startActivity(intent);
-                            finishAffinity();
                             break;
                         default: break;
 
                     }
+
+                    intent = new Intent(LoginVerificationActivity.this, SecurityCodeVerificationActivity.class);
+                    intent.putExtra("newLogin", 1);
+                    startActivity(intent);
+                    finish();
                 }
 
             }

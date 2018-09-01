@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import com.alimuzaffar.lib.pin.PinEntryEditText;
 import com.example.asus.cashbuddy.Activity.Merchant.MerchantMainActivity;
+import com.example.asus.cashbuddy.Activity.Merchant.MerchantProfileActivity;
 import com.example.asus.cashbuddy.Activity.User.MainActivity;
+import com.example.asus.cashbuddy.Activity.User.UserProfileActivity;
 import com.example.asus.cashbuddy.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -164,14 +166,16 @@ public class ChangePhoneNumberVerificationActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             successChange();
-                            finishAffinity();
                             if(role.equals("user")) {
+                                Toast.makeText(getApplicationContext(), "Phone number has successfully been changed", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(ChangePhoneNumberVerificationActivity.this, MainActivity.class);
                                 startActivity(intent);
                             }else{
+                                Toast.makeText(getApplicationContext(), "Phone number has successfully been changed", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(ChangePhoneNumberVerificationActivity.this, MerchantMainActivity.class);
                                 startActivity(intent);
                             }
+                            finishAffinity();
                         } else {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {

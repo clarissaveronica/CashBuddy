@@ -12,7 +12,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -121,7 +120,7 @@ public class MerchantHomeFragment extends Fragment {
         LayoutInflater factory = LayoutInflater.from(getActivity());
         final View view = factory.inflate(R.layout.qr_layout, null);
 
-        String text2Qr = firebaseAuth.getCurrentUser().getUid(); //will be changed later
+        String text2Qr = firebaseAuth.getCurrentUser().getUid();
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(text2Qr, BarcodeFormat.QR_CODE,300,300);
