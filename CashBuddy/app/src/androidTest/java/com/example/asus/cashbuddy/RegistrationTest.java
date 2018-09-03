@@ -29,7 +29,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsNot.not;
 
 @RunWith(AndroidJUnit4.class)
-public class UserValidateFormRegistrationTest {
+public class RegistrationTest {
 
     @Rule
     public IntentsTestRule<UserRegisterActivity> registerActivityTestRule = new IntentsTestRule<>(UserRegisterActivity.class);

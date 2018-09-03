@@ -261,7 +261,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
                         verify(new OnGetDataListener() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(getApplicationContext(), "Yay! Your transaction is completed!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Yay! Your transaction is completed!", Toast.LENGTH_LONG).show();
                                 finish();
                             }
 
@@ -271,7 +271,7 @@ public class UserScanActivity extends AppCompatActivity implements ZXingScannerV
 
                             @Override
                             public void onFailure() {
-                                Toast.makeText(getApplicationContext(), "Wrong security code", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(UserScanActivity.this, "Wrong security code", Toast.LENGTH_LONG).show();
                             }
                         });
                     }

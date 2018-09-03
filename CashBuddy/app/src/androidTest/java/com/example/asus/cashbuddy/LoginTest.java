@@ -46,7 +46,7 @@ public class LoginTest {
 
     //Phone number is not registered
     @Test
-    public void testSetPhoneNumberAlreadyRegistered() {
+    public void testSetPhoneNumberNotRegistered() {
         onView(withId(R.id.loginUsername)).perform(typeText("08123456789"));
         onView(withId(R.id.loginUsername)).perform(closeSoftKeyboard());
         onView(withId(R.id.signInButton)).perform(click());
