@@ -61,7 +61,7 @@ public class UserSentSplitBillFragment extends Fragment {
 
         splitBills = new ArrayList<SplitBill>();
         adapter = new UserSentSplitBillAdapter(splitBills);
-        recyclerView = view.findViewById(R.id.split_recycler_view);
+        recyclerView = view.findViewById(R.id.sent_split_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
         refReq = FirebaseDatabase.getInstance().getReference("splitbill");
 

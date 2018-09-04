@@ -185,7 +185,7 @@ public class UserRequestPaymentFragment extends Fragment {
         }
 
         if(newPrice < 10000){
-            amountRequested.setError("Minimal amount for transfer is Rp 10.000");
+            amountRequested.setError("Minimal amount requested is Rp 10.000");
             valid = false;
         }
 

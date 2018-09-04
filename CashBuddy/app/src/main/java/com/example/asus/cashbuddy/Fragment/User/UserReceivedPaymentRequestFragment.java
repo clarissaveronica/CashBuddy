@@ -63,7 +63,7 @@ public class UserReceivedPaymentRequestFragment extends Fragment {
 
         paymentReq = new ArrayList<PaymentRequest>();
         adapter = new UserReceivePaymentReqAdapter(paymentReq);
-        recyclerView = view.findViewById(R.id.request_recycler_view);
+        recyclerView = view.findViewById(R.id.received_request_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);

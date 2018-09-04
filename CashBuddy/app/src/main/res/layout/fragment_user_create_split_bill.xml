@@ -50,7 +50,7 @@
                     android:ems="10"
                     android:gravity="center"
                     android:background="@android:color/transparent"
-                    android:text="Rp"
+                    android:hint="Total bill to split"
                     android:inputType="number"/>
             </android.support.design.widget.TextInputLayout>
 

@@ -63,7 +63,7 @@ public class UserReceiveSplitBillFragment extends Fragment {
 
         splitBills = new ArrayList<SplitBill>();
         adapter = new UserReceiveSplitBillAdapter(splitBills);
-        recyclerView = view.findViewById(R.id.split_recycler_view);
+        recyclerView = view.findViewById(R.id.received_split_recycler_view);
         layoutManager = new LinearLayoutManager(getActivity());
 
         recyclerView.setLayoutManager(layoutManager);

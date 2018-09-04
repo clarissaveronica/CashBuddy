@@ -499,10 +499,6 @@ public class UserCreateSplitBillFragment extends Fragment {
                 if (originalString.contains(",")) {
                     originalString = originalString.replaceAll(",", "");
                 }
-
-                if(originalString.contains("Rp")){
-                    originalString = originalString.replaceAll("Rp", "");
-                }
                 longval = Long.parseLong(originalString);
 
                 DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
@@ -526,11 +522,11 @@ public class UserCreateSplitBillFragment extends Fragment {
                     price5.setText(formattedString);
                     price5.setSelection(price5.getText().length());
                 }else if(totalPrice.hasFocus()){
-                    totalPrice.setText("Rp" + formattedString);
+                    totalPrice.setText(formattedString);
                     totalPrice.setSelection(totalPrice.getText().length());
 
                     if(!totalPrice.getText().toString().equals("")){
-                        totalBill = Integer.parseInt(totalPrice.getText().toString().replace(",", "").replace("Rp", ""));
+                        totalBill = Integer.parseInt(totalPrice.getText().toString().replace(",", ""));
                     }
 
                     if(splitEvenly.isChecked()){
